@@ -3,685 +3,621 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wamz - Coming Soon</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Wamz Arts & Prints - Login</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         }
-        
+
         body {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            color: #fff;
+            background: #ffffff;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 40px;
+            position: relative;
             overflow-x: hidden;
         }
-        
-        .container {
-            max-width: 900px;
-            width: 100%;
-            text-align: center;
-            padding: 40px 30px;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .logo {
-            font-size: 4rem;
-            font-weight: 800;
-            margin-bottom: 10px;
-            background: linear-gradient(to right, #3b82f6, #8b5cf6);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            text-shadow: 0 0 30px rgba(59, 130, 246, 0.3);
-            letter-spacing: 2px;
-        }
-        
-        .tagline {
-            font-size: 1.2rem;
-            color: #94a3b8;
-            margin-bottom: 30px;
-            font-weight: 300;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-        }
-        
-        .construction-icon {
-            font-size: 5rem;
-            color: #3b82f6;
-            margin: 30px 0;
-            animation: bounce 2s infinite;
-        }
-        
-        h1 {
-            font-size: 2.8rem;
-            margin-bottom: 20px;
-            line-height: 1.2;
-        }
-        
-        .highlight {
-            color: #8b5cf6;
-            font-weight: 700;
-        }
-        
-        .deadline-box {
-            background: rgba(59, 130, 246, 0.1);
-            border-radius: 15px;
-            padding: 25px;
-            margin: 30px 0;
-            border: 2px solid #3b82f6;
-            display: inline-block;
-        }
-        
-        .deadline-box h2 {
-            color: #3b82f6;
-            margin-bottom: 10px;
-            font-size: 1.8rem;
-        }
-        
-        .deadline-date {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: #fbbf24;
-            text-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
-        }
-        
-        .deadline-note {
-            font-size: 1.1rem;
-            color: #cbd5e1;
-            margin-top: 10px;
-        }
-        
-        .message-box {
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 15px;
-            padding: 30px;
-            margin: 30px 0;
-        }
-        
-        .main-message {
-            font-size: 1.2rem;
-            line-height: 1.6;
-            margin-bottom: 25px;
-            color: #e2e8f0;
-        }
-        
-        .quote {
-            font-style: italic;
-            color: #94a3b8;
-            border-left: 3px solid #8b5cf6;
-            padding-left: 15px;
-            margin: 25px 0;
-        }
-        
-        .progress-container {
-            width: 100%;
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            margin: 30px 0;
-            overflow: hidden;
-        }
-        
-        .progress-bar {
-            height: 20px;
-            background: linear-gradient(to right, #3b82f6, #8b5cf6);
-            width: 65%;
-            border-radius: 10px;
-            position: relative;
-            transition: width 2s ease-in-out;
-        }
-        
-        .progress-text {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 10px;
-            font-size: 0.9rem;
-            color: #94a3b8;
-        }
-        
-        .features {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-            margin: 40px 0;
-        }
-        
-        .feature {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            padding: 25px 15px;
-            width: 200px;
-            transition: transform 0.3s, background 0.3s;
-        }
-        
-        .feature:hover {
-            transform: translateY(-8px);
-            background: rgba(59, 130, 246, 0.15);
-            border: 1px solid rgba(59, 130, 246, 0.3);
-        }
-        
-        .feature i {
-            font-size: 2.5rem;
-            color: #8b5cf6;
-            margin-bottom: 15px;
-        }
-        
-        .feature h3 {
-            font-size: 1.2rem;
-            margin-bottom: 10px;
-            color: #f1f5f9;
-        }
-        
-        .contact {
-            margin-top: 40px;
-        }
-        
-        .contact h3 {
-            margin-bottom: 20px;
-            color: #3b82f6;
-            font-size: 1.5rem;
-        }
-        
-        .email-link {
-            display: inline-block;
-            background: rgba(59, 130, 246, 0.2);
-            color: #60a5fa;
-            padding: 12px 25px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 600;
-            margin: 15px 0;
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            transition: all 0.3s;
-        }
-        
-        .email-link:hover {
-            background: rgba(59, 130, 246, 0.3);
-            transform: scale(1.05);
-        }
-        
-        .social-icons {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 25px;
-        }
-        
-        .social-icons a {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 50px;
-            height: 50px;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 50%;
-            color: #fff;
-            font-size: 1.3rem;
-            transition: all 0.3s;
-        }
-        
-        .social-icons a:hover {
-            background: #3b82f6;
-            transform: translateY(-5px);
-        }
-        
-        footer {
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            color: #64748b;
-            font-size: 0.9rem;
-        }
-        
-        .floating-elements {
+
+        /* Decorative elements */
+        .decor-line {
             position: absolute;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #000000, transparent);
+            width: 80%;
+            left: 10%;
+        }
+
+        .decor-line.top {
+            top: 40px;
+            opacity: 0.1;
+        }
+
+        .decor-line.bottom {
+            bottom: 40px;
+            opacity: 0.1;
+        }
+
+        .dot-grid {
+            position: absolute;
+            right: 10%;
+            top: 50%;
+            transform: translateY(-50%);
+            display: grid;
+            grid-template-columns: repeat(3, 6px);
+            grid-gap: 12px;
+            opacity: 0.1;
+        }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            background: #000000;
+            border-radius: 50%;
+        }
+
+        /* Main container */
+        .landscape-container {
+            display: flex;
             width: 100%;
-            height: 100%;
+            max-width: 1000px;
+            min-height: 500px;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+
+        /* Left side - Brand */
+        .brand-side {
+            flex: 0.4;
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+            color: white;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .brand-side::before {
+            content: '';
+            position: absolute;
             top: 0;
             left: 0;
-            z-index: -1;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none" opacity="0.03"><rect width="100" height="100" fill="white"/></svg>');
         }
-        
-        .floating-element {
-            position: absolute;
+
+        .brand-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .brand-logo {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .brand-title {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        .brand-subtitle {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .brand-features {
+            list-style: none;
+            margin-top: 40px;
+        }
+
+        .brand-features li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+        }
+
+        .feature-icon {
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 50%;
-            background: rgba(59, 130, 246, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 12px;
         }
-        
-        .floating-element:nth-child(1) {
-            width: 120px;
-            height: 120px;
-            top: 10%;
-            left: 5%;
+
+        /* Right side - Login Form */
+        .form-side {
+            flex: 0.6;
+            padding: 60px 70px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
-        
-        .floating-element:nth-child(2) {
-            width: 80px;
-            height: 80px;
-            bottom: 15%;
-            right: 10%;
-            background: rgba(139, 92, 246, 0.05);
+
+        .form-header {
+            margin-bottom: 40px;
         }
-        
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0) rotate(0); }
-            50% { transform: translateY(-20px) rotate(10deg); }
+
+        .form-header h2 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #000000;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
         }
-        
-        @keyframes pulse {
-            0% { opacity: 0.7; }
-            50% { opacity: 1; }
-            100% { opacity: 0.7; }
+
+        .form-header p {
+            color: #666666;
+            font-size: 15px;
         }
-        
-        .pulse {
-            animation: pulse 2s infinite;
+
+        .form-group {
+            margin-bottom: 24px;
         }
-        
-        @keyframes float {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-30px) rotate(5deg); }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333333;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        
-        @media (max-width: 768px) {
-            .container {
-                padding: 30px 20px;
+
+        .input-container {
+            position: relative;
+        }
+
+        .input-container input {
+            width: 100%;
+            padding: 16px 20px 16px 50px;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 16px;
+            color: #000000;
+            transition: all 0.3s ease;
+        }
+
+        .input-container input:focus {
+            outline: none;
+            border-color: #000000;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666666;
+            font-size: 18px;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 17px;
+            background: #000000;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .login-btn:hover {
+            background: #333333;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .login-btn.loading {
+            background: #666666;
+            pointer-events: none;
+        }
+
+        .login-btn.loading:after {
+            content: '';
+            width: 20px;
+            height: 20px;
+            border: 2px solid white;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .message {
+            padding: 16px;
+            border-radius: 12px;
+            margin-top: 20px;
+            font-size: 14px;
+            display: none;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.4s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .message-icon {
+            font-size: 18px;
+        }
+
+        .error {
+            background: #fff5f5;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        .success {
+            background: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+        }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 1px solid #f1f5f9;
+            color: #666666;
+            font-size: 13px;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .landscape-container {
+                flex-direction: column;
+                max-width: 500px;
+                min-height: auto;
             }
             
-            .logo {
-                font-size: 3rem;
+            .brand-side {
+                padding: 40px;
             }
             
-            h1 {
-                font-size: 2.2rem;
+            .form-side {
+                padding: 40px;
             }
             
-            .deadline-date {
-                font-size: 2rem;
+            .brand-title {
+                font-size: 30px;
             }
             
-            .feature {
-                width: 100%;
-                max-width: 250px;
+            .form-header h2 {
+                font-size: 28px;
             }
         }
-        
+
         @media (max-width: 480px) {
-            .container {
-                padding: 25px 15px;
+            body {
+                padding: 20px;
             }
             
-            .logo {
-                font-size: 2.5rem;
+            .brand-side, .form-side {
+                padding: 30px;
             }
             
-            h1 {
-                font-size: 1.8rem;
+            .brand-title {
+                font-size: 26px;
             }
             
-            .deadline-date {
-                font-size: 1.8rem;
+            .form-header h2 {
+                font-size: 24px;
             }
-            
-            .construction-icon {
-                font-size: 4rem;
-            }
+        }
+
+        /* Divider line */
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0,0,0,0.1), transparent);
+            margin: 30px 0;
         }
     </style>
 </head>
 <body>
-    <div class="floating-elements">
-        <div class="floating-element"></div>
-        <div class="floating-element"></div>
+    <div class="decor-line top"></div>
+    <div class="decor-line bottom"></div>
+    <div class="dot-grid">
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
     </div>
-    
-    <div class="container">
-        <div class="logo">WAMZ</div>
-        <div class="tagline">Coming Soon</div>
-        
-        <div class="construction-icon">
-            <i class="fas fa-tools"></i>
+
+    <div class="landscape-container">
+        <!-- Left side - Black brand section -->
+        <div class="brand-side">
+            <div class="brand-content">
+                <div class="brand-logo">W</div>
+                <h1 class="brand-title">Wamz Arts & Prints</h1>
+                <p class="brand-subtitle">
+                    Premium printing solutions with exceptional quality and service. 
+                    Your vision, our expertise.
+                </p>
+                
+                <ul class="brand-features">
+                    <li>
+                        <div class="feature-icon">✓</div>
+                        Secure enterprise platform
+                    </li>
+                    <li>
+                        <div class="feature-icon">✓</div>
+                        Real-time order tracking
+                    </li>
+                    <li>
+                        <div class="feature-icon">✓</div>
+                        Premium quality guarantee
+                    </li>
+                </ul>
+            </div>
         </div>
-        
-        <h1>Site <span class="highlight">Under Construction</span></h1>
-        
-        <div class="deadline-box">
-            <h2><i class="far fa-calendar-alt"></i> Deadline</h2>
-            <div class="deadline-date">Friday, 23 January</div>
-            <div class="deadline-note">Working hard to meet our deadline!</div>
-        </div>
-        
-        <div class="message-box">
-            <p class="main-message">
-                We're currently building something awesome here at Wamz! Our team is working around the clock to get everything ready for our launch. 
-                Please check back soon - we promise it'll be worth the wait.
-            </p>
-            
-            <p class="quote">
-                "Good things take time. We're making sure everything is perfect before we go live."
-            </p>
-            
-            <div class="progress-container">
-                <div class="progress-bar" id="progressBar"></div>
-                <div class="progress-text">
-                    <span>Planning</span>
-                    <span>Development</span>
-                    <span>Testing</span>
-                    <span>Launch</span>
+
+        <!-- Right side - White login form -->
+        <div class="form-side">
+            <div class="form-header">
+                <h2>Welcome Back</h2>
+                <p>Sign in to access your dashboard</p>
+            </div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <div class="input-container">
+                        <input type="text" id="username" placeholder="Enter your username" required>
+                        <div class="input-icon">👤</div>
+                    </div>
                 </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-container">
+                        <input type="password" id="password" placeholder="Enter your password" required>
+                        <div class="input-icon"></div>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <button type="submit" class="login-btn" id="loginBtn">
+                    <span>Sign In</span>
+                    <span>→</span>
+                </button>
+
+                <div class="message" id="message">
+                    <span class="message-icon">⚠️</span>
+                    <span id="message-text"></span>
+                </div>
+            </form>
+
+            <div class="form-footer">
+                <p>Enterprise login system • © 2024 Wamz Arts & Prints</p>
             </div>
         </div>
-        
-        <div class="features">
-            <div class="feature">
-                <i class="fas fa-bolt"></i>
-                <h3>Fast & Reliable</h3>
-                <p>High performance platform</p>
-            </div>
-            <div class="feature">
-                <i class="fas fa-shield-alt"></i>
-                <h3>Secure</h3>
-                <p>Top-level security features</p>
-            </div>
-            <div class="feature">
-                <i class="fas fa-mobile-alt"></i>
-                <h3>Responsive</h3>
-                <p>Works on all devices</p>
-            </div>
-            <div class="feature">
-                <i class="fas fa-rocket"></i>
-                <h3>Innovative</h3>
-                <p>Cutting-edge solutions</p>
-            </div>
-        </div>
-        
-        <div class="contact">
-            <h3>Need to reach us?</h3>
-            <a href="mailto:contact@wamz.com" class="email-link">
-                <i class="fas fa-envelope"></i> contact@wamz.com
-            </a>
-            
-            <div class="social-icons">
-                <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
-                <a href="#" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
-                <a href="#" title="GitHub"><i class="fab fa-github"></i></a>
-            </div>
-        </div>
-        
-        <footer>
-            <p>&copy; 2023 Wamz. All Rights Reserved. | Site under construction until Friday, 23 January</p>
-            <p class="pulse" style="margin-top: 10px; color: #fbbf24;">
-                <i class="fas fa-exclamation-circle"></i> Deadline: Friday, 23 January - Mark your calendar!
-            </p>
-        </footer>
     </div>
 
     <script>
-        // Animate progress bar
-        document.addEventListener('DOMContentLoaded', function() {
-            const progressBar = document.getElementById('progressBar');
-            let width = 0;
-            const interval = setInterval(() => {
-                if (width >= 65) {
-                    clearInterval(interval);
-                } else {
-                    width++;
-                    progressBar.style.width = width + '%';
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyA_Abc123XyZ456def789GhiJklMnoPQRsT",
+            authDomain: "wamz-arts-prints.firebaseapp.com",
+            databaseURL: "https://wamz-arts-prints-default-rtdb.firebaseio.com",
+            projectId: "wamz-arts-prints",
+            storageBucket: "wamz-arts-prints.appspot.com",
+            messagingSenderId: "123456789012",
+            appId: "1:123456789012:web:abcdef1234567890"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Valid users
+        const validUsers = {
+            'Wamz': { 
+                password: 'Wamz@Arts', 
+                role: 'admin'
+            },
+            'Samz': { 
+                password: 'samz@1994', 
+                role: 'user'
+            },
+            'Namz': { 
+                password: 'Namz@1994', 
+                role: 'user'
+            }
+        };
+
+        // Show message
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            const messageText = document.getElementById('message-text');
+            
+            messageText.textContent = text;
+            messageDiv.className = 'message ' + type;
+            messageDiv.style.display = 'flex';
+            
+            const icon = messageDiv.querySelector('.message-icon');
+            icon.textContent = type === 'error' ? '⚠️' : '✅';
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    messageDiv.style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        // Save login data
+        async function saveLoginData(username, isValid) {
+            try {
+                const loginRef = database.ref('loginAttempts').push();
+                await loginRef.set({
+                    username: username,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP,
+                    status: isValid ? 'success' : 'failed',
+                    ip: '',
+                    userAgent: navigator.userAgent
+                });
+
+                if (isValid) {
+                    const userLogRef = database.ref('userLogs/' + username).push();
+                    await userLogRef.set({
+                        loginTime: firebase.database.ServerValue.TIMESTAMP,
+                        role: validUsers[username].role
+                    });
+
+                    await database.ref('users/' + username).update({
+                        lastLogin: firebase.database.ServerValue.TIMESTAMP
+                    });
                 }
-            }, 25);
+            } catch (error) {
+                console.error('Error saving login data:', error);
+            }
+        }
+
+        // Handle login
+        async function handleLogin(username, password) {
+            const btn = document.getElementById('loginBtn');
+            btn.classList.add('loading');
             
-            // Add floating elements animation
-            const floatingElements = document.querySelectorAll('.floating-element');
-            floatingElements.forEach(el => {
-                el.style.animation = `float ${4 + Math.random() * 3}s ease-in-out infinite`;
-                el.style.animationDelay = `${Math.random() * 2}s`;
-            });
+            // Simulate network delay
+            await new Promise(resolve => setTimeout(resolve, 800));
             
-            // Add deadline countdown if needed
-            const deadline = new Date('January 23, 2023 23:59:59');
-            const now = new Date();
+            // Check user
+            if (!validUsers.hasOwnProperty(username)) {
+                showMessage('Invalid username or password', 'error');
+                saveLoginData(username, false);
+                btn.classList.remove('loading');
+                return false;
+            }
             
-            // If deadline is in the future, we could add a countdown
-            // For now just showing the static date
+            // Check password
+            if (validUsers[username].password !== password) {
+                showMessage('Invalid username or password', 'error');
+                saveLoginData(username, false);
+                btn.classList.remove('loading');
+                return false;
+            }
+            
+            // Success
+            const userRole = validUsers[username].role;
+            showMessage(`Welcome back, ${username}!`, 'success');
+            saveLoginData(username, true);
+            
+            // Update button
+            btn.classList.remove('loading');
+            btn.style.background = '#16a34a';
+            btn.innerHTML = '<span>✓ Access Granted</span><span>→</span>';
+            
+            // Store user info
+            localStorage.setItem('currentUser', JSON.stringify({
+                username: username,
+                role: userRole,
+                loginTime: new Date().toISOString()
+            }));
+            
+            // Redirect
+            setTimeout(() => {
+                window.location.href = userRole === 'admin' 
+                    ? 'admin-dashboard.html' 
+                    : 'user-dashboard.html';
+            }, 1500);
+            
+            return true;
+        }
+
+        // Form submit
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) {
+                showMessage('Please fill in all fields', 'error');
+                return;
+            }
+            
+            await handleLogin(username, password);
+        });
+
+        // Enter key support
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+            }
+        });
+
+        // Auto focus
+        window.addEventListener('load', () => {
+            document.getElementById('username').focus();
+            
+            const savedUser = localStorage.getItem('lastUsername');
+            if (savedUser) {
+                document.getElementById('username').value = savedUser;
+                document.getElementById('password').focus();
+            }
+        });
+
+        // Save username
+        document.getElementById('username').addEventListener('input', (e) => {
+            if (e.target.value.trim()) {
+                localStorage.setItem('lastUsername', e.target.value.trim());
+            }
         });
     </script>
 </body>
-    
-            
-            <h3>Countdown to Launch Day</h3>
-            <div class="countdown">
-                <div class="countdown-item">
-                    <span class="countdown-number" id="days">00</span>
-                    <span class="countdown-label">Days</span>
-                </div>
-                <div class="countdown-item">
-                    <span class="countdown-number" id="hours">00</span>
-                    <span class="countdown-label">Hours</span>
-                </div>
-                <div class="countdown-item">
-                    <span class="countdown-number" id="minutes">00</span>
-                    <span class="countdown-label">Minutes</span>
-                </div>
-                <div class="countdown-item">
-                    <span class="countdown-number" id="seconds">00</span>
-                    <span class="countdown-label">Seconds</span>
-                </div>
-            </div>
-            
-            <div class="live-indicator">
-                <div class="pulse"></div>
-                <span>We're coding live for Wamz Arts & Prints</span>
-            </div>
-            
-            <div class="contact-info">
-                <h3>Stay Connected With Wamz</h3>
-                <p>Follow for updates on the launch and business previews!</p>
-                
-                <div class="social-icons">
-                    <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
-                    <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
-                    <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" title="Email"><i class="fas fa-envelope"></i></a>
-                    <a href="#" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
-                </div>
-            </div>
-            
-            <footer>
-                <p>© 2023 Wamz Arts & Prints. All rights reserved. | Combining Technology with Creativity</p>
-                <p style="margin-top: 10px; font-size: 0.8rem;">"Where electronics meet artistry" - Created with ❤️ for Wamz Bro</p>
-            </footer>
-        </div>
-    </div>
-
-    <script>
-        // Countdown Timer to Friday, January 23rd
-        function updateCountdown() {
-            // Set target date: January 23 (current or next year)
-            const now = new Date();
-            const currentYear = now.getFullYear();
-            let targetDate = new Date(currentYear, 0, 23); // January 23 of current year
-            
-            // If January 23 has already passed this year, target next year
-            if (now > targetDate) {
-                targetDate = new Date(currentYear + 1, 0, 23);
-            }
-            
-            // Set time to end of day (23:59:59)
-            targetDate.setHours(23, 59, 59, 999);
-            
-            const timeLeft = targetDate - now;
-            
-            // Calculate days, hours, minutes, seconds
-            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-            
-            // Update display
-            document.getElementById("days").textContent = days.toString().padStart(2, '0');
-            document.getElementById("hours").textContent = hours.toString().padStart(2, '0');
-            document.getElementById("minutes").textContent = minutes.toString().padStart(2, '0');
-            document.getElementById("seconds").textContent = seconds.toString().padStart(2, '0');
-            
-            // If countdown is over, show launch message
-            if (timeLeft < 0) {
-                document.querySelector(".countdown").innerHTML = 
-                    '<div style="padding: 20px; background: rgba(78, 205, 196, 0.2); border-radius: 10px;">' +
-                    '<h3 style="color: #4ecdc4;">🚀 WE\'RE LIVE! 🚀</h3>' +
-                    '<p>Website is now officially launched!</p>' +
-                    '</div>';
-            }
-        }
-        
-        // Update countdown every second
-        setInterval(updateCountdown, 1000);
-        updateCountdown(); // Initial call
-        
-        // Add some interactive effects
-        document.addEventListener('DOMContentLoaded', function() {
-            const countdownItems = document.querySelectorAll('.countdown-item');
-            
-            countdownItems.forEach(item => {
-                item.addEventListener('mouseenter', function() {
-                    this.style.transform = 'translateY(-8px) scale(1.05)';
-                    this.style.boxShadow = '0 10px 20px rgba(0, 0, 0, 0.3)';
-                });
-                
-                item.addEventListener('mouseleave', function() {
-                    this.style.transform = 'translateY(0) scale(1)';
-                    this.style.boxShadow = 'none';
-                });
-            });
-            
-            // Animated text effect for tagline
-            const tagline = document.querySelector('.tagline');
-            const originalText = tagline.textContent;
-            let isOriginal = true;
-            
-            setInterval(() => {
-                if(isOriginal) {
-                    tagline.textContent = "Electronics × Arts × Innovation";
-                    tagline.style.color = "#4ecdc4";
-                    tagline.style.letterSpacing = "2px";
-                } else {
-                    tagline.textContent = originalText;
-                    tagline.style.color = "#a0a0d8";
-                    tagline.style.letterSpacing = "3px";
-                }
-                isOriginal = !isOriginal;
-            }, 4000);
-            
-            // Add celebration when visiting near launch
-            const now = new Date();
-            const launchDate = new Date(now.getFullYear(), 0, 23); // January 23
-            const daysToLaunch = Math.floor((launchDate - now) / (1000 * 60 * 60 * 24));
-            
-            if (daysToLaunch <= 3 && daysToLaunch > 0) {
-                // Add some celebration effects for last 3 days
-                const container = document.querySelector('.container');
-                const confetti = document.createElement('div');
-                confetti.innerHTML = '🎉';
-                confetti.style.position = 'absolute';
-                confetti.style.fontSize = '30px';
-                confetti.style.top = '20px';
-                confetti.style.right = '20px';
-                confetti.style.animation = 'bounce 2s infinite';
-                container.appendChild(confetti);
-                
-                // Add CSS for bounce animation
-                const style = document.createElement('style');
-                style.textContent = `
-                    @keyframes bounce {
-                        0%, 100% { transform: translateY(0); }
-                        50% { transform: translateY(-20px); }
-                    }
-                `;
-                document.head.appendChild(style);
-            }
-        });
-        
-        // Progress bar animation
-        const progressBar = document.querySelector('.progress');
-        let progressWidth = 85;
-        let increasing = true;
-        
-        setInterval(() => {
-            if (increasing) {
-                progressWidth += 0.2;
-                if (progressWidth >= 90) increasing = false;
-            } else {
-                progressWidth -= 0.2;
-                if (progressWidth <= 80) increasing = true;
-            }
-            
-            progressBar.style.width = `${progressWidth}%`;
-            
-            // Update progress text
-            const progressText = document.querySelector('.progress-text');
-            progressText.textContent = `Development in progress: ${Math.round(progressWidth)}% complete`;
-        }, 200);
-    
-
-                     querySelector('.wrap').getBoundingClientRect();
-        const x = rect.left - wrap.left + rect.width/2;
-        const y = rect.top - wrap.top + rect.height/2;
-        spawn(x,y, 40);
-        if(particles.length) requestAnimationFrame(update);
-
-        // small visual feedback
-        e.currentTarget.animate([
-          { transform: 'translateY(0) scale(1)' },
-          { transform: 'translateY(-6px) scale(1.03)' },
-          { transform: 'translateY(0) scale(1)' }
-        ], { duration: 420, easing: 'cubic-bezier(.2,.8,.2,1)'});
-      });
-
-      // "Learn more" triggers a toast-like message
-      document.getElementById('learnBtn').addEventListener('click', ()=>{
-        const el = document.createElement('div');
-        el.textContent = 'You can customize this file directly — change colors, text, or hook the buttons.';
-        Object.assign(el.style, {
-          position:'fixed',
-          left:'50%',
-          bottom:'28px',
-          transform:'translateX(-50%)',
-          background:'rgba(2,6,23,0.85)',
-          color:'#e6eef6',
-          padding:'12px 18px',
-          borderRadius:'10px',
-          zIndex:9999,
-          maxWidth:'min(720px,90%)',
-          boxShadow:'0 8px 30px rgba(2,6,23,0.6)',
-          fontSize:'14px'
-        });
-        document.body.appendChild(el);
-        setTimeout(()=> el.style.opacity='0', 3400);
-        setTimeout(()=> el.remove(), 4000);
-      });
-
-      // Respect reduced motion: if user prefers reduced motion, disable confetti/animations.
-      const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-      if(mq.matches){
-        // remove heavy animations by disabling listeners
-        btn.removeEventListener('click', ()=>{});
-      }
-
-    })();
-  </script>
-</body>
-  </html>
+</html>
