@@ -1,0 +1,2035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales - Wamz Arts & Prints</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: #f5f7fa;
+            color: #2c3e50;
+            line-height: 1.6;
+            height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Full screen layout with sidebar */
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            grid-template-rows: auto 1fr;
+            height: 100vh;
+            transition: grid-template-columns 0.3s ease;
+        }
+
+        .dashboard-container.sidebar-hidden {
+            grid-template-columns: 0px 1fr;
+        }
+
+        /* Header */
+        .header {
+            grid-column: 1 / -1;
+            background: #1a365d;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-name {
+            font-weight: 500;
+            color: #e2e8f0;
+        }
+
+        .branch-badge {
+            background: #4299e1;
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .admin-badge {
+            background: #e53e3e;
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: #2d3748;
+            color: white;
+            padding: 2rem 1rem;
+            border-right: 1px solid #4a5568;
+            overflow-y: auto;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .sidebar-hidden .sidebar {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+
+        .sidebar-title {
+            font-size: 1rem;
+            color: #cbd5e0;
+            margin-bottom: 1.5rem;
+            padding: 0 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.9rem 1rem;
+            background: none;
+            border: none;
+            text-align: left;
+            color: #cbd5e0;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .nav-item.active {
+            background: #4299e1;
+            color: white;
+        }
+
+        /* Toggle Button */
+        .sidebar-toggle {
+            background: #4299e1;
+            color: white;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            transition: all 0.2s;
+        }
+
+        .sidebar-toggle:hover {
+            background: #3182ce;
+        }
+
+        .logout-btn {
+            background: #2d3748;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: #4a5568;
+        }
+
+        /* Main Content */
+        .main-content {
+            background: #f5f7fa;
+            padding: 2rem;
+            overflow-y: auto;
+            height: 100%;
+        }
+
+        /* Welcome Banner */
+        .welcome-banner {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 12px rgba(66, 153, 225, 0.2);
+        }
+
+        .welcome-banner h2 {
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .welcome-banner p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        /* Admin Access Alert */
+        .admin-access-alert {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 12px rgba(229, 62, 62, 0.2);
+            display: none;
+            border: 2px solid #fed7d7;
+        }
+
+        .admin-access-alert h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        /* Message Display */
+        .message {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: none;
+            border: 1px solid transparent;
+        }
+
+        .message.success {
+            background: #f0fff4;
+            color: #276749;
+            border-color: #c6f6d5;
+        }
+
+        .message.error {
+            background: #fff5f5;
+            color: #c53030;
+            border-color: #fed7d7;
+        }
+
+        .message.info {
+            background: #ebf8ff;
+            color: #2c5282;
+            border-color: #bee3f8;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #718096;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Main Layout */
+        .content-wrapper {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            height: calc(100vh - 400px);
+            min-height: 500px;
+        }
+
+        @media (max-width: 1024px) {
+            .content-wrapper {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+        }
+
+        /* Inventory Section */
+        .inventory-section {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-bottom: 2px solid #f7fafc;
+            background: #f8fafc;
+        }
+
+        .section-header h3 {
+            font-size: 1.1rem;
+            color: #2d3748;
+            font-weight: 600;
+        }
+
+        .search-controls {
+            display: flex;
+            gap: 0.8rem;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 0.8rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+
+        .search-btn {
+            background: #4299e1;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .search-btn:hover {
+            background: #3182ce;
+        }
+
+        .table-container {
+            flex: 1;
+            overflow: auto;
+        }
+
+        .inventory-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        .inventory-table th {
+            background: #f8fafc;
+            padding: 1rem;
+            text-align: left;
+            color: #718096;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+        }
+
+        .inventory-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #f7fafc;
+            color: #4a5568;
+            font-size: 0.9rem;
+        }
+
+        .inventory-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .code-badge {
+            background: #4299e1;
+            color: white;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            font-family: monospace;
+            display: inline-block;
+        }
+
+        .qty-input {
+            width: 70px;
+            padding: 0.5rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .add-btn {
+            background: #4299e1;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .add-btn:hover {
+            background: #3182ce;
+        }
+
+        /* Cart Section */
+        .cart-section {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-bottom: 2px solid #f7fafc;
+            background: #f8fafc;
+        }
+
+        .cart-items {
+            flex: 1;
+            overflow: auto;
+            padding: 1rem;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem;
+            border-bottom: 1px solid #f7fafc;
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .cart-item-controls {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .cart-item-btn {
+            background: #e2e8f0;
+            color: #4a5568;
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cart-item-btn:hover {
+            background: #cbd5e0;
+        }
+
+        .remove-btn {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .remove-btn:hover {
+            background: #feb2b2;
+        }
+
+        .cart-summary {
+            padding: 1rem;
+            border-top: 2px solid #f7fafc;
+            background: #f8fafc;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .total-row {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .discount-controls {
+            display: flex;
+            gap: 0.5rem;
+            margin: 1rem 0;
+            align-items: center;
+        }
+
+        .discount-select {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+        }
+
+        .discount-input {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+        }
+
+        .cart-actions {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        .cart-action-btn {
+            flex: 1;
+            padding: 0.8rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .checkout-btn {
+            background: #38a169;
+            color: white;
+        }
+
+        .checkout-btn:hover {
+            background: #2f855a;
+        }
+
+        .checkout-btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+        }
+
+        .clear-btn {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .clear-btn:hover {
+            background: #cbd5e0;
+        }
+
+        .view-sales-btn {
+            background: #4299e1;
+            color: white;
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        .view-sales-btn:hover {
+            background: #3182ce;
+        }
+
+        /* Sales Overlay */
+        .sales-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+        }
+
+        .sales-overlay.show {
+            display: flex;
+        }
+
+        .sales-panel {
+            width: 100%;
+            height: 100%;
+            max-width: 1000px;
+            max-height: 90vh;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+        }
+
+        .sales-panel-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8fafc;
+        }
+
+        .sales-panel-body {
+            flex: 1;
+            overflow: auto;
+            padding: 1rem;
+        }
+
+        .sales-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .sales-table th {
+            background: #f8fafc;
+            padding: 1rem;
+            text-align: left;
+            color: #718096;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+        }
+
+        .sales-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #f7fafc;
+            color: #4a5568;
+            font-size: 0.9rem;
+        }
+
+        .sales-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .date-filter {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .date-filter input[type="date"] {
+            padding: 0.5rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+        }
+
+        .preset-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-left: auto;
+        }
+
+        .preset-btn {
+            padding: 0.5rem 1rem;
+            background: #e2e8f0;
+            color: #4a5568;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .preset-btn:hover {
+            background: #cbd5e0;
+        }
+
+        /* Loading States */
+        .loading {
+            color: #a0aec0;
+            font-style: italic;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+
+            .header {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .user-info {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .content-wrapper {
+                gap: 1rem;
+            }
+
+            .search-controls {
+                flex-direction: column;
+            }
+        }
+
+        /* Mobile Sidebar Toggle */
+        .sidebar-mobile-toggle {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #4299e1;
+            color: white;
+            border: none;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3);
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar-mobile-toggle {
+                display: flex;
+            }
+        }
+
+        /* Scrollbar Styling */
+        .table-container::-webkit-scrollbar,
+        .cart-items::-webkit-scrollbar,
+        .sales-panel-body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .table-container::-webkit-scrollbar-track,
+        .cart-items::-webkit-scrollbar-track,
+        .sales-panel-body::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb,
+        .cart-items::-webkit-scrollbar-thumb,
+        .sales-panel-body::-webkit-scrollbar-thumb {
+            background: #cbd5e0;
+            border-radius: 4px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb:hover,
+        .cart-items::-webkit-scrollbar-thumb:hover,
+        .sales-panel-body::-webkit-scrollbar-thumb:hover {
+            background: #a0aec0;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container" id="dashboardContainer">
+        <!-- Header -->
+        <div class="header">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <button class="sidebar-toggle" onclick="toggleSidebar()" id="sidebarToggle">☰</button>
+                <h1>Wamz Arts & Prints - Sales</h1>
+            </div>
+            <div class="user-info">
+                <span class="user-name">Welcome, <strong id="currentUser">User</strong></span>
+                <span class="branch-badge" id="branchBadge">Branch</span>
+                <span class="admin-badge" id="adminBadge" style="display: none;">ADMIN</span>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-title">Navigation</div>
+            <div class="nav-menu">
+                <a href="user-dashboard.html" class="nav-item" onclick="checkAdminAccess(event, 'user-dashboard.html')">
+                     Overview
+                </a>
+                <a href="inventory.html" class="nav-item" onclick="checkAdminAccess(event, 'inventory.html')">
+                     Inventory
+                </a>
+                <a href="sales.html" class="nav-item active">
+                     Sales
+                </a>
+                <a href="reports.html" class="nav-item" onclick="checkAdminAccess(event, 'reports.html')">
+                     Reports
+                </a>
+                <a href="cashflow.html" class="nav-item" onclick="checkAdminAccess(event, 'cashflow.html')">
+                     Cash Flow
+                </a>
+              
+                <!-- Admin-only option -->
+                <button class="nav-item" onclick="openAdminPanel()" id="adminPanelBtn" style="display: none;">
+                    🔧 Admin Panel
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Admin Access Alert -->
+            <div class="admin-access-alert" id="adminAccessAlert">
+                <h3>⚠️ ADMIN ACCESS DETECTED</h3>
+                <p><strong id="adminName">Wamz (Admin)</strong> is accessing another user's account.</p>
+                <div class="alert-details" style="background: rgba(255, 255, 255, 0.1); padding: 0.8rem; border-radius: 6px; margin-top: 0.5rem; font-size: 0.85rem; border-left: 4px solid white;">
+                    <p><strong>Admin User:</strong> <span id="loggedInAdmin">Wamz</span></p>
+                    <p><strong>Accessing Account:</strong> <span id="targetAccount">Namz</span></p>
+                    <p><strong>Branch Being Accessed:</strong> <span id="targetBranch">Branch 3</span></p>
+                    <p><strong>Time:</strong> <span id="accessTime">Just now</span></p>
+                </div>
+                <p style="margin-top: 0.8rem; font-size: 0.8rem;">All actions will be logged for security purposes.</p>
+            </div>
+
+            <!-- Welcome Banner -->
+            <div class="welcome-banner">
+                <h2 id="branchTitle">Sales Management</h2>
+                <p id="branchDescription">Process sales and manage transactions</p>
+            </div>
+
+            <!-- Message Display -->
+            <div class="message" id="message"></div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalItems">0</div>
+                    <div class="stat-label">Total Items</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="lowStockCount">0</div>
+                    <div class="stat-label">Low Stock</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalValue">ZMW 0.00</div>
+                    <div class="stat-label">Total Value</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="outOfStock">0</div>
+                    <div class="stat-label">Out of Stock</div>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="content-wrapper">
+                <!-- Inventory Section -->
+                <div class="inventory-section">
+                    <div class="section-header">
+                        <h3>Available Items</h3>
+                        <div>
+                            <button class="search-btn" id="refreshBtn">Refresh</button>
+                        </div>
+                    </div>
+                    
+                    <div class="search-controls">
+                        <input type="text" class="search-input" id="searchInput" 
+                               placeholder="Search by item name, code, or location...">
+                        <button class="search-btn" id="searchBtn">Search</button>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table class="inventory-table" id="inventoryTable">
+                            <thead>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Item</th>
+                                    <th>Category</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th>Total Value</th>
+                                    <th>Location</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventoryBody">
+                                <tr>
+                                    <td colspan="8" style="text-align: center; padding: 40px;">
+                                        <span class="loading">Loading inventory...</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Cart Section -->
+                <div class="cart-section">
+                    <div class="cart-header">
+                        <h3>Cart</h3>
+                        <span id="cartIndicator" style="color: #718096; font-size: 0.9rem;">0 items</span>
+                    </div>
+                    
+                    <div class="cart-items" id="cartList">
+                        <div style="text-align: center; padding: 2rem; color: #a0aec0;">
+                            Cart is empty
+                        </div>
+                    </div>
+                    
+                    <div class="cart-summary">
+                        <div class="summary-row">
+                            <span>Subtotal:</span>
+                            <span id="subtotalDisplay">ZMW 0.00</span>
+                        </div>
+                        
+                        <div class="discount-controls">
+                            <select class="discount-select" id="discountType">
+                                <option value="none">No Discount</option>
+                                <option value="percent">Percentage (%)</option>
+                                <option value="fixed">Fixed Amount</option>
+                            </select>
+                            <input type="number" class="discount-input" id="discountValue" 
+                                   placeholder="0" min="0" step="0.01" disabled>
+                        </div>
+                        <div id="discountAmountDisplay" style="text-align: right; color: #718096; font-size: 0.85rem;">
+                            -
+                        </div>
+                        
+                        <div class="summary-row total-row">
+                            <span>TOTAL:</span>
+                            <span id="totalDisplay">ZMW 0.00</span>
+                        </div>
+                        
+                        <input type="text" id="customerInput" 
+                               placeholder="Customer name (optional)" 
+                               style="width: 100%; padding: 0.8rem; margin-top: 1rem; border: 1px solid #e2e8f0; border-radius: 6px;">
+                        
+                        <div class="cart-actions">
+                            <button class="cart-action-btn checkout-btn" id="checkoutBtn" disabled>
+                                Process Sale
+                            </button>
+                            <button class="cart-action-btn clear-btn" id="clearCartBtn">
+                                Clear Cart
+                            </button>
+                        </div>
+                        
+                        <button class="cart-action-btn view-sales-btn" id="openSalesPanelBtn">
+                            View Recent Sales
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Sidebar Toggle -->
+    <button class="sidebar-mobile-toggle" id="mobileSidebarToggle" onclick="toggleMobileSidebar()">☰</button>
+
+    <!-- Sales Overlay -->
+    <div class="sales-overlay" id="salesOverlay">
+        <div class="sales-panel">
+            <div class="sales-panel-header">
+                <h3>Recent Sales</h3>
+                <div style="display: flex; gap: 0.8rem;">
+                    <button class="search-btn" id="exportCsvBtn">Export CSV</button>
+                    <button class="clear-btn" id="closeSalesPanelBtn">Close</button>
+                </div>
+            </div>
+            
+            <div style="padding: 1rem; border-bottom: 1px solid #e2e8f0;">
+                <div class="date-filter">
+                    <span style="color: #718096;">From:</span>
+                    <input type="date" id="salesFrom">
+                    <span style="color: #718096;">To:</span>
+                    <input type="date" id="salesTo">
+                    <button class="search-btn" id="applyDateFilterBtn">Apply</button>
+                    <button class="clear-btn" id="clearDateFilterBtn">Clear</button>
+                    
+                    <div class="preset-buttons">
+                        <button class="preset-btn" id="presetTodayBtn">Today</button>
+                        <button class="preset-btn" id="preset7Btn">Last 7 Days</button>
+                        <button class="preset-btn" id="presetMonthBtn">This Month</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sales-panel-body" id="salesPanelBody">
+                <div style="text-align: center; padding: 2rem; color: #a0aec0;">
+                    Loading sales...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDTslfW2YQOw1XqiTn4RgTNKusi4w6NcHI",
+            authDomain: "wamz-arts-and-prints.firebaseapp.com",
+            projectId: "wamz-arts-and-prints",
+            storageBucket: "wamz-arts-and-prints.firebasestorage.app",
+            messagingSenderId: "495100135771",
+            appId: "1:495100135771:web:d63ab48db021b4b02c327e",
+            measurementId: "G-1HL55EC1D1"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        
+        let currentUserData = null;
+        let currentBranch = '';
+        let isAdmin = false;
+        let isAdminAccessingOther = false;
+        let originalLoggedInUser = '';
+        let allItems = [];
+        let cart = [];
+        let lastRenderedSales = [];
+        let unsubscribeInventory = null;
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("💰 Sales Dashboard loaded");
+            checkLogin();
+            loadSidebarState();
+        });
+
+        // Check login
+        function checkLogin() {
+            const currentUser = localStorage.getItem('currentUser');
+            
+            if (!currentUser) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            currentUserData = JSON.parse(currentUser);
+            const username = currentUserData.username;
+            originalLoggedInUser = username;
+            
+            // Check if admin is accessing another account
+            checkAdminAccess();
+            
+            // Set welcome message
+            document.getElementById('currentUser').textContent = username;
+            
+            // Assign branches and set UI
+            if (username === 'Samz') {
+                currentBranch = 'branch2';
+                document.getElementById('branchBadge').textContent = 'Branch 2';
+                document.getElementById('branchTitle').textContent = 'Branch 2 Sales';
+                document.getElementById('branchDescription').textContent = 'Retail Branch Sales';
+            } else if (username === 'Namz') {
+                currentBranch = 'branch3';
+                document.getElementById('branchBadge').textContent = 'Branch 3';
+                document.getElementById('branchTitle').textContent = 'Branch 3 Sales';
+                document.getElementById('branchDescription').textContent = 'Wholesale Branch Sales';
+            } else if (username === 'Wamz') {
+                currentBranch = 'branch1';
+                isAdmin = true;
+                document.getElementById('branchBadge').textContent = 'Branch 1';
+                document.getElementById('adminBadge').style.display = 'inline-block';
+                document.getElementById('adminPanelBtn').style.display = 'flex';
+                document.getElementById('branchTitle').textContent = 'Branch 1 Sales';
+                document.getElementById('branchDescription').textContent = 'Main Branch Sales';
+            } else {
+                currentBranch = 'unassigned';
+                document.getElementById('branchBadge').textContent = 'Unassigned';
+                document.getElementById('branchDescription').textContent = 'Please contact admin for branch assignment';
+            }
+            
+            // Update welcome message if admin accessing other
+            if (isAdminAccessingOther) {
+                document.getElementById('branchTitle').textContent = `Admin View: ${username}'s Sales`;
+            }
+            
+            // Setup event listeners
+            setupEventListeners();
+            
+            // Load inventory
+            setupInventoryListener();
+            
+            // Log admin access if detected
+            if (isAdminAccessingOther) {
+                logAdminAccess();
+            }
+        }
+
+        // Check if admin is accessing another account
+        function checkAdminAccess(event = null, targetPage = null) {
+            // Check URL parameters for admin access
+            const urlParams = new URLSearchParams(window.location.search);
+            const accessAs = urlParams.get('access_as');
+            
+            if (accessAs && originalLoggedInUser === 'Wamz') {
+                // Admin is accessing another user's account
+                isAdminAccessingOther = true;
+                
+                // Show admin access alert
+                document.getElementById('adminAccessAlert').style.display = 'block';
+                
+                // Update alert details
+                document.getElementById('adminName').textContent = 'Wamz (Admin)';
+                document.getElementById('loggedInAdmin').textContent = 'Wamz';
+                document.getElementById('targetAccount').textContent = accessAs;
+                
+                // Set current user to the accessed account
+                currentUserData.username = accessAs;
+                document.getElementById('currentUser').textContent = accessAs;
+                
+                // Update branch info for accessed user
+                if (accessAs === 'Samz') {
+                    currentBranch = 'branch2';
+                    document.getElementById('targetBranch').textContent = 'Branch 2';
+                    document.getElementById('branchBadge').textContent = 'Branch 2';
+                    document.getElementById('branchTitle').textContent = 'Admin View: Branch 2 Sales';
+                    document.getElementById('branchDescription').textContent = 'Admin viewing retail branch sales';
+                } else if (accessAs === 'Namz') {
+                    currentBranch = 'branch3';
+                    document.getElementById('targetBranch').textContent = 'Branch 3';
+                    document.getElementById('branchBadge').textContent = 'Branch 3';
+                    document.getElementById('branchTitle').textContent = 'Admin View: Branch 3 Sales';
+                    document.getElementById('branchDescription').textContent = 'Admin viewing wholesale branch sales';
+                }
+                
+                // Update access time
+                const now = new Date();
+                document.getElementById('accessTime').textContent = now.toLocaleTimeString();
+                
+                // Show info message
+                showMessage(`Admin mode: Viewing ${accessAs}'s sales. All actions are logged.`, 'info');
+            }
+            
+            // If this was called from a link click, handle navigation
+            if (event && targetPage) {
+                event.preventDefault();
+                let url = targetPage;
+                
+                if (isAdminAccessingOther) {
+                    url += `?access_as=${currentUserData.username}`;
+                }
+                
+                window.location.href = url;
+            }
+        }
+
+        // Log admin access to Firestore
+        function logAdminAccess() {
+            try {
+                const accessLog = {
+                    adminUser: originalLoggedInUser,
+                    accessedAccount: currentUserData.username,
+                    branch: currentBranch,
+                    page: 'sales',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    ipAddress: 'N/A',
+                    userAgent: navigator.userAgent,
+                    url: window.location.href
+                };
+                
+                // Save to Firestore
+                db.collection('admin_access_logs').add(accessLog)
+                    .then(() => console.log('✅ Admin access logged for sales'))
+                    .catch(err => console.error('❌ Error logging admin access:', err));
+                    
+            } catch (error) {
+                console.error('Error in admin access logging:', error);
+            }
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Search functionality
+            document.getElementById('searchBtn').addEventListener('click', searchItems);
+            document.getElementById('searchInput').addEventListener('keyup', function(event) {
+                if (event.key === 'Enter') {
+                    searchItems();
+                }
+            });
+            document.getElementById('refreshBtn').addEventListener('click', refreshItems);
+            
+            // Cart functionality
+            document.getElementById('clearCartBtn').addEventListener('click', clearCart);
+            document.getElementById('checkoutBtn').addEventListener('click', checkout);
+            
+            // Discount functionality
+            document.getElementById('discountType').addEventListener('change', function() {
+                document.getElementById('discountValue').disabled = this.value === 'none';
+                renderCart();
+            });
+            document.getElementById('discountValue').addEventListener('input', renderCart);
+            
+            // Sales panel functionality
+            document.getElementById('openSalesPanelBtn').addEventListener('click', openSalesPanel);
+            document.getElementById('closeSalesPanelBtn').addEventListener('click', closeSalesPanel);
+            document.getElementById('exportCsvBtn').addEventListener('click', exportCSV);
+            
+            // Date filters
+            document.getElementById('applyDateFilterBtn').addEventListener('click', applyDateFilter);
+            document.getElementById('clearDateFilterBtn').addEventListener('click', clearDateFilter);
+            document.getElementById('presetTodayBtn').addEventListener('click', presetToday);
+            document.getElementById('preset7Btn').addEventListener('click', presetLast7Days);
+            document.getElementById('presetMonthBtn').addEventListener('click', presetThisMonth);
+            
+            // Close overlay on backdrop click
+            document.getElementById('salesOverlay').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeSalesPanel();
+                }
+            });
+            
+            // Escape key to close overlay
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && document.getElementById('salesOverlay').classList.contains('show')) {
+                    closeSalesPanel();
+                }
+            });
+        }
+
+        // Format currency
+        function formatCurrency(amount) {
+            const num = parseFloat(amount) || 0;
+            return 'ZMW ' + num.toFixed(2);
+        }
+
+        // Format date
+        function formatDate(timestamp) {
+            if (!timestamp) return 'N/A';
+            try {
+                const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+                return date.toLocaleString();
+            } catch (e) {
+                return 'Invalid Date';
+            }
+        }
+
+        // Setup real-time inventory listener
+        function setupInventoryListener() {
+            console.log(`🔍 Setting up Firestore listener for branch: ${currentBranch}`);
+            
+            // Unsubscribe from previous listener if exists
+            if (unsubscribeInventory) {
+                unsubscribeInventory();
+            }
+            
+            // Query Firestore for items in this branch
+            const q = db.collection('inventory').where('branchId', '==', currentBranch);
+            
+            unsubscribeInventory = q.onSnapshot((snapshot) => {
+                console.log(`📦 Firestore update received for ${currentBranch}:`, snapshot.size, "items");
+                
+                allItems = [];
+                let totalItems = 0;
+                let totalValue = 0;
+                let lowStockCount = 0;
+                let outOfStockCount = 0;
+                
+                if (snapshot.empty) {
+                    const inventoryBody = document.getElementById('inventoryBody');
+                    inventoryBody.innerHTML = `
+                        <tr>
+                            <td colspan="8" style="text-align: center; padding: 40px;">
+                                <div style="color: #666; font-size: 14px;">
+                                    📭 No items in inventory
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    updateStats(0, 0, 0, 0);
+                    return;
+                }
+                
+                // Process all items
+                snapshot.forEach((doc) => {
+                    const item = doc.data();
+                    item.id = doc.id;
+                    
+                    // Ensure numeric values
+                    item.price = parseFloat(item.price) || 0;
+                    item.stock = parseInt(item.stock) || 0;
+                    item.totalValue = item.price * item.stock;
+                    
+                    allItems.push(item);
+                    
+                    totalItems++;
+                    totalValue += item.totalValue;
+                    
+                    if (item.stock === 0) {
+                        outOfStockCount++;
+                    } else if (item.stock <= 5) {
+                        lowStockCount++;
+                    }
+                });
+                
+                console.log(`📊 Processed ${totalItems} items, Total value: ${formatCurrency(totalValue)}`);
+                
+                // Sort by item code
+                allItems.sort((a, b) => (a.code || '').localeCompare(b.code || ''));
+                
+                // Display items
+                displayInventory(allItems);
+                updateStats(totalItems, lowStockCount, totalValue, outOfStockCount);
+                
+            }, (error) => {
+                console.error("❌ Firestore listener error:", error);
+                const inventoryBody = document.getElementById('inventoryBody');
+                inventoryBody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 40px; color: #c53030;">
+                            ❌ Error loading inventory
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Display inventory in table
+        function displayInventory(items) {
+            const inventoryBody = document.getElementById('inventoryBody');
+            inventoryBody.innerHTML = '';
+            
+            if (items.length === 0) {
+                inventoryBody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 40px;">
+                            No items found
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            items.forEach(item => {
+                const row = inventoryBody.insertRow();
+                
+                // Determine if item can be added to cart
+                const canAdd = item.stock > 0;
+                
+                row.innerHTML = `
+                    <td><span class="code-badge">${escapeHtml(item.code || '')}</span></td>
+                    <td><strong>${escapeHtml(item.name || '')}</strong></td>
+                    <td>${getCategoryName(item.category)}</td>
+                    <td>${item.stock}</td>
+                    <td>${formatCurrency(item.price)}</td>
+                    <td><strong>${formatCurrency(item.totalValue || 0)}</strong></td>
+                    <td>${escapeHtml(item.location || '')}</td>
+                    <td>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <input type="number" class="qty-input" id="qty-${item.id}" 
+                                   value="1" min="1" max="${item.stock}" ${!canAdd ? 'disabled' : ''}>
+                            <button class="add-btn" data-id="${item.id}" ${!canAdd ? 'disabled' : ''}>
+                                Add
+                            </button>
+                        </div>
+                    </td>
+                `;
+            });
+            
+            // Add event listeners to add buttons
+            inventoryBody.querySelectorAll('button[data-id]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const itemId = this.getAttribute('data-id');
+                    const qtyInput = document.getElementById(`qty-${itemId}`);
+                    const quantity = parseInt(qtyInput.value) || 1;
+                    
+                    addToCart(itemId, quantity);
+                });
+            });
+        }
+
+        // Get category display name
+        function getCategoryName(categoryCode) {
+            const categories = {
+                'paper': 'Paper',
+                'ink': 'Ink & Toner',
+                'frames': 'Frames',
+                'printing': 'Printing',
+                'art': 'Art Supplies',
+                'other': 'Other'
+            };
+            return categories[categoryCode] || categoryCode || 'Uncategorized';
+        }
+
+        // Update stats
+        function updateStats(totalItems, lowStockCount, totalValue, outOfStockCount) {
+            document.getElementById('totalItems').textContent = totalItems;
+            document.getElementById('lowStockCount').textContent = lowStockCount;
+            document.getElementById('totalValue').textContent = formatCurrency(totalValue);
+            document.getElementById('outOfStock').textContent = outOfStockCount;
+        }
+
+        // Search items
+        function searchItems() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            if (!searchTerm) {
+                displayInventory(allItems);
+                return;
+            }
+            
+            const filteredItems = allItems.filter(item => {
+                return (
+                    (item.name || '').toLowerCase().includes(searchTerm) ||
+                    (item.code || '').toLowerCase().includes(searchTerm) ||
+                    (item.location || '').toLowerCase().includes(searchTerm) ||
+                    getCategoryName(item.category).toLowerCase().includes(searchTerm)
+                );
+            });
+            
+            displayInventory(filteredItems);
+        }
+
+        // Refresh items
+        function refreshItems() {
+            document.getElementById('searchInput').value = '';
+            displayInventory(allItems);
+        }
+
+        // Add to cart
+        function addToCart(itemId, quantity) {
+            const item = allItems.find(i => i.id === itemId);
+            if (!item) {
+                showMessage('Item not found', 'error');
+                return;
+            }
+            
+            if (quantity <= 0) {
+                showMessage('Quantity must be at least 1', 'error');
+                return;
+            }
+            
+            if (quantity > item.stock) {
+                showMessage(`Only ${item.stock} items available`, 'error');
+                return;
+            }
+            
+            // Check if item already in cart
+            const existingItemIndex = cart.findIndex(cartItem => cartItem.id === itemId);
+            
+            if (existingItemIndex > -1) {
+                // Update existing item
+                const newQuantity = cart[existingItemIndex].quantity + quantity;
+                if (newQuantity > item.stock) {
+                    showMessage(`Cannot add ${quantity} more. Total would exceed available stock.`, 'error');
+                    return;
+                }
+                cart[existingItemIndex].quantity = newQuantity;
+                cart[existingItemIndex].subtotal = newQuantity * item.price;
+            } else {
+                // Add new item to cart
+                cart.push({
+                    id: itemId,
+                    code: item.code,
+                    name: item.name,
+                    price: item.price,
+                    quantity: quantity,
+                    subtotal: quantity * item.price
+                });
+            }
+            
+            renderCart();
+            showMessage(`Added ${quantity} ${item.name} to cart`, 'success');
+        }
+
+        // Render cart
+        function renderCart() {
+            const cartList = document.getElementById('cartList');
+            const cartIndicator = document.getElementById('cartIndicator');
+            const subtotalDisplay = document.getElementById('subtotalDisplay');
+            const totalDisplay = document.getElementById('totalDisplay');
+            const discountAmountDisplay = document.getElementById('discountAmountDisplay');
+            const checkoutBtn = document.getElementById('checkoutBtn');
+            
+            if (cart.length === 0) {
+                cartList.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: #a0aec0;">
+                        Cart is empty
+                    </div>
+                `;
+                cartIndicator.textContent = '0 items';
+                subtotalDisplay.textContent = formatCurrency(0);
+                totalDisplay.textContent = formatCurrency(0);
+                discountAmountDisplay.textContent = '-';
+                checkoutBtn.disabled = true;
+                return;
+            }
+            
+            // Calculate subtotal
+            const subtotal = cart.reduce((sum, item) => sum + item.subtotal, 0);
+            
+            // Calculate discount
+            const discountType = document.getElementById('discountType').value;
+            const discountValue = parseFloat(document.getElementById('discountValue').value) || 0;
+            let discountAmount = 0;
+            
+            if (discountType === 'percent') {
+                discountAmount = (subtotal * discountValue) / 100;
+            } else if (discountType === 'fixed') {
+                discountAmount = Math.min(discountValue, subtotal);
+            }
+            
+            // Calculate total
+            const total = Math.max(0, subtotal - discountAmount);
+            
+            // Update displays
+            subtotalDisplay.textContent = formatCurrency(subtotal);
+            totalDisplay.textContent = formatCurrency(total);
+            discountAmountDisplay.textContent = discountAmount > 0 ? `-${formatCurrency(discountAmount)}` : '-';
+            
+            // Update cart indicator
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartIndicator.textContent = `${totalItems} item${totalItems !== 1 ? 's' : ''}`;
+            
+            // Render cart items
+            cartList.innerHTML = '';
+            cart.forEach((item, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'cart-item';
+                itemDiv.innerHTML = `
+                    <div>
+                        <strong>${escapeHtml(item.name)}</strong>
+                        <div style="font-size: 0.85rem; color: #718096;">
+                            ${escapeHtml(item.code)} • ${formatCurrency(item.price)} each
+                        </div>
+                    </div>
+                    <div class="cart-item-controls">
+                        <button class="cart-item-btn" data-action="decrease" data-index="${index}">-</button>
+                        <span style="min-width: 30px; text-align: center;">${item.quantity}</span>
+                        <button class="cart-item-btn" data-action="increase" data-index="${index}">+</button>
+                        <button class="cart-item-btn remove-btn" data-action="remove" data-index="${index}">×</button>
+                    </div>
+                `;
+                cartList.appendChild(itemDiv);
+            });
+            
+            // Add event listeners to cart controls
+            cartList.querySelectorAll('.cart-item-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const action = this.getAttribute('data-action');
+                    const index = parseInt(this.getAttribute('data-index'));
+                    updateCartItem(index, action);
+                });
+            });
+            
+            checkoutBtn.disabled = false;
+        }
+
+        // Update cart item
+        function updateCartItem(index, action) {
+            if (index < 0 || index >= cart.length) return;
+            
+            const item = cart[index];
+            const inventoryItem = allItems.find(i => i.id === item.id);
+            
+            switch(action) {
+                case 'increase':
+                    if (item.quantity + 1 > inventoryItem.stock) {
+                        showMessage(`Only ${inventoryItem.stock} items available`, 'error');
+                        return;
+                    }
+                    item.quantity++;
+                    item.subtotal = item.quantity * item.price;
+                    break;
+                    
+                case 'decrease':
+                    if (item.quantity > 1) {
+                        item.quantity--;
+                        item.subtotal = item.quantity * item.price;
+                    }
+                    break;
+                    
+                case 'remove':
+                    cart.splice(index, 1);
+                    break;
+            }
+            
+            renderCart();
+        }
+
+        // Clear cart
+        function clearCart() {
+            if (cart.length === 0) return;
+            
+            if (confirm('Clear all items from cart?')) {
+                cart = [];
+                renderCart();
+                showMessage('Cart cleared', 'info');
+            }
+        }
+
+        // Checkout
+        async function checkout() {
+            if (cart.length === 0) {
+                showMessage('Cart is empty', 'error');
+                return;
+            }
+            
+            if (!confirm('Process sale?')) {
+                return;
+            }
+            
+            try {
+                // Calculate totals
+                const subtotal = cart.reduce((sum, item) => sum + item.subtotal, 0);
+                const discountType = document.getElementById('discountType').value;
+                const discountValue = parseFloat(document.getElementById('discountValue').value) || 0;
+                let discountAmount = 0;
+                
+                if (discountType === 'percent') {
+                    discountAmount = (subtotal * discountValue) / 100;
+                } else if (discountType === 'fixed') {
+                    discountAmount = Math.min(discountValue, subtotal);
+                }
+                
+                const total = Math.max(0, subtotal - discountAmount);
+                const customerName = document.getElementById('customerInput').value.trim() || 'Walk-in';
+                
+                // Create sale record
+                const sale = {
+                    customerName: customerName,
+                    items: cart.map(item => ({
+                        itemId: item.id,
+                        code: item.code,
+                        name: item.name,
+                        price: item.price,
+                        quantity: item.quantity,
+                        subtotal: item.subtotal
+                    })),
+                    subtotal: subtotal,
+                    discount: {
+                        type: discountType,
+                        value: discountValue,
+                        amount: discountAmount
+                    },
+                    total: total,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    processedBy: isAdminAccessingOther ? currentUserData.username : originalLoggedInUser,
+                    branchId: currentBranch
+                };
+                
+                // Save to Firestore
+                const saleRef = await db.collection('sales').add(sale);
+                
+                // Update inventory
+                for (const item of cart) {
+                    const itemRef = db.collection('inventory').doc(item.id);
+                    await itemRef.update({
+                        stock: firebase.firestore.FieldValue.increment(-item.quantity),
+                        sold: firebase.firestore.FieldValue.increment(item.quantity)
+                    });
+                }
+                
+                // Clear cart and reset form
+                cart = [];
+                document.getElementById('customerInput').value = '';
+                document.getElementById('discountType').value = 'none';
+                document.getElementById('discountValue').value = '';
+                document.getElementById('discountValue').disabled = true;
+                
+                renderCart();
+                showMessage(`Sale processed successfully! Receipt ID: ${saleRef.id.substring(0, 8)}`, 'success');
+                
+            } catch (error) {
+                console.error('Checkout error:', error);
+                showMessage('Error processing sale: ' + error.message, 'error');
+            }
+        }
+
+        // Sales panel functions
+        async function openSalesPanel() {
+            document.getElementById('salesOverlay').classList.add('show');
+            await loadRecentSales();
+        }
+
+        function closeSalesPanel() {
+            document.getElementById('salesOverlay').classList.remove('show');
+        }
+
+        async function loadRecentSales(filters = {}) {
+            const salesPanelBody = document.getElementById('salesPanelBody');
+            salesPanelBody.innerHTML = '<div style="text-align: center; padding: 2rem; color: #a0aec0;">Loading sales...</div>';
+            
+            try {
+                let query = db.collection('sales').where('branchId', '==', currentBranch);
+                
+                // Apply date filters if provided
+                if (filters.startDate || filters.endDate) {
+                    // For simplicity, we'll filter client-side
+                    const snapshot = await query.get();
+                    let sales = [];
+                    
+                    snapshot.forEach(doc => {
+                        const sale = doc.data();
+                        sale.id = doc.id;
+                        
+                        // Apply date filtering
+                        const saleDate = sale.timestamp ? sale.timestamp.toDate() : new Date();
+                        let include = true;
+                        
+                        if (filters.startDate) {
+                            const startDate = new Date(filters.startDate);
+                            startDate.setHours(0, 0, 0, 0);
+                            if (saleDate < startDate) include = false;
+                        }
+                        
+                        if (filters.endDate) {
+                            const endDate = new Date(filters.endDate);
+                            endDate.setHours(23, 59, 59, 999);
+                            if (saleDate > endDate) include = false;
+                        }
+                        
+                        if (include) {
+                            sales.push(sale);
+                        }
+                    });
+                    
+                    // Sort by timestamp (newest first)
+                    sales.sort((a, b) => {
+                        const dateA = a.timestamp ? a.timestamp.toDate() : new Date();
+                        const dateB = b.timestamp ? b.timestamp.toDate() : new Date();
+                        return dateB - dateA;
+                    });
+                    
+                    lastRenderedSales = sales;
+                    renderSales(sales);
+                } else {
+                    // Get all sales and sort client-side
+                    const snapshot = await query.get();
+                    const sales = [];
+                    
+                    snapshot.forEach(doc => {
+                        const sale = doc.data();
+                        sale.id = doc.id;
+                        sales.push(sale);
+                    });
+                    
+                    // Sort by timestamp (newest first)
+                    sales.sort((a, b) => {
+                        const dateA = a.timestamp ? a.timestamp.toDate() : new Date();
+                        const dateB = b.timestamp ? b.timestamp.toDate() : new Date();
+                        return dateB - dateA;
+                    });
+                    
+                    lastRenderedSales = sales;
+                    renderSales(sales);
+                }
+            } catch (error) {
+                console.error('Error loading sales:', error);
+                salesPanelBody.innerHTML = '<div style="text-align: center; padding: 2rem; color: #c53030;">Error loading sales</div>';
+            }
+        }
+
+        function renderSales(sales) {
+            const salesPanelBody = document.getElementById('salesPanelBody');
+            
+            if (sales.length === 0) {
+                salesPanelBody.innerHTML = '<div style="text-align: center; padding: 2rem; color: #a0aec0;">No sales found</div>';
+                return;
+            }
+            
+            let html = `
+                <table class="sales-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Customer</th>
+                            <th>Items</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            sales.forEach(sale => {
+                const date = formatDate(sale.timestamp);
+                const customer = sale.customerName || 'Walk-in';
+                const itemCount = sale.items ? sale.items.length : 0;
+                const total = formatCurrency(sale.total || 0);
+                
+                html += `
+                    <tr>
+                        <td>${date}</td>
+                        <td>${escapeHtml(customer)}</td>
+                        <td>${itemCount} item${itemCount !== 1 ? 's' : ''}</td>
+                        <td><strong>${total}</strong></td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                    </tbody>
+                </table>
+            `;
+            
+            salesPanelBody.innerHTML = html;
+        }
+
+        function applyDateFilter() {
+            const startDate = document.getElementById('salesFrom').value;
+            const endDate = document.getElementById('salesTo').value;
+            
+            loadRecentSales({ startDate, endDate });
+        }
+
+        function clearDateFilter() {
+            document.getElementById('salesFrom').value = '';
+            document.getElementById('salesTo').value = '';
+            loadRecentSales();
+        }
+
+        function presetToday() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('salesFrom').value = today;
+            document.getElementById('salesTo').value = today;
+            applyDateFilter();
+        }
+
+        function presetLast7Days() {
+            const today = new Date();
+            const lastWeek = new Date(today);
+            lastWeek.setDate(today.getDate() - 6);
+            
+            document.getElementById('salesFrom').value = lastWeek.toISOString().split('T')[0];
+            document.getElementById('salesTo').value = today.toISOString().split('T')[0];
+            applyDateFilter();
+        }
+
+        function presetThisMonth() {
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+            const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+            
+            document.getElementById('salesFrom').value = firstDay.toISOString().split('T')[0];
+            document.getElementById('salesTo').value = lastDay.toISOString().split('T')[0];
+            applyDateFilter();
+        }
+
+        function exportCSV() {
+            if (!lastRenderedSales || lastRenderedSales.length === 0) {
+                showMessage('No sales data to export', 'error');
+                return;
+            }
+            
+            // Create CSV content
+            let csv = 'Date,Customer,Items,Total,Subtotal,Discount,Discount Type\n';
+            
+            lastRenderedSales.forEach(sale => {
+                const date = formatDate(sale.timestamp);
+                const customer = (sale.customerName || 'Walk-in').replace(/"/g, '""');
+                const itemCount = sale.items ? sale.items.length : 0;
+                const total = sale.total || 0;
+                const subtotal = sale.subtotal || 0;
+                const discount = sale.discount ? sale.discount.amount || 0 : 0;
+                const discountType = sale.discount ? sale.discount.type || 'none' : 'none';
+                
+                csv += `"${date}","${customer}",${itemCount},${total},${subtotal},${discount},"${discountType}"\n`;
+            });
+            
+            // Create download link
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `sales_export_${new Date().toISOString().slice(0, 10)}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showMessage('CSV exported successfully', 'success');
+        }
+
+        // Utility functions
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = 'message ' + type;
+            messageDiv.style.display = 'block';
+
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        // Toggle sidebar
+        function toggleSidebar() {
+            const container = document.getElementById('dashboardContainer');
+            const isHidden = container.classList.contains('sidebar-hidden');
+            
+            if (isHidden) {
+                container.classList.remove('sidebar-hidden');
+                localStorage.setItem('sidebarState', 'visible');
+            } else {
+                container.classList.add('sidebar-hidden');
+                localStorage.setItem('sidebarState', 'hidden');
+            }
+        }
+
+        // Toggle mobile sidebar
+        function toggleMobileSidebar() {
+            const container = document.getElementById('dashboardContainer');
+            const sidebar = document.getElementById('sidebar');
+            
+            if (sidebar.style.display === 'block') {
+                sidebar.style.display = 'none';
+            } else {
+                sidebar.style.display = 'block';
+                sidebar.style.position = 'fixed';
+                sidebar.style.left = '0';
+                sidebar.style.top = '70px';
+                sidebar.style.width = '250px';
+                sidebar.style.height = 'calc(100vh - 70px)';
+                sidebar.style.zIndex = '999';
+            }
+        }
+
+        // Load sidebar state from localStorage
+        function loadSidebarState() {
+            const savedState = localStorage.getItem('sidebarState');
+            const container = document.getElementById('dashboardContainer');
+            
+            if (savedState === 'hidden') {
+                container.classList.add('sidebar-hidden');
+            } else {
+                container.classList.remove('sidebar-hidden');
+            }
+        }
+
+        // Open admin panel
+        function openAdminPanel() {
+            window.location.href = 'admin-dashboard.html';
+        }
+
+        // Logout function
+        function logout() {
+            // Unsubscribe from Firestore listener
+            if (unsubscribeInventory) {
+                unsubscribeInventory();
+            }
+            
+            if (isAdminAccessingOther) {
+                const logoutLog = {
+                    adminUser: originalLoggedInUser,
+                    accessedAccount: currentUserData.username,
+                    branch: currentBranch,
+                    action: 'logout',
+                    page: 'sales',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    duration: Math.floor((Date.now() - window.dashboardStartTime) / 1000) + ' seconds'
+                };
+
+                db.collection('admin_access_logs').add(logoutLog)
+                    .then(() => console.log('✅ Admin logout logged'))
+                    .catch(err => console.error('❌ Error logging admin logout:', err));
+            }
+
+            localStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        }
+
+        // Set dashboard start time
+        window.dashboardStartTime = Date.now();
+
+        // Auto-refresh data every 30 seconds
+        setInterval(() => {
+            if (unsubscribeInventory) {
+                setupInventoryListener();
+            }
+        }, 30000);
+    </script>
+</body>
+</html>

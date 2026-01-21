@@ -1,0 +1,1733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cash Flow - Wamz Arts & Prints</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: #f5f7fa;
+            color: #2c3e50;
+            line-height: 1.6;
+            height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Full screen layout */
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            grid-template-rows: auto 1fr;
+            height: 100vh;
+            transition: grid-template-columns 0.3s ease;
+        }
+
+        .dashboard-container.sidebar-hidden {
+            grid-template-columns: 0px 1fr;
+        }
+
+        /* Header */
+        .header {
+            grid-column: 1 / -1;
+            background: #1a365d;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-name {
+            font-weight: 500;
+            color: #e2e8f0;
+        }
+
+        .branch-badge {
+            background: #4299e1;
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .admin-badge {
+            background: #e53e3e;
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: #2d3748;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: #4a5568;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: #2d3748;
+            color: white;
+            padding: 2rem 1rem;
+            border-right: 1px solid #4a5568;
+            overflow-y: auto;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .sidebar-hidden .sidebar {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+
+        .sidebar-title {
+            font-size: 1rem;
+            color: #cbd5e0;
+            margin-bottom: 1.5rem;
+            padding: 0 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.9rem 1rem;
+            background: none;
+            border: none;
+            text-align: left;
+            color: #cbd5e0;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .nav-item.active {
+            background: #4299e1;
+            color: white;
+        }
+
+        /* Toggle Button */
+        .sidebar-toggle {
+            background: #4299e1;
+            color: white;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            transition: all 0.2s;
+        }
+
+        .sidebar-toggle:hover {
+            background: #3182ce;
+        }
+
+        /* Main Content */
+        .main-content {
+            background: #f5f7fa;
+            padding: 2rem;
+            overflow-y: auto;
+            transition: margin-left 0.3s ease;
+        }
+
+        /* Welcome Banner */
+        .welcome-banner {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(66, 153, 225, 0.2);
+        }
+
+        .welcome-banner h2 {
+            font-size: 1.6rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .welcome-banner p {
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        .date-display {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 0.5rem;
+        }
+
+        /* Admin Access Alert */
+        .admin-access-alert {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 12px rgba(229, 62, 62, 0.2);
+            display: none;
+            border: 2px solid #fed7d7;
+        }
+
+        .admin-access-alert h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .admin-access-alert p {
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+        }
+
+        .alert-details {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 6px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            border-left: 4px solid white;
+        }
+
+        /* Cash Flow App Styles */
+        .app {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* Top Bar */
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            background: transparent;
+            padding: 6px 4px;
+        }
+
+        .title {
+            color: #4299e1;
+            font-weight: 800;
+            font-size: 1.05rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
+            background: #4299e1;
+            color: #fff;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background: #3182ce;
+        }
+
+        .btn.ghost {
+            background: rgba(255, 255, 255, 0.85);
+            color: #4299e1;
+            border: 1px solid rgba(66, 153, 225, 0.1);
+        }
+
+        .btn.ghost:hover {
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .small {
+            color: #718096;
+            font-size: 13px;
+        }
+
+        /* Three Dot Menu */
+        .menu-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4299e1;
+            transition: all 0.2s;
+        }
+
+        .menu-btn:hover {
+            background: rgba(255, 255, 255, 1);
+        }
+
+        .dropdown {
+            position: absolute;
+            right: 14px;
+            top: 56px;
+            min-width: 220px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 12px 30px rgba(10, 30, 60, 0.12);
+            border: 1px solid rgba(2, 60, 120, 0.05);
+            padding: 10px;
+            display: none;
+            z-index: 999;
+        }
+
+        .dropdown.show {
+            display: block;
+        }
+
+        .dropdown .item {
+            width: 100%;
+            padding: 8px 10px;
+            text-align: left;
+            border-radius: 6px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: #4299e1;
+            font-weight: 700;
+            margin-bottom: 6px;
+            transition: all 0.2s;
+        }
+
+        .dropdown .item:hover {
+            background: #f7fafc;
+        }
+
+        .dropdown .sep {
+            height: 1px;
+            background: #e2e8f0;
+            margin: 8px 0;
+            border-radius: 2px;
+        }
+
+        /* Main Content Area */
+        .main {
+            display: flex;
+            gap: 12px;
+            flex: 1 1 auto;
+            min-height: 0;
+        }
+
+        .table-area {
+            flex: 1 1 65%;
+            background: white;
+            border-radius: 10px;
+            padding: 8px;
+            overflow: hidden;
+            border: 1px solid rgba(2, 60, 120, 0.04);
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .table-scroll {
+            overflow: auto;
+            flex: 1 1 auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 6px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 640px;
+            font-size: 14px;
+        }
+
+        thead th {
+            text-align: left;
+            padding: 10px 8px;
+            background: #f7fafc;
+            color: #718096;
+            font-size: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        tbody td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #f1f6ff;
+            vertical-align: middle;
+        }
+
+        td.num {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 24px;
+            color: #718096;
+        }
+
+        /* Highlight positive/negative balances */
+        .positive {
+            color: #38a169;
+            font-weight: 600;
+        }
+
+        .negative {
+            color: #e53e3e;
+            font-weight: 600;
+        }
+
+        /* Form Pane */
+        .form-pane {
+            flex: 0 0 360px;
+            max-width: 360px;
+            min-width: 260px;
+            background: white;
+            border-radius: 10px;
+            padding: 10px;
+            border: 1px solid rgba(2, 60, 120, 0.04);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .form-pane.hidden {
+            display: none;
+        }
+
+        .form-pane header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .form-pane header .label {
+            font-weight: 800;
+            color: #4299e1;
+        }
+
+        .form-branch {
+            font-size: 12px;
+            color: #718096;
+            font-weight: 700;
+            margin-left: 8px;
+        }
+
+        form.simple-form {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-size: 13px;
+            color: #718096;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        input[type="number"] {
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            font-size: 14px;
+            background: #fff;
+            width: 100%;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #4299e1;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .form-row>div {
+            flex: 1;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            margin-top: 6px;
+        }
+
+        /* Edit/Delete buttons */
+        .editBtn,
+        .delBtn {
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: none;
+            font-size: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .editBtn {
+            background: #4299e1;
+            color: white;
+            margin-right: 6px;
+        }
+
+        .editBtn:hover {
+            background: #3182ce;
+        }
+
+        .delBtn {
+            background: #e53e3e;
+            color: white;
+        }
+
+        .delBtn:hover {
+            background: #c53030;
+        }
+
+        .disabled {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        /* Message Display */
+        .message {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: none;
+            border: 1px solid transparent;
+        }
+
+        .message.success {
+            background: #f0fff4;
+            color: #276749;
+            border-color: #c6f6d5;
+        }
+
+        .message.error {
+            background: #fff5f5;
+            color: #c53030;
+            border-color: #fed7d7;
+        }
+
+        .message.info {
+            background: #ebf8ff;
+            color: #2c5282;
+            border-color: #bee3f8;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .sidebar-mobile-toggle {
+                display: flex;
+            }
+
+            .main {
+                flex-direction: column;
+            }
+
+            .form-pane {
+                width: 100%;
+                max-width: none;
+                min-width: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+
+            .header {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .user-info {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            table {
+                min-width: 560px;
+            }
+        }
+
+        /* Mobile Sidebar Toggle */
+        .sidebar-mobile-toggle {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #4299e1;
+            color: white;
+            border: none;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3);
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar-mobile-toggle {
+                display: flex;
+            }
+        }
+
+        /* Loading States */
+        .loading {
+            color: #a0aec0;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container" id="dashboardContainer">
+        <!-- Header -->
+        <div class="header">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <button class="sidebar-toggle" onclick="toggleSidebar()" id="sidebarToggle">☰</button>
+                <h1>Wamz Arts & Prints - Cash Flow</h1>
+            </div>
+            <div class="user-info">
+                <span class="user-name">Welcome, <strong id="currentUser">User</strong></span>
+                <span class="branch-badge" id="branchBadge">Branch</span>
+                <span class="admin-badge" id="adminBadge" style="display: none;">ADMIN</span>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-title">Navigation</div>
+            <div class="nav-menu">
+                <a href="user-dashboard.html" class="nav-item" onclick="checkAdminAccess(event, 'user-dashboard.html')">
+                     Overview
+                </a>
+                <a href="inventory.html" class="nav-item" onclick="checkAdminAccess(event, 'inventory.html')">
+                     Inventory
+                </a>
+                <a href="sales.html" class="nav-item" onclick="checkAdminAccess(event, 'sales.html')">
+                     Sales
+                </a>
+                <a href="reports.html" class="nav-item" onclick="checkAdminAccess(event, 'reports.html')">
+                     Reports
+                </a>
+                <a href="cashflow.html" class="nav-item active" onclick="checkAdminAccess(event, 'cashflow.html')">
+                     Cash Flow
+                </a>
+                <!-- Admin-only option -->
+                <button class="nav-item" onclick="openAdminPanel()" id="adminPanelBtn" style="display: none;">
+                     Admin Panel
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Admin Access Alert -->
+            <div class="admin-access-alert" id="adminAccessAlert">
+                <h3>⚠️ ADMIN ACCESS DETECTED</h3>
+                <p><strong id="adminName">Wamz (Admin)</strong> is accessing another user's account.</p>
+                <div class="alert-details">
+                    <p><strong>Admin User:</strong> <span id="loggedInAdmin">Wamz</span></p>
+                    <p><strong>Accessing Account:</strong> <span id="targetAccount">Namz</span></p>
+                    <p><strong>Branch Being Accessed:</strong> <span id="targetBranch">Branch 3</span></p>
+                    <p><strong>Time:</strong> <span id="accessTime">Just now</span></p>
+                </div>
+                <p style="margin-top: 1rem; font-size: 0.9rem;">All actions will be logged for security purposes.</p>
+            </div>
+
+            <!-- Welcome Banner -->
+            <div class="welcome-banner">
+                <h2 id="welcomeMessage">Cash Flow Management</h2>
+                <p id="branchDescription">Track income and expenses for your branch</p>
+                <div class="date-display" id="currentDate"></div>
+            </div>
+
+            <!-- Message Display -->
+            <div class="message" id="message"></div>
+
+            <!-- Cash Flow App -->
+            <div class="app" id="appRoot">
+                <div class="topbar">
+                    <div class="title"> Cash Flow Transactions</div>
+                    <div class="controls">
+                        <button class="btn" id="addBtn">Add Transaction</button>
+                        <div style="position:relative;">
+                            <button id="menuBtn" class="menu-btn" aria-label="more">⋮</button>
+                            <div id="dropdown" class="dropdown" role="menu" aria-hidden="true">
+                                <button id="toggleFormFromMenu" class="item">Toggle Form</button>
+                                <button id="exportCsvBtn" class="item">Export CSV</button>
+                                <button id="printBtn" class="item">Print Report</button>
+                                <div class="sep"></div>
+                                <div style="font-size:12px;color:#718096;font-weight:700;margin-bottom:6px">Filter period</div>
+                                <div style="display:flex;gap:6px;margin-bottom:8px">
+                                    <input id="filterFrom" type="date" style="flex:1;padding:6px;border-radius:6px;border:1px solid #e2e8f0" />
+                                    <input id="filterTo" type="date" style="flex:1;padding:6px;border-radius:6px;border:1px solid #e2e8f0" />
+                                </div>
+                                <div style="display:flex;gap:6px">
+                                    <button id="applyFilterBtn" class="btn" style="flex:1">Apply</button>
+                                    <button id="clearFilterBtn" class="btn ghost" style="flex:1">Clear</button>
+                                </div>
+                                <div class="sep" style="margin-top:8px"></div>
+                              
+                                <!-- Admin-only options -->
+                                <button id="adminViewAllBtn" class="item" style="display: none; background: #f7fafc; color: #e53e3e; border: 1px solid #fed7d7;">
+                                     View All Branches (Admin)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="main">
+                    <div class="table-area">
+                        <div class="table-scroll">
+                            <table aria-label="transactions">
+                                <thead>
+                                    <tr id="tableHeader">
+                                        <th style="width:120px">Date</th>
+                                        <th style="width:120px">Tid</th>
+                                        <th>Description</th>
+                                        <th style="width:110px">Cash In</th>
+                                        <th style="width:110px">Cash Out</th>
+                                        <th style="width:120px">Balance</th>
+                                        <!-- Actions column will be shown/hidden based on user -->
+                                    </tr>
+                                </thead>
+                                <tbody id="tableBody">
+                                    <tr>
+                                        <td colspan="7" class="empty">Loading transactions...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <aside id="formPane" class="form-pane hidden" aria-hidden="true">
+                        <header>
+                            <div style="display:flex;align-items:center">
+                                <div class="label">Add / Edit Transaction</div>
+                                <div id="formBranch" class="form-branch" aria-hidden="true"></div>
+                            </div>
+                            <div>
+                                <button id="hideFormBtn" class="btn ghost">Hide</button>
+                            </div>
+                        </header>
+
+                        <form id="transactionForm" class="simple-form" autocomplete="off">
+                            <div>
+                                <label for="date">Date *</label>
+                                <input id="date" type="date" required />
+                            </div>
+
+                            <div>
+                                <label for="tid">Tid (reference)</label>
+                                <input id="tid" type="text" placeholder="reference / tid" />
+                            </div>
+
+                            <div>
+                                <label for="description">Description</label>
+                                <input id="description" type="text" placeholder="Short description" />
+                            </div>
+
+                            <div class="form-row">
+                                <div>
+                                    <label for="cashIn">Cash In (ZMW)</label>
+                                    <input id="cashIn" type="number" step="0.01" min="0" value="0" />
+                                </div>
+                                <div>
+                                    <label for="cashOut">Cash Out (ZMW)</label>
+                                    <input id="cashOut" type="number" step="0.01" min="0" value="0" />
+                                </div>
+                            </div>
+
+                            <input type="hidden" id="editId" />
+                            <input type="hidden" id="branchIdInput" />
+
+                            <div class="form-actions">
+                                <button type="button" id="cancelEdit" class="btn ghost">Cancel</button>
+                                <button type="submit" id="saveBtn" class="btn">Save</button>
+                            </div>
+                        </form>
+                    </aside>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Sidebar Toggle -->
+    <button class="sidebar-mobile-toggle" id="mobileSidebarToggle" onclick="toggleMobileSidebar()">☰</button>
+
+   <script>
+    // Firebase Configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyDTslfW2YQOw1XqiTn4RgTNKusi4w6NcHI",
+        authDomain: "wamz-arts-and-prints.firebaseapp.com",
+        projectId: "wamz-arts-and-prints",
+        storageBucket: "wamz-arts-and-prints.firebasestorage.app",
+        messagingSenderId: "495100135771",
+        appId: "1:495100135771:web:d63ab48db021b4b02c327e",
+        measurementId: "G-1HL55EC1D1"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    
+    let currentUserData = null;
+    let currentBranch = '';
+    let isAdmin = false;
+    let isAdminAccessingOther = false;
+    let originalLoggedInUser = '';
+    let allTransactions = [];
+    let listenerUnsub = null;
+    let isSaving = false;
+    let indexError = false; // Track if we have index error
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("💸 Cash Flow Dashboard loaded");
+        checkLogin();
+        loadSidebarState();
+    });
+
+    // Check login
+    function checkLogin() {
+        const currentUser = localStorage.getItem('currentUser');
+        
+        if (!currentUser) {
+            window.location.href = 'index.html';
+            return;
+        }
+
+        currentUserData = JSON.parse(currentUser);
+        const username = currentUserData.username;
+        originalLoggedInUser = username;
+        
+        // Check URL parameters for admin access and admin view
+        const urlParams = new URLSearchParams(window.location.search);
+        const adminView = urlParams.get('admin_view');
+        
+        // Handle admin view all FIRST
+        if (adminView === 'all' && username === 'Wamz') {
+            currentBranch = 'all';
+            isAdmin = true;
+            document.getElementById('branchBadge').textContent = 'All Branches';
+            document.getElementById('adminBadge').style.display = 'inline-block';
+            document.getElementById('adminPanelBtn').style.display = 'flex';
+            document.getElementById('adminViewAllBtn').style.display = 'block';
+            document.getElementById('branchDescription').textContent = 'Admin view: Track cash flow for all branches';
+            document.getElementById('currentUser').textContent = username;
+            document.getElementById('welcomeMessage').textContent = `Cash Flow - All Branches`;
+        } else {
+            // Check if admin is accessing another account
+            checkAdminAccess();
+            
+            // Set welcome message
+            document.getElementById('currentUser').textContent = username;
+            
+            // Set current date
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', options);
+            
+            // Assign branches and set UI
+            if (username === 'Samz') {
+                currentBranch = 'branch2';
+                document.getElementById('branchBadge').textContent = 'Branch 2';
+                document.getElementById('branchDescription').textContent = 'Track cash flow for Branch 2';
+            } else if (username === 'Namz') {
+                currentBranch = 'branch3';
+                document.getElementById('branchBadge').textContent = 'Branch 3';
+                document.getElementById('branchDescription').textContent = 'Track cash flow for Branch 3';
+            } else if (username === 'Wamz') {
+                currentBranch = 'branch1';
+                isAdmin = true;
+                document.getElementById('branchBadge').textContent = 'Branch 1';
+                document.getElementById('adminBadge').style.display = 'inline-block';
+                document.getElementById('adminPanelBtn').style.display = 'flex';
+                document.getElementById('adminViewAllBtn').style.display = 'block';
+                document.getElementById('branchDescription').textContent = 'Admin view: Track cash flow for Branch 1';
+            } else {
+                currentBranch = 'unassigned';
+                document.getElementById('branchBadge').textContent = 'Unassigned';
+                document.getElementById('branchDescription').textContent = 'Please contact admin for branch assignment';
+            }
+            
+            // Update welcome message
+            if (isAdminAccessingOther) {
+                document.getElementById('welcomeMessage').textContent = `Admin View: ${username}'s Cash Flow`;
+            } else {
+                document.getElementById('welcomeMessage').textContent = `Cash Flow - ${username}`;
+            }
+        }
+        
+        // Initialize cash flow app
+        initCashFlowApp();
+        
+        // Log admin access if detected
+        if (isAdminAccessingOther) {
+            logAdminAccess();
+        }
+        
+        // Log admin view all if active
+        if (currentBranch === 'all') {
+            logAdminViewAll();
+        }
+    }
+
+    // Check if admin is accessing another account
+    function checkAdminAccess(event = null, targetPage = null) {
+        // Check URL parameters for admin access
+        const urlParams = new URLSearchParams(window.location.search);
+        const accessAs = urlParams.get('access_as');
+        
+        if (accessAs && originalLoggedInUser === 'Wamz') {
+            // Admin is accessing another user's account
+            isAdminAccessingOther = true;
+            
+            // Show admin access alert
+            document.getElementById('adminAccessAlert').style.display = 'block';
+            
+            // Update alert details
+            document.getElementById('adminName').textContent = 'Wamz (Admin)';
+            document.getElementById('loggedInAdmin').textContent = 'Wamz';
+            document.getElementById('targetAccount').textContent = accessAs;
+            
+            // Set current user to the accessed account
+            currentUserData.username = accessAs;
+            document.getElementById('currentUser').textContent = accessAs;
+            
+            // Update branch info for accessed user
+            if (accessAs === 'Samz') {
+                currentBranch = 'branch2';
+                document.getElementById('targetBranch').textContent = 'Branch 2';
+                document.getElementById('branchBadge').textContent = 'Branch 2';
+                document.getElementById('branchDescription').textContent = 'Admin View: Cash flow for Branch 2';
+            } else if (accessAs === 'Namz') {
+                currentBranch = 'branch3';
+                document.getElementById('targetBranch').textContent = 'Branch 3';
+                document.getElementById('branchBadge').textContent = 'Branch 3';
+                document.getElementById('branchDescription').textContent = 'Admin View: Cash flow for Branch 3';
+            }
+            
+            // Update access time
+            const now = new Date();
+            document.getElementById('accessTime').textContent = now.toLocaleTimeString();
+            
+            // Show info message
+            showMessage(`Admin mode: Viewing ${accessAs}'s cash flow. All actions are logged.`, 'info');
+        }
+        
+        // If this was called from a link click, handle navigation
+        if (event && targetPage) {
+            event.preventDefault();
+            let url = targetPage;
+            
+            if (isAdminAccessingOther) {
+                url += `?access_as=${currentUserData.username}`;
+            }
+            
+            window.location.href = url;
+        }
+    }
+
+    // Log admin access to Firestore
+    function logAdminAccess() {
+        try {
+            const accessLog = {
+                adminUser: originalLoggedInUser,
+                accessedAccount: currentUserData.username,
+                branch: currentBranch,
+                page: 'cashflow',
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                ipAddress: 'N/A',
+                userAgent: navigator.userAgent,
+                url: window.location.href
+            };
+            
+            // Save to Firestore
+            db.collection('admin_access_logs').add(accessLog)
+                .then(() => console.log('✅ Admin access logged for cash flow'))
+                .catch(err => console.error('❌ Error logging admin access:', err));
+                
+        } catch (error) {
+            console.error('Error in admin access logging:', error);
+        }
+    }
+
+    // Log admin view all
+    function logAdminViewAll() {
+        try {
+            const viewLog = {
+                adminUser: originalLoggedInUser,
+                view: 'all_branches',
+                page: 'cashflow',
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                userAgent: navigator.userAgent,
+                url: window.location.href
+            };
+            
+            // Save to Firestore
+            db.collection('admin_view_logs').add(viewLog)
+                .then(() => console.log('✅ Admin view all logged'))
+                .catch(err => console.error('❌ Error logging admin view:', err));
+                
+        } catch (error) {
+            console.error('Error in admin view logging:', error);
+        }
+    }
+
+    // Format ZMW currency
+    function formatCurrency(v) {
+        const n = Number(v) || 0;
+        return 'ZMW ' + n.toFixed(2);
+    }
+
+    function formatCurrencyCell(v) {
+        const n = Number(v) || 0;
+        const formatted = 'ZMW ' + Math.abs(n).toFixed(2);
+        if (n >= 0) return `<span class="positive">${formatted}</span>`;
+        return `<span class="negative">${formatted}</span>`;
+    }
+
+    function formatDate(ts) {
+        const d = ts && ts.toDate ? ts.toDate() : new Date(ts);
+        return d.toLocaleDateString();
+    }
+
+    function escapeHtml(s) {
+        return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+ 
+    // Initialize cash flow app
+    function initCashFlowApp() {
+        // Setup DOM elements
+        const addBtn = document.getElementById('addBtn');
+        const menuBtn = document.getElementById('menuBtn');
+        const dropdown = document.getElementById('dropdown');
+        const toggleFormFromMenu = document.getElementById('toggleFormFromMenu');
+        const exportCsvBtn = document.getElementById('exportCsvBtn');
+        const printBtn = document.getElementById('printBtn');
+        const filterFrom = document.getElementById('filterFrom');
+        const filterTo = document.getElementById('filterTo');
+        const applyFilterBtn = document.getElementById('applyFilterBtn');
+        const clearFilterBtn = document.getElementById('clearFilterBtn');
+        const addDemoBtn = document.getElementById('addDemoBtn');
+        const adminViewAllBtn = document.getElementById('adminViewAllBtn');
+        const formPane = document.getElementById('formPane');
+        const hideFormBtn = document.getElementById('hideFormBtn');
+        const transactionForm = document.getElementById('transactionForm');
+        const dateInput = document.getElementById('date');
+        const tidInput = document.getElementById('tid');
+        const descriptionInput = document.getElementById('description');
+        const cashInInput = document.getElementById('cashIn');
+        const cashOutInput = document.getElementById('cashOut');
+        const editIdInput = document.getElementById('editId');
+        const branchIdInput = document.getElementById('branchIdInput');
+        const formBranchLabel = document.getElementById('formBranch');
+        const saveBtn = document.getElementById('saveBtn');
+        const tableBody = document.getElementById('tableBody');
+        const tableHeader = document.getElementById('tableHeader');
+
+        // Set default date for filter
+        const today = new Date();
+        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+        filterFrom.value = firstDay.toISOString().slice(0, 10);
+        filterTo.value = today.toISOString().slice(0, 10);
+        dateInput.valueAsDate = new Date();
+
+        // Setup Firestore listener
+        setupListener();
+
+        // Event Listeners
+        addBtn.addEventListener('click', () => {
+            if (currentBranch === 'all') {
+                alert('Cannot add transactions in "View All" mode. Please select a specific branch.');
+                return;
+            }
+            
+            if (isAdminAccessingOther || isAdmin || currentUserData.username !== 'guest') {
+                branchIdInput.value = currentBranch === 'all' ? 'branch1' : currentBranch;
+                formBranchLabel.textContent = `Branch: ${branchIdInput.value}`;
+                formBranchLabel.setAttribute('aria-hidden', 'false');
+                editIdInput.value = '';
+                showForm();
+                dropdown.classList.remove('show');
+            }
+        });
+
+        menuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdown.classList.toggle('show');
+            dropdown.setAttribute('aria-hidden', dropdown.classList.contains('show') ? 'false' : 'true');
+        });
+
+        dropdown.addEventListener('click', (e) => e.stopPropagation());
+
+        document.addEventListener('click', () => {
+            if (dropdown.classList.contains('show')) {
+                dropdown.classList.remove('show');
+                dropdown.setAttribute('aria-hidden', 'true');
+            }
+        });
+
+        adminViewAllBtn.addEventListener('click', () => {
+            dropdown.classList.remove('show');
+            if (isAdmin) {
+                if (currentBranch === 'all') {
+                    // Already in view all mode, go back to own branch
+                    window.location.href = 'cashflow.html';
+                } else {
+                    window.location.href = 'cashflow.html?admin_view=all';
+                }
+            }
+        });
+
+        toggleFormFromMenu.addEventListener('click', () => {
+            dropdown.classList.remove('show');
+            if (isAdminAccessingOther || isAdmin || currentUserData.username !== 'guest') {
+                if (formPane.classList.contains('hidden')) {
+                    branchIdInput.value = currentBranch === 'all' ? 'branch1' : currentBranch;
+                    formBranchLabel.textContent = `Branch: ${branchIdInput.value}`;
+                    formBranchLabel.setAttribute('aria-hidden', 'false');
+                    showForm();
+                } else {
+                    hideForm();
+                }
+            }
+        });
+
+        hideFormBtn.addEventListener('click', hideForm);
+        document.getElementById('cancelEdit').addEventListener('click', () => { hideForm(); });
+
+        // Export CSV
+        exportCsvBtn.addEventListener('click', () => {
+            dropdown.classList.remove('show');
+            let filtered = allTransactions.slice();
+            const from = filterFrom.value ? new Date(filterFrom.value) : null;
+            const to = filterTo.value ? new Date(filterTo.value + 'T23:59:59') : null;
+            if (from || to) {
+                filtered = filtered.filter(t => {
+                    const d = t.date && t.date.toDate ? t.date.toDate() : new Date(t.date);
+                    if (from && d < from) return false;
+                    if (to && d > to) return false;
+                    return true;
+                });
+            }
+            if (filtered.length === 0) {
+                alert('No transactions to export');
+                return;
+            }
+            const asc = filtered.slice().sort((a, b) => {
+                const dateA = a.date && a.date.toDate ? a.date.toDate() : new Date(a.date);
+                const dateB = b.date && b.date.toDate ? b.date.toDate() : new Date(b.date);
+                return dateA - dateB;
+            });
+            let running = 0;
+            const rows = asc.map(t => {
+                const inVal = Number(t.cashIn || 0);
+                const outVal = Number(t.cashOut || 0);
+                running += inVal - outVal;
+                return [
+                    formatDate(t.date),
+                    t.tid || '',
+                    (t.description || '').replace(/"/g, '""'),
+                    inVal.toFixed(2),
+                    outVal.toFixed(2),
+                    running.toFixed(2),
+                    t.branchId || 'unknown'
+                ];
+            });
+            const headers = currentBranch === 'all'
+                ? ['Date', 'Tid', 'Description', 'Cash In (ZMW)', 'Cash Out (ZMW)', 'Balance (ZMW)', 'Branch']
+                : ['Date', 'Tid', 'Description', 'Cash In (ZMW)', 'Cash Out (ZMW)', 'Balance (ZMW)'];
+            const csv = [headers.join(','), ...rows.map(r => r.map(c => `"${c}"`).join(','))].join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const fileName = currentBranch === 'all'
+                ? `cashflow_all_branches_${new Date().toISOString().slice(0, 10)}.csv`
+                : `cashflow_${currentUserData.username}_${new Date().toISOString().slice(0, 10)}.csv`;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+        });
+
+        printBtn.addEventListener('click', () => {
+            dropdown.classList.remove('show');
+            window.print();
+        });
+
+        applyFilterBtn.addEventListener('click', () => {
+            dropdown.classList.remove('show');
+            renderTransactions();
+        });
+
+        clearFilterBtn.addEventListener('click', () => {
+            filterFrom.value = '';
+            filterTo.value = '';
+            dropdown.classList.remove('show');
+            renderTransactions();
+        });
+
+        addDemoBtn.addEventListener('click', async () => {
+            dropdown.classList.remove('show');
+            if (currentBranch === 'all') {
+                alert('Cannot add demo transactions in "View All" mode. Please select a specific branch.');
+                return;
+            }
+            
+            if (isAdminAccessingOther || isAdmin || currentUserData.username !== 'guest') {
+                const confirmMessage = isAdminAccessingOther
+                    ? `Add demo transactions to ${currentUserData.username}'s account?`
+                    : 'Add 3 demo transactions to the database for this branch?';
+
+                if (!confirm(confirmMessage)) return;
+                try {
+                    addDemoBtn.classList.add('disabled');
+                    const now = new Date();
+                    const demo = [
+                        {
+                            date: firebase.firestore.Timestamp.fromDate(new Date(now.getFullYear(), now.getMonth(), 3)),
+                            tid: 'demo-001',
+                            description: 'Demo sale',
+                            cashIn: '150.00',
+                            cashOut: '0.00',
+                            branchId: branchIdInput.value || currentBranch,
+                            createdBy: isAdminAccessingOther ? currentUserData.username : originalLoggedInUser,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        },
+                        {
+                            date: firebase.firestore.Timestamp.fromDate(new Date(now.getFullYear(), now.getMonth(), 7)),
+                            tid: 'demo-002',
+                            description: 'Demo purchase',
+                            cashIn: '0.00',
+                            cashOut: '45.50',
+                            branchId: branchIdInput.value || currentBranch,
+                            createdBy: isAdminAccessingOther ? currentUserData.username : originalLoggedInUser,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        },
+                        {
+                            date: firebase.firestore.Timestamp.fromDate(new Date(now.getFullYear(), now.getMonth(), 12)),
+                            tid: 'demo-003',
+                            description: 'Demo income',
+                            cashIn: '75.25',
+                            cashOut: '0.00',
+                            branchId: branchIdInput.value || currentBranch,
+                            createdBy: isAdminAccessingOther ? currentUserData.username : originalLoggedInUser,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        },
+                    ];
+                    for (const d of demo) await db.collection('cashflow').add(d);
+                    alert('Demo transactions added.');
+                } catch (err) {
+                    console.error('demo add err', err);
+                    alert('Error adding demo transactions: ' + err.message);
+                } finally {
+                    addDemoBtn.classList.remove('disabled');
+                }
+            }
+        });
+
+        // Form submit
+        transactionForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (isSaving) return;
+            const dateVal = dateInput.value;
+            if (!dateVal) {
+                alert('Select date');
+                return;
+            }
+
+            const cashInNum = parseFloat(cashInInput.value || 0) || 0;
+            const cashOutNum = parseFloat(cashOutInput.value || 0) || 0;
+            if (cashInNum <= 0 && cashOutNum <= 0) {
+                alert('Enter a value for Cash In or Cash Out (both cannot be zero).');
+                return;
+            }
+
+            if (cashInNum < 0 || cashOutNum < 0) {
+                alert('Cash values cannot be negative.');
+                return;
+            }
+
+            const id = editIdInput.value;
+            let payload = {
+                date: firebase.firestore.Timestamp.fromDate(new Date(dateVal)),
+                tid: tidInput.value.trim(),
+                description: descriptionInput.value.trim(),
+                cashIn: cashInNum.toFixed(2),
+                cashOut: cashOutNum.toFixed(2),
+                createdBy: isAdminAccessingOther ? currentUserData.username : originalLoggedInUser,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            if (id) {
+                const existing = allTransactions.find(t => t.id === id);
+                if (existing && existing.branchId) {
+                    payload.branchId = existing.branchId;
+                } else if (branchIdInput.value) {
+                    payload.branchId = branchIdInput.value;
+                } else {
+                    payload.branchId = currentBranch === 'all' ? 'branch1' : currentBranch;
+                }
+            } else {
+                payload.branchId = branchIdInput.value || currentBranch;
+                payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+            }
+
+            try {
+                isSaving = true;
+                saveBtn.disabled = true;
+                saveBtn.textContent = 'Saving...';
+
+                if (id) {
+                    await db.collection('cashflow').doc(id).update(payload);
+                } else {
+                    await db.collection('cashflow').add(payload);
+                }
+                hideForm();
+                showMessage('Transaction saved successfully!', 'success');
+            } catch (err) {
+                console.error('save err', err);
+                alert('Error saving: ' + err.message);
+            } finally {
+                isSaving = false;
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Save';
+            }
+        });
+
+        // Helper functions
+        function showForm() {
+            formPane.classList.remove('hidden');
+            formPane.setAttribute('aria-hidden', 'false');
+            dateInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function hideForm() {
+            formPane.classList.add('hidden');
+            formPane.setAttribute('aria-hidden', 'true');
+            transactionForm.reset();
+            dateInput.valueAsDate = new Date();
+            editIdInput.value = '';
+            branchIdInput.value = '';
+            formBranchLabel.textContent = '';
+            formBranchLabel.setAttribute('aria-hidden', 'true');
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'Save';
+            isSaving = false;
+        }
+    }
+
+    // Setup Firestore listener - FIXED VERSION
+    function setupListener() {
+        if (listenerUnsub) listenerUnsub();
+
+        console.log('Setting up listener for branch:', currentBranch);
+
+        try {
+            let q;
+            // Always get all transactions first
+            q = db.collection('cashflow').orderBy('date', 'desc');
+
+            listenerUnsub = q.onSnapshot(snapshot => {
+                console.log('Received', snapshot.docs.length, 'total transactions');
+                
+                // Convert all transactions
+                let transactions = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                
+                // ONLY filter if NOT in "all" mode
+                if (currentBranch !== 'all') {
+                    transactions = transactions.filter(tx => tx.branchId === currentBranch);
+                    console.log('Filtered to', transactions.length, 'transactions for branch:', currentBranch);
+                } else {
+                    console.log('Showing ALL', transactions.length, 'transactions from all branches');
+                }
+                
+                allTransactions = transactions;
+                renderTransactions();
+            }, err => {
+                console.error('Firestore listener error:', err);
+                
+                // Check if it's an index error
+                if (err.code === 'failed-precondition' || err.message.includes('index')) {
+                    indexError = true;
+                    showMessage('⚠️ Database index required. Please create the composite index in Firebase Console. Data loaded without filtering.', 'error');
+                    
+                    // Fallback: Load all data
+                    db.collection('cashflow').get().then(snapshot => {
+                        let transactions = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                        
+                        // ONLY filter if NOT in "all" mode
+                        if (currentBranch !== 'all') {
+                            transactions = transactions.filter(tx => tx.branchId === currentBranch);
+                        }
+                        
+                        allTransactions = transactions;
+                        renderTransactions();
+                        showMessage('Data loaded with client-side filtering.', 'info');
+                    });
+                } else {
+                    document.getElementById('tableBody').innerHTML = `<tr><td colspan="7" class="empty">
+                        <div>Error loading transactions</div>
+                        <div style="font-size:12px;margin-top:8px;color:#e53e3e;">${err.message}</div>
+                    </td></tr>`;
+                }
+            });
+        } catch (error) {
+            console.error('Error setting up listener:', error);
+        }
+    }
+
+    // Render transactions
+    function renderTransactions() {
+        const tableBody = document.getElementById('tableBody');
+        const tableHeader = document.getElementById('tableHeader');
+        const filterFrom = document.getElementById('filterFrom');
+        const filterTo = document.getElementById('filterTo');
+
+        let filtered = allTransactions.slice();
+
+        const from = filterFrom.value ? new Date(filterFrom.value) : null;
+        const to = filterTo.value ? new Date(filterTo.value + 'T23:59:59') : null;
+        if (from || to) {
+            filtered = filtered.filter(t => {
+                const d = t.date && t.date.toDate ? t.date.toDate() : new Date(t.date);
+                if (from && d < from) return false;
+                if (to && d > to) return false;
+                return true;
+            });
+        }
+
+        if (filtered.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="${(isAdmin || isAdminAccessingOther || currentBranch === 'all') ? '7' : '6'}" class="empty">
+                ${indexError ? 'No transactions found. Index may be building. Try creating composite index.' : 'No transactions found'}
+            </td></tr>`;
+            return;
+        }
+
+        // Sort by date ASCENDING (oldest first for running balance)
+        const sorted = filtered.slice().sort((a, b) => {
+            const dateA = a.date && a.date.toDate ? a.date.toDate() : new Date(a.date);
+            const dateB = b.date && b.date.toDate ? b.date.toDate() : new Date(b.date);
+            return dateA - dateB;
+        });
+
+        // Update table header
+        updateTableHeader();
+
+        // Calculate running balance - reset for each branch in "all" mode
+        let runningBalance = 0;
+        let lastBranch = null;
+        tableBody.innerHTML = '';
+
+        sorted.forEach(tx => {
+            const inVal = Number(tx.cashIn || 0);
+            const outVal = Number(tx.cashOut || 0);
+            
+            // Reset running balance when branch changes in "all" mode
+            if (currentBranch === 'all' && tx.branchId !== lastBranch) {
+                runningBalance = 0;
+                lastBranch = tx.branchId;
+            }
+            
+            runningBalance += inVal - outVal;
+
+            const row = document.createElement('tr');
+            const showActions = isAdmin || isAdminAccessingOther || currentBranch === 'all';
+
+            if (showActions) {
+                row.innerHTML = `
+                    <td>${formatDate(tx.date)}</td>
+                    <td>${escapeHtml(tx.tid || '')}</td>
+                    <td>${escapeHtml(tx.description || '')} ${currentBranch === 'all' ? `<small style="color:#a0aec0">(${tx.branchId})</small>` : ''}</td>
+                    <td class="num">${inVal > 0 ? formatCurrency(inVal) : ''}</td>
+                    <td class="num">${outVal > 0 ? formatCurrency(outVal) : ''}</td>
+                    <td class="num">${formatCurrencyCell(runningBalance)}</td>
+                    <td>
+                        <button data-id="${tx.id}" class="editBtn" style="margin-right:6px">Edit</button>
+                        <button data-id="${tx.id}" class="delBtn">Del</button>
+                    </td>
+                `;
+            } else {
+                row.innerHTML = `
+                    <td>${formatDate(tx.date)}</td>
+                    <td>${escapeHtml(tx.tid || '')}</td>
+                    <td>${escapeHtml(tx.description || '')}</td>
+                    <td class="num">${inVal > 0 ? formatCurrency(inVal) : ''}</td>
+                    <td class="num">${outVal > 0 ? formatCurrency(outVal) : ''}</td>
+                    <td class="num">${formatCurrencyCell(runningBalance)}</td>
+                `;
+            }
+
+            tableBody.appendChild(row);
+        });
+
+        if (isAdmin || isAdminAccessingOther || currentBranch === 'all') {
+            attachRowEvents();
+        }
+    }
+
+    // Update table header
+    function updateTableHeader() {
+        const tableHeader = document.getElementById('tableHeader');
+        const showActions = isAdmin || isAdminAccessingOther || currentBranch === 'all';
+
+        if (showActions) {
+            tableHeader.innerHTML = `
+                <th style="width:120px">Date</th>
+                <th style="width:120px">Tid</th>
+                <th>Description${currentBranch === 'all' ? ' (Branch)' : ''}</th>
+                <th style="width:110px">Cash In</th>
+                <th style="width:110px">Cash Out</th>
+                <th style="width:120px">Balance</th>
+                <th style="width:90px">Actions</th>
+            `;
+        } else {
+            tableHeader.innerHTML = `
+                <th style="width:120px">Date</th>
+                <th style="width:120px">Tid</th>
+                <th>Description</th>
+                <th style="width:110px">Cash In</th>
+                <th style="width:110px">Cash Out</th>
+                <th style="width:120px">Balance</th>
+            `;
+        }
+    }
+
+    // Attach row events
+    function attachRowEvents() {
+        // Delete handlers
+        document.querySelectorAll('.delBtn').forEach(btn => {
+            btn.onclick = async () => {
+                const id = btn.getAttribute('data-id');
+                if (!confirm('Delete this transaction?')) return;
+                try {
+                    btn.classList.add('disabled');
+                    await db.collection('cashflow').doc(id).delete();
+                    showMessage('Transaction deleted successfully!', 'success');
+                } catch (err) {
+                    console.error('delete err', err);
+                    alert('Error deleting: ' + err.message);
+                } finally {
+                    btn.classList.remove('disabled');
+                }
+            };
+        });
+
+        // Edit handlers
+        document.querySelectorAll('.editBtn').forEach(btn => {
+            btn.onclick = () => {
+                const id = btn.getAttribute('data-id');
+                const tx = allTransactions.find(t => t.id === id);
+                if (!tx) return;
+                const txDate = tx.date && tx.date.toDate ? tx.date.toDate() : new Date(tx.date);
+                document.getElementById('date').value = txDate.toISOString().slice(0, 10);
+                document.getElementById('tid').value = tx.tid || '';
+                document.getElementById('description').value = tx.description || '';
+                document.getElementById('cashIn').value = Number(tx.cashIn || 0).toFixed(2);
+                document.getElementById('cashOut').value = Number(tx.cashOut || 0).toFixed(2);
+                document.getElementById('editId').value = tx.id;
+                document.getElementById('branchIdInput').value = tx.branchId || currentBranch || 'branch1';
+                document.getElementById('formBranch').textContent = `Branch: ${document.getElementById('branchIdInput').value}`;
+                document.getElementById('formBranch').setAttribute('aria-hidden', 'false');
+                showForm();
+            };
+        });
+    }
+
+    // Toggle sidebar
+    function toggleSidebar() {
+        const container = document.getElementById('dashboardContainer');
+        const isHidden = container.classList.contains('sidebar-hidden');
+        
+        if (isHidden) {
+            container.classList.remove('sidebar-hidden');
+            localStorage.setItem('sidebarState', 'visible');
+        } else {
+            container.classList.add('sidebar-hidden');
+            localStorage.setItem('sidebarState', 'hidden');
+        }
+    }
+
+    // Toggle mobile sidebar
+    function toggleMobileSidebar() {
+        const container = document.getElementById('dashboardContainer');
+        const sidebar = document.getElementById('sidebar');
+        
+        if (sidebar.style.display === 'block') {
+            sidebar.style.display = 'none';
+        } else {
+            sidebar.style.display = 'block';
+            sidebar.style.position = 'fixed';
+            sidebar.style.left = '0';
+            sidebar.style.top = '70px';
+            sidebar.style.width = '250px';
+            sidebar.style.height = 'calc(100vh - 70px)';
+            sidebar.style.zIndex = '999';
+        }
+    }
+
+    // Load sidebar state from localStorage
+    function loadSidebarState() {
+        const savedState = localStorage.getItem('sidebarState');
+        const container = document.getElementById('dashboardContainer');
+        
+        if (savedState === 'hidden') {
+            container.classList.add('sidebar-hidden');
+        } else {
+            container.classList.remove('sidebar-hidden');
+        }
+    }
+
+    // Show message
+    function showMessage(text, type) {
+        const messageDiv = document.getElementById('message');
+        messageDiv.textContent = text;
+        messageDiv.className = 'message ' + type;
+        messageDiv.style.display = 'block';
+
+        setTimeout(() => {
+            messageDiv.style.display = 'none';
+        }, 5000);
+    }
+
+    // Open admin panel
+    function openAdminPanel() {
+        window.location.href = 'admin-dashboard.html';
+    }
+
+    // Logout function
+    function logout() {
+        if (isAdminAccessingOther) {
+            const logoutLog = {
+                adminUser: originalLoggedInUser,
+                accessedAccount: currentUserData.username,
+                branch: currentBranch,
+                action: 'logout',
+                page: 'cashflow',
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                duration: Math.floor((Date.now() - window.dashboardStartTime) / 1000) + ' seconds'
+            };
+
+            db.collection('admin_access_logs').add(logoutLog)
+                .then(() => console.log('✅ Admin logout logged'))
+                .catch(err => console.error('❌ Error logging admin logout:', err));
+        }
+
+        localStorage.removeItem('currentUser');
+        window.location.href = 'index.html';
+    }
+
+    // Set dashboard start time
+    window.dashboardStartTime = Date.now();
+
+    // Auto-refresh data every 30 seconds
+    setInterval(() => {
+        if (listenerUnsub) {
+            setupListener();
+        }
+    }, 30000);
+</script>
+</body>
+</html>

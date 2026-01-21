@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Website Temporarily Unavailable</title>
+  <style>
+    :root {
+      --bg1: #0f172a;
+      --bg2: #0b1220;
+      --card: #0f172a;
+      --accent: #ffb86b;
+      --muted: #bfc7d6;
+    }
+
+    html,body {
+      height: 100%;
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(135deg, var(--bg1) 0%, #111827 60%, #0b1220 100%);
+      color: white;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    .wrap {
+      min-height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      box-sizing: border-box;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
+      border: 1px solid rgba(255,255,255,0.04);
+      backdrop-filter: blur(6px);
+      padding: 36px;
+      max-width: 720px;
+      width: 100%;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.6);
+    }
+
+    .emoji {
+      font-size: 48px;
+      display: inline-block;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      margin: 6px 0 12px;
+      font-size: 26px;
+      letter-spacing: -0.02em;
+    }
+
+    p.lead {
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .phone {
+      display: inline-block;
+      margin: 8px 0 18px;
+      font-weight: 600;
+      font-size: 20px;
+      color: var(--accent);
+      background: rgba(255,184,107,0.08);
+      padding: 10px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      border: 1px solid rgba(255,184,107,0.08);
+    }
+
+    .phone:hover {
+      filter: brightness(1.05);
+    }
+
+    footer.note {
+      margin-top: 10px;
+      color: #94a3b8;
+      font-size: 13px;
+    }
+
+    @media (max-width:420px) {
+      .card { padding: 24px; }
+      h1 { font-size: 20px; }
+      .phone { font-size: 18px; padding: 8px 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <main class="card" role="main" aria-labelledby="main-heading">
+      <div class="emoji" aria-hidden="true"></div>
+      <h1 id="main-heading">Website temporarily unavailable</h1>
+      <p class="lead">We're sorry for the inconvenience — your site is currently offline. If you need assistance right away, please contact:</p>
+      <p>
+        <a class="phone" href="tel:0771287206">0771287206</a>
+      </p>
+      <p class="lead" style="margin-top:0">Leave a message and we'll get back to you as soon as we can.</p>
+      <footer class="note">Thanks for your patience.</footer>
+    </main>
+  </div>
+
+  <script>
+  (function () {
+    // Set to true if you REALLY want to block left-click everywhere.
+    // WARNING: this will break links and buttons.
+    const blockLeftClick = false;
+
+    // Block right-click context menu
+    document.addEventListener('contextmenu', function (e) {
+      e.preventDefault();
+    }, false);
+
+    // Disable text selection via JS (works in most browsers)
+    document.documentElement.style.userSelect = 'none';
+    document.documentElement.style.webkitUserSelect = 'none';
+    document.documentElement.style.msUserSelect = 'none';
+
+    // Prevent copy, cut, paste, and selectstart events
+    ['copy', 'cut', 'paste', 'selectstart'].forEach(function (ev) {
+      document.addEventListener(ev, function (e) {
+        e.preventDefault();
+      }, false);
+    });
+
+    // Block common keyboard shortcuts: Ctrl/Cmd+C/X/S/U/A/P and Ctrl+Shift+I/J and F12
+    document.addEventListener('keydown', function (e) {
+      // F12
+      if (e.key === 'F12') {
+        e.preventDefault();
+        return;
+      }
+
+      // Normalize key
+      const key = (e.key || '').toLowerCase();
+
+      // If Ctrl or Cmd pressed
+      if (e.ctrlKey || e.metaKey) {
+        // Block these single-letter combos
+        const blocked = ['c', 'x', 's', 'u', 'p', 'a', 'i', 'j'];
+        if (blocked.includes(key)) {
+          // Allow some combos if you want (example: allow Ctrl+P for printing by removing 'p')
+          // block Ctrl+Shift+I/J (devtools)
+          if ((key === 'i' || key === 'j') && !e.shiftKey) {
+            // only block if user pressed Shift as well for devtools combos
+            // do nothing here
+          }
+          e.preventDefault();
+        }
+        // Block Ctrl+Shift+I / Ctrl+Shift+J explicitly
+        if (e.shiftKey && (key === 'i' || key === 'j')) {
+          e.preventDefault();
+        }
+      }
+    }, false);
+
+    // Optional: block left click (button === 0)
+    if (blockLeftClick) {
+      document.addEventListener('click', function (e) {
+        // prevent left-click default behavior everywhere
+        if (e.button === 0) {
+          e.stopPropagation();
+          e.preventDefault();
+        }
+      }, true); // capture phase to stop as early as possible
+    }
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wamz Arts & Prints - GRV Upload & Process</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: #f5f7fa;
+            color: #2c3e50;
+            line-height: 1.6;
+            height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Full screen layout */
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            grid-template-rows: auto 1fr;
+            height: 100vh;
+        }
+
+        .dashboard-container.sidebar-collapsed {
+            grid-template-columns: 60px 1fr;
+        }
+
+        /* Header */
+        .header {
+            grid-column: 1 / -1;
+            background: #1a365d;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+            gap: 1rem;
+        }
+
+        .header h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            flex: 1;
+        }
+
+        .sidebar-toggle {
+            background: transparent;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .sidebar-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-name {
+            font-weight: 500;
+            color: #e2e8f0;
+        }
+
+        .branch-badge {
+            background: #4299e1;
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .admin-badge {
+            background: #e53e3e;
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: #2d3748;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: #4a5568;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: #2d3748;
+            color: white;
+            padding: 2rem 0;
+            border-right: 1px solid #4a5568;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar.collapsed {
+            padding: 2rem 0;
+        }
+
+        .sidebar-title {
+            font-size: 1rem;
+            color: #cbd5e0;
+            margin-bottom: 1.5rem;
+            padding: 0 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar.collapsed .sidebar-title {
+            text-align: center;
+            font-size: 0.8rem;
+            opacity: 0.7;
+            padding: 0 0.5rem;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 0 1rem;
+        }
+
+        .sidebar.collapsed .nav-menu {
+            padding: 0 0.5rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.9rem 1rem;
+            background: none;
+            border: none;
+            text-align: left;
+            color: #cbd5e0;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .sidebar.collapsed .nav-item {
+            padding: 0.9rem 0.5rem;
+            justify-content: center;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .nav-item.active {
+            background: #4299e1;
+            color: white;
+        }
+
+        .nav-item span {
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar.collapsed .nav-item span {
+            opacity: 0;
+            width: 0;
+        }
+
+        .nav-icon {
+            min-width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            background: #f5f7fa;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        /* Message */
+        .message {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: none;
+            border: 1px solid transparent;
+        }
+
+        .message.success {
+            background: #f0fff4;
+            color: #276749;
+            border-color: #c6f6d5;
+        }
+
+        .message.error {
+            background: #fff5f5;
+            color: #c53030;
+            border-color: #fed7d7;
+        }
+
+        .message.info {
+            background: #ebf8ff;
+            color: #2c5282;
+            border-color: #bee3f8;
+        }
+
+        /* GRV Container */
+        .grv-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-header h2 {
+            font-size: 1.6rem;
+            color: #2d3748;
+            font-weight: 600;
+        }
+
+        .page-subtitle {
+            color: #718096;
+            font-size: 0.95rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .btn {
+            background: #4299e1;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .btn:hover {
+            background: #3182ce;
+            transform: translateY(-1px);
+        }
+
+        .btn.ghost {
+            background: transparent;
+            color: #4299e1;
+            border: 1px solid #4299e1;
+        }
+
+        .btn.ghost:hover {
+            background: rgba(66, 153, 225, 0.1);
+        }
+
+        .btn.secondary {
+            background: #e2e8f0;
+            color: #2d3748;
+        }
+
+        .btn.secondary:hover {
+            background: #cbd5e0;
+        }
+
+        /* Main Grid Layout */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 1.5rem;
+            transition: grid-template-columns 0.3s ease;
+        }
+
+        .main-grid.form-hidden {
+            grid-template-columns: 1fr;
+        }
+
+        .main-grid.history-hidden {
+            grid-template-columns: 1fr;
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            color: #2d3748;
+            font-weight: 600;
+        }
+
+        .card-subtitle {
+            font-size: 0.85rem;
+            color: #718096;
+        }
+
+        /* Form Grid */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1rem;
+            align-items: end;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            color: #718096;
+            margin-bottom: 0.35rem;
+            font-weight: 500;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.6rem;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            font-size: 0.9rem;
+            background: white;
+            transition: all 0.2s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #4299e1;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+        }
+
+        input.readonly {
+            background: #f8fafc;
+            color: #718096;
+            cursor: not-allowed;
+        }
+
+        /* Table */
+        .table-container {
+            max-height: 40vh;
+            overflow: auto;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f8fafc;
+            padding: 0.75rem;
+            text-align: left;
+            font-size: 0.85rem;
+            color: #718096;
+            font-weight: 600;
+            border-bottom: 1px solid #e2e8f0;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #f7fafc;
+            font-size: 0.9rem;
+            color: #4a5568;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: #f8fafc;
+        }
+
+        /* Row Controls */
+        .row-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .row-controls .btn {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+        }
+
+        /* History Items */
+        .history-container {
+            max-height: 50vh;
+            overflow: auto;
+        }
+
+        .history-item {
+            padding: 1rem;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 0.75rem;
+            background: #f8fafc;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .history-item:hover {
+            border-color: #4299e1;
+            background: #ebf8ff;
+            transform: translateX(5px);
+        }
+
+        .history-item.selected {
+            border-color: #4299e1;
+            background: #ebf8ff;
+            box-shadow: 0 2px 8px rgba(66, 153, 225, 0.2);
+        }
+
+        .history-info h4 {
+            font-size: 0.95rem;
+            color: #2d3748;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-info p {
+            font-size: 0.8rem;
+            color: #718096;
+        }
+
+        .grv-total {
+            background: #4299e1;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+            justify-content: flex-end;
+        }
+
+        .action-buttons .btn {
+            min-width: 120px;
+        }
+
+        /* Form Actions */
+        .form-actions {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+        .item-count {
+            font-size: 0.85rem;
+            color: #718096;
+            font-weight: 500;
+        }
+
+        /* Add New Button */
+        .add-new-btn {
+            background: #38a169;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .add-new-btn:hover {
+            background: #2f855a;
+            transform: translateY(-1px);
+        }
+
+        /* GRV Details Modal */
+        .grv-details-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .grv-details-content {
+            background: white;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .grv-details-header {
+            background: #1a365d;
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .grv-details-header h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .close-modal {
+            background: transparent;
+            color: white;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .close-modal:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .grv-details-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .grv-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .summary-item {
+            text-align: center;
+        }
+
+        .summary-label {
+            font-size: 0.85rem;
+            color: #718096;
+            margin-bottom: 0.25rem;
+        }
+
+        .summary-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .summary-value.total {
+            color: #e53e3e;
+            font-size: 1.4rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                display: none;
+            }
+            
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard-container.sidebar-collapsed {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .header {
+                padding: 1rem;
+                flex-wrap: wrap;
+                gap: 0.75rem;
+            }
+            
+            .header h1 {
+                font-size: 1.2rem;
+            }
+            
+            .user-info {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .page-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+            
+            .controls {
+                width: 100%;
+                flex-wrap: wrap;
+                justify-content: space-between;
+            }
+            
+            .grv-summary {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .action-buttons .btn {
+                width: 100%;
+            }
+            
+            .form-actions {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container" id="dashboardContainer">
+        <!-- Header -->
+        <div class="header">
+            <button class="sidebar-toggle" id="sidebarToggle" title="Toggle Sidebar">
+                ☰
+            </button>
+            <h1>Wamz Arts & Prints - GRV Upload & Process</h1>
+            <div class="user-info">
+                <span class="user-name">Welcome, <strong id="currentUser">User</strong></span>
+                <span class="branch-badge" id="branchBadge">Admin</span>
+                <span class="admin-badge" id="adminBadge">ADMIN</span>
+                <button class="logout-btn" id="logoutBtn">Logout</button>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-title" id="sidebarTitle">Navigation</div>
+            <div class="nav-menu">
+                <button class="nav-item" onclick="navigateTo('admin-dashboard.html')">
+                    <span class="nav-icon">📊</span>
+                    <span>Dashboard</span>
+                </button>
+                <button class="nav-item" onclick="navigateTo('admin-warehouse.html')">
+                    <span class="nav-icon"></span>
+                    <span>Warehouse</span>
+                </button>
+                <button class="nav-item active">
+                    <span class="nav-icon"></span>
+                    <span>GRV Upload</span>
+                </button>
+                <button class="nav-item" onclick="navigateTo('reports.html')">
+                    <span class="nav-icon"></span>
+                    <span>Reports</span>
+                </button>
+                <button class="nav-item" onclick="navigateTo('cashflow.html')">
+                    <span class="nav-icon"></span>
+                    <span>Cash Flow</span>
+                </button>
+                <button class="nav-item" onclick="navigateTo('admin-panel.html')">
+                    <span class="nav-icon"></span>
+                    <span>Admin Panel</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="grv-container">
+                <!-- Message Display -->
+                <div class="message" id="message"></div>
+
+                <!-- Page Header -->
+                <div class="page-header">
+                    <div>
+                        <h2>GRV Upload & Process</h2>
+                        <div class="page-subtitle">Batch restock across branches</div>
+                    </div>
+                    <div class="controls">
+                        <button class="add-new-btn" id="addNewBtn">
+                            <span>+</span>
+                            <span>Add New Item</span>
+                        </button>
+                        <button class="btn secondary" id="toggleFormBtn" title="Show / hide Add Form">Hide Form</button>
+                        <button class="btn secondary" id="toggleHistoryBtn" title="Show / hide GRV History">Hide History</button>
+                    </div>
+                </div>
+
+                <div class="main-grid" id="mainGrid">
+                    <!-- Left: Form and Items List -->
+                    <div id="formSection">
+                        <!-- Add Form (Collapsible) -->
+                        <div class="card" id="addForm">
+                            <div class="card-header">
+                                <div>
+                                    <div class="card-title">Add New Item</div>
+                                    <div class="card-subtitle">Fill in the details below to add items to GRV</div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-grid">
+                                <div>
+                                    <label for="branchSelect">Branch</label>
+                                    <select id="branchSelect">
+                                        <option value="branch1">Branch 1 (Main)</option>
+                                        <option value="branch2">Branch 2</option>
+                                        <option value="branch3">Branch 3</option>
+                                    </select>
+                                </div>
+
+                                <div style="position: relative;">
+                                    <label for="itemCode">Item Code</label>
+                                    <input id="itemCode" placeholder="Start typing or pick existing..." list="codesList" autocomplete="off" />
+                                    <datalist id="codesList"></datalist>
+                                </div>
+
+                                <div>
+                                    <label for="itemName">Item Name</label>
+                                    <input id="itemName" placeholder="A4 Paper" />
+                                </div>
+
+                                <div>
+                                    <label for="itemCategory">Category</label>
+                                    <select id="itemCategory">
+                                        <option value="">Select Category</option>
+                                        <option value="phone accessories">Phone Accessories</option>
+                                        <option value="stationary">Stationary</option>
+                                        <option value="other suppliers">Other Suppliers</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label for="itemQty">Quantity</label>
+                                    <input id="itemQty" type="number" min="1" value="10" />
+                                </div>
+
+                                <div>
+                                    <label for="itemPrice">Unit Price (ZMW)</label>
+                                    <input id="itemPrice" type="number" step="0.01" min="0" value="10.00" />
+                                </div>
+
+                                <div style="grid-column: 1 / -1;">
+                                    <label for="itemLocation">Location</label>
+                                    <input id="itemLocation" placeholder="Shelf A1" />
+                                    <button class="btn ghost" id="useNewBtn" style="margin-top: 0.5rem; width: auto;">Force New Item</button>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button id="addRowBtn" class="btn">Add to GRV List</button>
+                                <button id="clearFormBtn" class="btn ghost">Clear Form</button>
+                                <div style="flex: 1"></div>
+                                <div class="item-count" id="listCount">0 items in list</div>
+                            </div>
+                        </div>
+
+                        <!-- Items List -->
+                        <div class="card" style="margin-top: 1.5rem;" id="itemsListCard">
+                            <div class="card-header">
+                                <div>
+                                    <div class="card-title">GRV Items List</div>
+                                    <div class="card-subtitle">Items ready for processing</div>
+                                </div>
+                            </div>
+
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 50px">#</th>
+                                            <th>Branch</th>
+                                            <th>Code</th>
+                                            <th>Name</th>
+                                            <th style="width: 80px">Qty</th>
+                                            <th style="width: 100px">Unit Price</th>
+                                            <th>Total</th>
+                                            <th style="width: 150px">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="rowsBody">
+                                        <tr>
+                                            <td colspan="8" style="text-align: center; padding: 2rem; color: #a0aec0;">
+                                                No items added yet. Start by adding items above.
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="action-buttons">
+                                <button id="exportListCsv" class="btn secondary">Export CSV</button>
+                                <button id="processBtn" class="btn">Process GRV</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: GRV History -->
+                    <div class="card" id="historySection">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">GRV History</div>
+                                <div class="card-subtitle">Click on a GRV to view details</div>
+                            </div>
+                        </div>
+
+                        <div class="history-container" id="historyContainer">
+                            <div style="text-align: center; padding: 2rem; color: #a0aec0;">
+                                Loading GRV history...
+                            </div>
+                        </div>
+
+                        <div class="action-buttons">
+                            <button id="downloadAllCsv" class="btn secondary">Export All GRVs (CSV)</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GRV Details Modal -->
+    <div class="grv-details-modal" id="grvDetailsModal">
+        <div class="grv-details-content">
+            <div class="grv-details-header">
+                <h3 id="grvDetailsTitle">GRV Details</h3>
+                <button class="close-modal" id="closeModalBtn">&times;</button>
+            </div>
+            <div class="grv-details-body">
+                <div class="grv-summary" id="grvSummary">
+                    <!-- Summary will be loaded here -->
+                </div>
+                <div class="table-container">
+                    <table id="grvItemsTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Branch</th>
+                                <th>Code</th>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>Qty</th>
+                                <th>Unit Price</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="grvItemsBody">
+                            <!-- GRV items will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyDTslfW2YQOw1XqiTn4RgTNKusi4w6NcHI",
+            authDomain: "wamz-arts-and-prints.firebaseapp.com",
+            projectId: "wamz-arts-and-prints",
+            storageBucket: "wamz-arts-and-prints.firebasestorage.app",
+            messagingSenderId: "495100135771",
+            appId: "1:495100135771:web:d63ab48db021b4b02c327e",
+            measurementId: "G-1HL55EC1D1"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const FieldValue = firebase.firestore.FieldValue;
+
+        // State
+        let currentUser = null;
+        let grvRows = [];
+        let grvHistoryUnsub = null;
+        let inventoryUnsub = null;
+        let selectedGRV = null;
+        const codeMap = {};
+
+        // Sidebar Management
+        function initializeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const toggleBtn = document.getElementById('sidebarToggle');
+            const container = document.getElementById('dashboardContainer');
+            
+            // Load saved state
+            const savedState = localStorage.getItem('sidebarCollapsed');
+            const isCollapsed = savedState === 'true';
+            
+            if (isCollapsed) {
+                sidebar.classList.add('collapsed');
+                container.classList.add('sidebar-collapsed');
+            }
+            
+            // Toggle sidebar
+            toggleBtn.addEventListener('click', () => {
+                const isCollapsed = sidebar.classList.toggle('collapsed');
+                container.classList.toggle('sidebar-collapsed');
+                localStorage.setItem('sidebarCollapsed', isCollapsed.toString());
+            });
+        }
+
+        // Navigation
+        function navigateTo(url) {
+            window.location.href = url;
+        }
+
+        // Show message
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = 'message ' + type;
+            messageDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        // Format ZMW currency
+        function formatZMW(n) { 
+            return 'ZMW ' + Number(n || 0).toLocaleString('en-ZM', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }); 
+        }
+
+        // Access check
+        (function initAccess() {
+            const cur = localStorage.getItem('currentUser');
+            if (!cur) { window.location.href = 'index.html'; return; }
+            const u = JSON.parse(cur);
+            if (u.username !== 'Wamz' && u.role !== 'admin') { window.location.href = 'user-dashboard.html'; return; }
+            currentUser = u;
+            document.getElementById('currentUser').textContent = u.username;
+            initializeSidebar();
+        })();
+
+        // Helper functions
+        function $id(id) { return document.getElementById(id); }
+        
+        function downloadTextFile(text, filename) { 
+            const blob = new Blob([text], { type: 'text/csv;charset=utf-8;' }); 
+            const url = URL.createObjectURL(blob); 
+            const a = document.createElement('a'); 
+            a.href = url; 
+            a.download = filename; 
+            document.body.appendChild(a); 
+            a.click(); 
+            a.remove(); 
+            setTimeout(() => URL.revokeObjectURL(url), 5000); 
+        }
+
+        // Toggle form and history sections
+        const addFormEl = $id('addForm');
+        const itemsListCard = $id('itemsListCard');
+        const formSection = $id('formSection');
+        const historySectionEl = $id('historySection');
+        const toggleFormBtn = $id('toggleFormBtn');
+        const toggleHistoryBtn = $id('toggleHistoryBtn');
+        const mainGrid = $id('mainGrid');
+        const addNewBtn = $id('addNewBtn');
+
+        function toggleSection(type) {
+            if (type === 'form') {
+                const isHidden = formSection.style.display === 'none';
+                if (isHidden) {
+                    formSection.style.display = 'block';
+                    toggleFormBtn.textContent = 'Hide Form';
+                    mainGrid.classList.remove('form-hidden');
+                } else {
+                    formSection.style.display = 'none';
+                    toggleFormBtn.textContent = 'Show Form';
+                    mainGrid.classList.add('form-hidden');
+                }
+            } else if (type === 'history') {
+                const isHidden = historySectionEl.style.display === 'none';
+                if (isHidden) {
+                    historySectionEl.style.display = 'block';
+                    toggleHistoryBtn.textContent = 'Hide History';
+                    mainGrid.classList.remove('history-hidden');
+                } else {
+                    historySectionEl.style.display = 'none';
+                    toggleHistoryBtn.textContent = 'Show History';
+                    mainGrid.classList.add('history-hidden');
+                }
+            }
+        }
+
+        toggleFormBtn.addEventListener('click', () => {
+            toggleSection('form');
+        });
+
+        toggleHistoryBtn.addEventListener('click', () => {
+            toggleSection('history');
+        });
+
+        addNewBtn.addEventListener('click', () => {
+            if (formSection.style.display === 'none') {
+                formSection.style.display = 'block';
+                toggleFormBtn.textContent = 'Hide Form';
+                mainGrid.classList.remove('form-hidden');
+            }
+            $id('itemCode').focus();
+        });
+
+        // Form readonly helper
+        function setFormReadonly(readonly) {
+            ['itemName', 'itemCategory', 'itemPrice', 'itemLocation'].forEach(id => {
+                const el = $id(id);
+                if (!el) return;
+                el.readOnly = readonly;
+                el.classList.toggle('readonly', readonly);
+            });
+        }
+
+        // Render rows in GRV list
+        function renderRows() {
+            const tbody = $id('rowsBody');
+            tbody.innerHTML = '';
+            
+            if (!grvRows.length) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 2rem; color: #a0aec0;">
+                            No items added yet. Start by adding items above.
+                        </td>
+                    </tr>
+                `;
+                $id('listCount').textContent = '0 items in list';
+                return;
+            }
+            
+            let totalValue = 0;
+            
+            grvRows.forEach((r, i) => {
+                const itemTotal = (r.qty || 0) * (r.price || 0);
+                totalValue += itemTotal;
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${i + 1}</td>
+                    <td>${r.branch === 'branch1' ? 'Branch 1' : r.branch === 'branch2' ? 'Branch 2' : 'Branch 3'}</td>
+                    <td><strong>${r.code}</strong></td>
+                    <td>${r.name}</td>
+                    <td>${r.qty}</td>
+                    <td>${formatZMW(r.price)}</td>
+                    <td style="font-weight: 600; color: #2d3748;">${formatZMW(itemTotal)}</td>
+                    <td>
+                        <div class="row-controls">
+                            <button class="btn ghost" onclick="editRow(${i})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">Edit</button>
+                            <button class="btn ghost" onclick="removeRow(${i})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">Remove</button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            
+            // Add total row
+            const totalRow = document.createElement('tr');
+            totalRow.style.backgroundColor = '#f8fafc';
+            totalRow.style.fontWeight = '600';
+            totalRow.innerHTML = `
+                <td colspan="6" style="text-align: right; color: #718096;">Total:</td>
+                <td style="color: #e53e3e; font-size: 1rem;">${formatZMW(totalValue)}</td>
+                <td></td>
+            `;
+            tbody.appendChild(totalRow);
+            
+            $id('listCount').textContent = `${grvRows.length} item${grvRows.length === 1 ? '' : 's'} in list • ${formatZMW(totalValue)}`;
+        }
+
+        // Remove row
+        window.removeRow = function(idx) {
+            grvRows.splice(idx, 1);
+            renderRows();
+        };
+
+        // Edit row
+        window.editRow = function(idx) {
+            const r = grvRows[idx];
+            if (!r) return;
+            
+            $id('branchSelect').value = r.branch;
+            $id('itemCode').value = r.code;
+            $id('itemName').value = r.name;
+            $id('itemCategory').value = r.category;
+            $id('itemQty').value = r.qty;
+            $id('itemPrice').value = Number(r.price || 0).toFixed(2);
+            $id('itemLocation').value = r.location || '';
+            
+            const exists = codeMap[r.code.toUpperCase()];
+            setFormReadonly(Boolean(exists));
+            
+            // Remove row while editing
+            grvRows.splice(idx, 1);
+            renderRows();
+            
+            // Ensure form is visible
+            if (formSection.style.display === 'none') {
+                formSection.style.display = 'block';
+                toggleFormBtn.textContent = 'Hide Form';
+                mainGrid.classList.remove('form-hidden');
+            }
+        };
+
+        // Clear form
+        function clearForm() {
+            $id('itemCode').value = '';
+            $id('itemName').value = '';
+            $id('itemCategory').value = '';
+            $id('itemQty').value = '10';
+            $id('itemPrice').value = '10.00';
+            $id('itemLocation').value = '';
+            setFormReadonly(false);
+        }
+
+        // Code input handler
+        function onCodeInput() {
+            const codeRaw = ($id('itemCode').value || '').trim();
+            const code = codeRaw.toUpperCase();
+            
+            if (!code) { 
+                setFormReadonly(false); 
+                return; 
+            }
+            
+            const entry = codeMap[code];
+            if (entry) {
+                $id('itemName').value = entry.name || code;
+                $id('itemCategory').value = entry.category || '';
+                $id('itemPrice').value = (entry.price || 0).toFixed(2);
+                $id('itemLocation').value = entry.location || '';
+                setFormReadonly(true);
+                $id('itemQty').focus();
+            } else {
+                setFormReadonly(false);
+            }
+        }
+
+        // Add row to GRV list
+        $id('addRowBtn').addEventListener('click', () => {
+            const branch = $id('branchSelect').value;
+            const rawCode = ($id('itemCode').value || '').trim();
+            
+            if (!rawCode) { 
+                showMessage('Please enter an item code', 'error');
+                return; 
+            }
+            
+            const code = rawCode.toUpperCase();
+            const qty = parseInt($id('itemQty').value || '0', 10) || 0;
+            const price = parseFloat($id('itemPrice').value || '0') || 0;
+            const name = ($id('itemName').value || '').trim() || code;
+            const category = $id('itemCategory').value || 'other suppliers';
+            const location = ($id('itemLocation').value || '').trim();
+            
+            if (!qty || qty <= 0) { 
+                showMessage('Please enter a valid quantity (>0)', 'error');
+                return; 
+            }
+            
+            // Avoid duplicate branch+code in working list
+            const existingIndex = grvRows.findIndex(r => r.branch === branch && r.code === code);
+            
+            if (existingIndex !== -1) {
+                // Merge quantities
+                grvRows[existingIndex].qty += qty;
+                showMessage(`Updated quantity for ${code} in ${branch}`, 'info');
+            } else {
+                const existingCode = codeMap[code];
+                const row = {
+                    branch, 
+                    code, 
+                    name: existingCode ? (existingCode.name || name) : name,
+                    category: existingCode ? (existingCode.category || category) : category,
+                    qty, 
+                    price: existingCode ? (existingCode.price || price) : price,
+                    location: existingCode ? (existingCode.location || location) : location
+                };
+                grvRows.push(row);
+                showMessage(`Added ${name} to GRV list`, 'success');
+            }
+            
+            renderRows();
+            clearForm();
+        });
+
+        $id('clearFormBtn').addEventListener('click', clearForm);
+        $id('useNewBtn').addEventListener('click', () => {
+            $id('itemCode').value = $id('itemCode').value.trim();
+            setFormReadonly(false);
+            $id('itemName').focus();
+        });
+
+        // Export list as CSV
+        $id('exportListCsv').addEventListener('click', () => {
+            if (!grvRows.length) { 
+                showMessage('No rows to export', 'error');
+                return; 
+            }
+            
+            const rows = [['Branch', 'Code', 'Name', 'Category', 'Quantity', 'Price', 'Location', 'Total']];
+            grvRows.forEach(r => {
+                const total = (r.qty || 0) * (r.price || 0);
+                rows.push([
+                    r.branch, 
+                    r.code, 
+                    r.name, 
+                    r.category, 
+                    r.qty, 
+                    (r.price || 0).toFixed(2), 
+                    r.location || '',
+                    total.toFixed(2)
+                ]);
+            });
+            
+            const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+            downloadTextFile(csv, `grv-export-${new Date().toISOString().slice(0, 19)}.csv`);
+            showMessage('CSV exported successfully', 'success');
+        });
+
+        // Process GRV
+        $id('processBtn').addEventListener('click', async () => {
+            if (!grvRows.length) { 
+                showMessage('No rows to process', 'error');
+                return; 
+            }
+            
+            if (!confirm(`Process ${grvRows.length} items and update inventory?`)) return;
+            
+            const processBtn = $id('processBtn');
+            const originalText = processBtn.textContent;
+            processBtn.disabled = true;
+            processBtn.textContent = 'Processing...';
+            
+            try {
+                const resolved = await Promise.all(grvRows.map(async r => {
+                    const q = await db.collection('inventory')
+                        .where('branchId', '==', r.branch)
+                        .where('code', '==', r.code)
+                        .limit(1)
+                        .get();
+                    
+                    if (!q.empty) {
+                        const doc = q.docs[0];
+                        const ref = db.collection('inventory').doc(doc.id);
+                        const updateData = { stock: FieldValue.increment(r.qty) };
+                        
+                        if (r.price && r.price > 0) updateData.price = r.price;
+                        if (r.location) updateData.location = r.location;
+                        if (r.name) updateData.name = r.name;
+                        if (r.category) updateData.category = r.category;
+                        
+                        return { ref, updateData, isNew: false, row: r };
+                    } else {
+                        const id = `${r.branch}_${r.code}`;
+                        const ref = db.collection('inventory').doc(id);
+                        const setData = {
+                            branchId: r.branch,
+                            code: r.code,
+                            name: r.name,
+                            category: r.category,
+                            stock: r.qty,
+                            price: r.price || 0,
+                            location: r.location || '',
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        };
+                        return { ref, setData, isNew: true, row: r };
+                    }
+                }));
+
+                // Batch write
+                const BATCH_SIZE = 400;
+                let idx = 0;
+                
+                while (idx < resolved.length) {
+                    const batch = db.batch();
+                    const chunk = resolved.slice(idx, idx + BATCH_SIZE);
+                    
+                    chunk.forEach(op => {
+                        if (op.isNew) {
+                            batch.set(op.ref, op.setData, { merge: true });
+                        } else {
+                            batch.update(op.ref, op.updateData);
+                        }
+                    });
+                    
+                    await batch.commit();
+                    idx += BATCH_SIZE;
+                }
+
+                // Create GRV history record
+                const totalValue = grvRows.reduce((s, r) => s + (Number(r.qty || 0) * Number(r.price || 0)), 0);
+                const historyDoc = {
+                    processedBy: currentUser.username,
+                    ts: firebase.firestore.FieldValue.serverTimestamp(),
+                    processedAt: Date.now(),
+                    rowsCount: grvRows.length,
+                    totalValue,
+                    items: grvRows
+                };
+                
+                await db.collection('grvHistory').add(historyDoc);
+                
+                showMessage(`GRV processed successfully! ${grvRows.length} items updated. Total value: ${formatZMW(totalValue)}`, 'success');
+                grvRows = [];
+                renderRows();
+                
+            } catch (err) {
+                console.error('Process GRV error', err);
+                showMessage('Error processing GRV: ' + (err.message || err), 'error');
+            } finally {
+                processBtn.disabled = false;
+                processBtn.textContent = originalText;
+            }
+        });
+
+        // GRV History
+        function renderHistoryList(docs) {
+            const el = $id('historyContainer');
+            el.innerHTML = '';
+            
+            if (!docs.length) {
+                el.innerHTML = '<div style="text-align: center; padding: 2rem; color: #a0aec0;">No GRV history yet.</div>';
+                return;
+            }
+            
+            docs.forEach((doc, index) => {
+                const data = doc.data();
+                const ts = data.processedAt ? new Date(data.processedAt) : (data.ts && data.ts.toDate ? data.ts.toDate() : new Date());
+                const total = data.totalValue || 0;
+                const rowsCount = data.rowsCount || (data.items && data.items.length) || 0;
+                
+                const wrapper = document.createElement('div');
+                wrapper.className = 'history-item';
+                wrapper.dataset.id = doc.id;
+                wrapper.dataset.index = index;
+                
+                if (selectedGRV && selectedGRV.id === doc.id) {
+                    wrapper.classList.add('selected');
+                }
+                
+                wrapper.onclick = () => showGRVDetails(doc.id, data, index);
+                
+                wrapper.innerHTML = `
+                    <div class="history-info">
+                        <h4>
+                            ${ts.toLocaleString()}
+                            <span class="grv-total">${formatZMW(total)}</span>
+                        </h4>
+                        <p>${rowsCount} items • Processed by: ${data.processedBy || 'Unknown'}</p>
+                        <p style="font-size: 0.75rem; color: #a0aec0; margin-top: 0.25rem;">
+                            ${ts.toLocaleDateString()} • ${ts.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                        </p>
+                    </div>
+                `;
+                
+                el.appendChild(wrapper);
+            });
+        }
+
+        // Show GRV Details
+        async function showGRVDetails(docId, data, index) {
+            selectedGRV = { id: docId, data: data };
+            
+            // Update UI selection
+            document.querySelectorAll('.history-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            document.querySelector(`.history-item[data-index="${index}"]`).classList.add('selected');
+            
+            // Show modal
+            const modal = $id('grvDetailsModal');
+            const title = $id('grvDetailsTitle');
+            const summary = $id('grvSummary');
+            const itemsBody = $id('grvItemsBody');
+            
+            const ts = data.processedAt ? new Date(data.processedAt) : (data.ts && data.ts.toDate ? data.ts.toDate() : new Date());
+            const items = data.items || [];
+            const totalValue = data.totalValue || 0;
+            
+            // Update title
+            title.textContent = `GRV Details - ${ts.toLocaleString()}`;
+            
+            // Calculate branch totals
+            const branchTotals = {};
+            items.forEach(item => {
+                const branch = item.branch === 'branch1' ? 'Branch 1' : item.branch === 'branch2' ? 'Branch 2' : 'Branch 3';
+                const itemTotal = (item.qty || 0) * (item.price || 0);
+                branchTotals[branch] = (branchTotals[branch] || 0) + itemTotal;
+            });
+            
+            // Update summary
+            summary.innerHTML = `
+                <div class="summary-item">
+                    <div class="summary-label">Total Items</div>
+                    <div class="summary-value">${items.length}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Processed By</div>
+                    <div class="summary-value">${data.processedBy || 'Unknown'}</div>
+                </div>
+                ${Object.entries(branchTotals).map(([branch, total]) => `
+                    <div class="summary-item">
+                        <div class="summary-label">${branch}</div>
+                        <div class="summary-value">${formatZMW(total)}</div>
+                    </div>
+                `).join('')}
+                <div class="summary-item">
+                    <div class="summary-label">Grand Total</div>
+                    <div class="summary-value total">${formatZMW(totalValue)}</div>
+                </div>
+            `;
+            
+            // Update items table
+            itemsBody.innerHTML = '';
+            let runningTotal = 0;
+            
+            items.forEach((item, i) => {
+                const itemTotal = (item.qty || 0) * (item.price || 0);
+                runningTotal += itemTotal;
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${i + 1}</td>
+                    <td>${item.branch === 'branch1' ? 'Branch 1' : item.branch === 'branch2' ? 'Branch 2' : 'Branch 3'}</td>
+                    <td><strong>${item.code}</strong></td>
+                    <td>${item.name}</td>
+                    <td>${item.category || '-'}</td>
+                    <td>${item.qty}</td>
+                    <td>${formatZMW(item.price)}</td>
+                    <td style="font-weight: 600;">${formatZMW(itemTotal)}</td>
+                `;
+                itemsBody.appendChild(tr);
+            });
+            
+            // Add total row
+            const totalRow = document.createElement('tr');
+            totalRow.style.backgroundColor = '#f8fafc';
+            totalRow.style.fontWeight = '600';
+            totalRow.innerHTML = `
+                <td colspan="7" style="text-align: right;">Total:</td>
+                <td style="color: #e53e3e; font-size: 1rem;">${formatZMW(runningTotal)}</td>
+            `;
+            itemsBody.appendChild(totalRow);
+            
+            // Show modal
+            modal.style.display = 'flex';
+        }
+
+        // Close modal
+        $id('closeModalBtn').addEventListener('click', () => {
+            $id('grvDetailsModal').style.display = 'none';
+        });
+
+        // Close modal when clicking outside
+        $id('grvDetailsModal').addEventListener('click', (e) => {
+            if (e.target === $id('grvDetailsModal')) {
+                $id('grvDetailsModal').style.display = 'none';
+            }
+        });
+
+        function setupHistoryListener() {
+            if (grvHistoryUnsub) grvHistoryUnsub();
+            
+            grvHistoryUnsub = db.collection('grvHistory')
+                .orderBy('ts', 'desc')
+                .limit(50)
+                .onSnapshot(snap => {
+                    renderHistoryList(snap.docs);
+                }, err => {
+                    $id('historyContainer').innerHTML = 
+                        `<div style="text-align: center; padding: 2rem; color: #e53e3e;">Error loading history: ${err.message}</div>`;
+                });
+        }
+
+        // Inventory codes listener
+        function setupInventoryCodesListener() {
+            if (inventoryUnsub) inventoryUnsub();
+            
+            inventoryUnsub = db.collection('inventory').onSnapshot(snap => {
+                const temp = {};
+                
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    const code = (d.code || '').toString().toUpperCase();
+                    if (!code) return;
+                    
+                    const branchId = d.branchId || d.branch || 'branch1';
+                    const qty = parseInt(d.stock || d.qty || 0, 10) || 0;
+                    const price = parseFloat(d.price || 0) || 0;
+                    const location = d.location || '';
+                    const name = d.name || code;
+                    const category = d.category || '';
+                    
+                    if (!temp[code]) {
+                        temp[code] = { 
+                            code, 
+                            name, 
+                            category, 
+                            price, 
+                            location, 
+                            branches: {} 
+                        };
+                    }
+                    
+                    temp[code].branches[branchId] = (temp[code].branches[branchId] || 0) + qty;
+                    
+                    if ((!temp[code].price || temp[code].price === 0) && price) {
+                        temp[code].price = price;
+                    }
+                    
+                    if (branchId === 'branch1') {
+                        temp[code].price = price || temp[code].price;
+                        temp[code].name = name || temp[code].name;
+                        temp[code].category = category || temp[code].category;
+                        temp[code].location = location || temp[code].location;
+                    } else {
+                        if (!temp[code].location && location) {
+                            temp[code].location = location;
+                        }
+                    }
+                });
+
+                // Update codeMap
+                Object.keys(codeMap).forEach(k => delete codeMap[k]);
+                Object.keys(temp).forEach(k => codeMap[k] = temp[k]);
+                populateDatalist();
+                
+            }, err => {
+                console.error('Inventory codes listener error', err);
+            });
+        }
+
+        function populateDatalist() {
+            const dl = $id('codesList');
+            dl.innerHTML = '';
+            const codes = Object.keys(codeMap).sort();
+            
+            codes.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c;
+                dl.appendChild(opt);
+            });
+        }
+
+        // Export all GRV history
+        $id('downloadAllCsv').addEventListener('click', async () => {
+            const snap = await db.collection('grvHistory')
+                .orderBy('ts', 'desc')
+                .limit(500)
+                .get();
+            
+            if (snap.empty) { 
+                showMessage('No GRV history to export', 'info');
+                return; 
+            }
+            
+            const rows = [['Processed At', 'Processed By', 'Items Count', 'Total Value']];
+            
+            snap.forEach(doc => {
+                const d = doc.data();
+                const processedAt = d.processedAt ? 
+                    new Date(d.processedAt).toISOString() : 
+                    (d.ts && d.ts.toDate ? d.ts.toDate().toISOString() : '');
+                
+                rows.push([
+                    processedAt, 
+                    d.processedBy || '', 
+                    d.rowsCount || 0, 
+                    (d.totalValue || 0).toFixed(2)
+                ]);
+            });
+            
+            const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+            downloadTextFile(csv, `grv-history-${new Date().toISOString().slice(0, 19)}.csv`);
+            showMessage('All GRV history exported successfully', 'success');
+        });
+
+        // Logout
+        $id('logoutBtn').addEventListener('click', () => {
+            if (grvHistoryUnsub) grvHistoryUnsub();
+            if (inventoryUnsub) inventoryUnsub();
+            localStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        });
+
+        // Initialize
+        (function init() {
+            $id('itemCode').addEventListener('input', onCodeInput);
+            renderRows();
+            setupHistoryListener();
+            setupInventoryCodesListener();
+        })();
+
+        // Cleanup
+        window.addEventListener('beforeunload', () => {
+            if (grvHistoryUnsub) grvHistoryUnsub();
+            if (inventoryUnsub) inventoryUnsub();
+        });
+    </script>
+</body>
+</html>
