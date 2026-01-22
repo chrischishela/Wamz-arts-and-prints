@@ -8,6 +8,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
    <style>
     * {
         margin: 0;
@@ -22,132 +24,37 @@
         line-height: 1.5;
         min-height: 100vh;
         width: 100%;
+        overflow-x: hidden;
     }
 
-    /* AUTO FIT LAYOUT */
+    /* DASHBOARD LAYOUT */
     .dashboard-container {
-        display: grid;
-        grid-template-columns: minmax(200px, 220px) 1fr;
-        grid-template-rows: auto 1fr;
+        display: flex;
         min-height: 100vh;
         width: 100%;
+        position: relative;
     }
 
-    .dashboard-container.sidebar-hidden {
-        grid-template-columns: 0 1fr;
-    }
-
-    /* HEADER - AUTO FIT */
-    .header {
-        grid-column: 1 / -1;
-        background: #1a365d;
-        color: white;
-        padding: 0.8rem 1rem;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        align-items: center;
-        gap: 0.5rem;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        z-index: 100;
-    }
-
-    .header-left {
-        display: flex;
-        align-items: center;
-        gap: 0.8rem;
-        flex-wrap: wrap;
-    }
-
-    .header h1 {
-        font-size: 1.2rem;
-        font-weight: 600;
-        white-space: nowrap;
-    }
-
-    .user-info {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-    }
-
-    .user-name {
-        font-weight: 500;
-        color: #e2e8f0;
-        font-size: 0.9rem;
-    }
-
-    .branch-badge {
-        background: #4299e1;
-        color: white;
-        padding: 0.3rem 0.6rem;
-        border-radius: 4px;
-        font-size: 0.8rem;
-        font-weight: 500;
-        white-space: nowrap;
-    }
-
-    .admin-badge {
-        background: #e53e3e;
-        color: white;
-        padding: 0.3rem 0.6rem;
-        border-radius: 4px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        white-space: nowrap;
-    }
-
-    /* TOGGLE BUTTON - AUTO FIT */
-    .sidebar-toggle {
-        background: #4299e1;
-        color: white;
-        border: none;
-        width: 36px;
-        height: 36px;
-        border-radius: 6px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1rem;
-        transition: all 0.2s;
-        flex-shrink: 0;
-    }
-
-    .sidebar-toggle:hover {
-        background: #3182ce;
-    }
-
-    .logout-btn {
-        background: #2d3748;
-        color: white;
-        border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 0.85rem;
-        transition: all 0.2s;
-        white-space: nowrap;
-    }
-
-    .logout-btn:hover {
-        background: #4a5568;
-    }
-
-    /* SIDEBAR - AUTO FIT */
+    /* SIDEBAR - HIDDEN ON MOBILE BY DEFAULT */
     .sidebar {
         background: #2d3748;
         color: white;
+        width: 220px;
+        min-width: 220px;
         padding: 1.5rem 0.8rem;
         border-right: 1px solid #4a5568;
         overflow-y: auto;
-        min-width: min-content;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        z-index: 1000;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
     }
 
-    .sidebar-hidden .sidebar {
-        transform: translateX(-100%);
-        opacity: 0;
+    .sidebar.open {
+        transform: translateX(0);
     }
 
     .sidebar-title {
@@ -193,22 +100,136 @@
         color: white;
     }
 
-    /* MAIN CONTENT - AUTO FIT */
+    /* SIDEBAR OVERLAY FOR MOBILE */
+    .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        backdrop-filter: blur(3px);
+    }
+
+    .sidebar-overlay.active {
+        display: block;
+    }
+
+    /* MAIN CONTENT AREA */
     .main-content {
+        flex: 1;
         background: #f5f7fa;
         padding: 1rem;
         overflow-y: auto;
-        height: 100%;
-        min-width: 0;
+        min-height: 100vh;
+        width: 100%;
     }
 
-    /* WELCOME BANNER - AUTO FIT */
+    /* MOBILE MENU TOGGLE */
+    .menu-toggle {
+        display: none;
+        background: #4299e1;
+        color: white;
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 6px;
+        cursor: pointer;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        position: fixed;
+        top: 1rem;
+        left: 1rem;
+        z-index: 1001;
+    }
+
+    /* HEADER */
+    .header {
+        background: #1a365d;
+        color: white;
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .header-content {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex: 1;
+    }
+
+    .header h1 {
+        font-size: 1.2rem;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        flex-wrap: wrap;
+    }
+
+    .user-name {
+        font-weight: 500;
+        color: #e2e8f0;
+        font-size: 0.9rem;
+    }
+
+    .branch-badge {
+        background: #4299e1;
+        color: white;
+        padding: 0.3rem 0.6rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    .admin-badge {
+        background: #e53e3e;
+        color: white;
+        padding: 0.3rem 0.6rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .logout-btn {
+        background: #2d3748;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        transition: all 0.2s;
+        white-space: nowrap;
+    }
+
+    .logout-btn:hover {
+        background: #4a5568;
+    }
+
+    /* WELCOME BANNER */
     .welcome-banner {
         background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
         color: white;
         padding: 1.2rem;
-        border-radius: 10px;
-        margin-bottom: 1.2rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
         box-shadow: 0 4px 10px rgba(66, 153, 225, 0.2);
     }
 
@@ -223,29 +244,11 @@
         font-size: 0.9rem;
     }
 
-    /* ADMIN ACCESS ALERT - AUTO FIT */
-    .admin-access-alert {
-        background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
-        color: white;
-        padding: 0.8rem;
-        border-radius: 8px;
-        margin-bottom: 0.8rem;
-        box-shadow: 0 4px 10px rgba(229, 62, 62, 0.2);
-        display: none;
-        border: 2px solid #fed7d7;
-    }
-
-    .admin-access-alert h3 {
-        font-size: 1rem;
-        margin-bottom: 0.4rem;
-        font-weight: 600;
-    }
-
-    /* MESSAGE DISPLAY - AUTO FIT */
+    /* MESSAGE DISPLAY */
     .message {
         padding: 0.8rem;
         border-radius: 8px;
-        margin-bottom: 1.2rem;
+        margin-bottom: 1rem;
         display: none;
         border: 1px solid transparent;
         font-size: 0.85rem;
@@ -269,12 +272,12 @@
         border-color: #bee3f8;
     }
 
-    /* STATS GRID - AUTO FIT */
+    /* QUICK STATS */
     .stats-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
         gap: 1rem;
-        margin-bottom: 1.2rem;
+        margin-bottom: 1.5rem;
     }
 
     .stat-card {
@@ -293,56 +296,239 @@
     }
 
     .stat-value {
-        font-size: 1.4rem;
+        font-size: 1.6rem;
         font-weight: 700;
         color: #2d3748;
         margin-bottom: 0.4rem;
     }
 
     .stat-label {
-        font-size: 0.8rem;
+        font-size: 0.85rem;
         color: #718096;
         font-weight: 500;
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
 
-    /* MAIN LAYOUT - AUTO FIT */
-    .content-wrapper {
-        display: grid;
-        grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-        gap: 1.2rem;
-        height: auto;
-        min-height: 400px;
-    }
-
-    /* INVENTORY SECTION - AUTO FIT */
-    .inventory-section {
+    /* SALES ACTION BAR */
+    .sales-action-bar {
         background: white;
-        border-radius: 10px;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
         box-shadow: 0 2px 6px rgba(0,0,0,0.05);
         border: 1px solid #e2e8f0;
-        overflow: hidden;
         display: flex;
-        flex-direction: column;
-        min-height: 400px;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .make-sale-btn {
+        background: #38a169;
+        color: white;
+        border: none;
+        padding: 0.7rem 1.5rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .make-sale-btn:hover {
+        background: #2f855a;
+        transform: translateY(-2px);
+    }
+
+    .date-filter {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .date-input {
+        padding: 0.5rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        font-size: 0.85rem;
+    }
+
+    .filter-btn {
+        background: #4299e1;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .filter-btn:hover {
+        background: #3182ce;
+    }
+
+    .preset-buttons {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .preset-btn {
+        padding: 0.5rem 0.8rem;
+        background: #e2e8f0;
+        color: #4a5568;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .preset-btn:hover {
+        background: #cbd5e0;
+    }
+
+    /* SALES SECTION - ALWAYS VISIBLE */
+    .sales-section {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        border: 1px solid #e2e8f0;
+        margin-bottom: 1.5rem;
+        overflow: hidden;
     }
 
     .section-header {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        align-items: center;
         padding: 1rem;
         border-bottom: 2px solid #f7fafc;
         background: #f8fafc;
-        gap: 0.8rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
     }
 
     .section-header h3 {
         font-size: 1rem;
         color: #2d3748;
         font-weight: 600;
+    }
+
+    .total-display {
+        background: #4299e1;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .table-container {
+        overflow-x: auto;
+        width: 100%;
+    }
+
+    .sales-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 600px;
+    }
+
+    .sales-table th {
+        background: #f8fafc;
+        padding: 0.8rem;
+        text-align: left;
+        color: #718096;
+        font-weight: 600;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid #e2e8f0;
+        white-space: nowrap;
+    }
+
+    .sales-table td {
+        padding: 0.8rem;
+        border-bottom: 1px solid #f7fafc;
+        color: #4a5568;
+        font-size: 0.85rem;
+    }
+
+    .sales-table tr:hover {
+        background: #f8fafc;
+    }
+
+    /* SALES OVERLAY FOR MAKING SALE */
+    .sale-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        backdrop-filter: blur(4px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+        padding: 1rem;
+    }
+
+    .sale-overlay.show {
+        display: flex;
+    }
+
+    .sale-panel {
+        width: 100%;
+        height: 100%;
+        max-width: 1200px;
+        max-height: 90vh;
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+    }
+
+    .sale-panel-header {
+        padding: 1rem;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #f8fafc;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+    }
+
+    .sale-panel-body {
+        flex: 1;
+        overflow: hidden;
+        display: flex;
+    }
+
+    /* INVENTORY SECTION - HIDDEN BY DEFAULT */
+    .inventory-section {
+        flex: 2;
+        display: flex;
+        flex-direction: column;
+        border-right: 1px solid #e2e8f0;
+    }
+
+    .inventory-section .section-header {
+        padding: 1rem;
+        border-bottom: 1px solid #e2e8f0;
     }
 
     .search-controls {
@@ -355,7 +541,7 @@
 
     .search-input {
         flex: 1;
-        min-width: 150px;
+        min-width: 200px;
         padding: 0.7rem;
         border: 1px solid #e2e8f0;
         border-radius: 6px;
@@ -379,16 +565,10 @@
         background: #3182ce;
     }
 
-    .table-container {
-        flex: 1;
-        overflow: auto;
-        width: 100%;
-    }
-
     .inventory-table {
         width: 100%;
         border-collapse: collapse;
-        min-width: 800px;
+        min-width: 600px;
     }
 
     .inventory-table th {
@@ -401,8 +581,6 @@
         text-transform: uppercase;
         letter-spacing: 0.5px;
         border-bottom: 2px solid #e2e8f0;
-        position: sticky;
-        top: 0;
         white-space: nowrap;
     }
 
@@ -454,20 +632,15 @@
         background: #3182ce;
     }
 
-    /* CART SECTION - AUTO FIT */
+    /* CART SECTION - HIDDEN BY DEFAULT */
     .cart-section {
-        background: white;
-        border-radius: 10px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-        border: 1px solid #e2e8f0;
+        flex: 1;
         display: flex;
         flex-direction: column;
-        min-height: 400px;
     }
 
     .cart-header {
         display: flex;
-        flex-wrap: wrap;
         justify-content: space-between;
         align-items: center;
         padding: 1rem;
@@ -627,132 +800,13 @@
         background: #cbd5e0;
     }
 
-    .view-sales-btn {
-        background: #4299e1;
+    .close-sale-btn {
+        background: #e53e3e;
         color: white;
-        width: 100%;
-        margin-top: 0.5rem;
     }
 
-    .view-sales-btn:hover {
-        background: #3182ce;
-    }
-
-    /* SALES OVERLAY - AUTO FIT */
-    .sales-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,0.5);
-        backdrop-filter: blur(4px);
-        display: none;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-        padding: 1rem;
-    }
-
-    .sales-overlay.show {
-        display: flex;
-    }
-
-    .sales-panel {
-        width: 100%;
-        height: 100%;
-        max-width: 900px;
-        max-height: 90vh;
-        background: white;
-        border-radius: 10px;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
-    }
-
-    .sales-panel-header {
-        padding: 1rem;
-        border-bottom: 1px solid #e2e8f0;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: #f8fafc;
-        flex-wrap: wrap;
-        gap: 0.8rem;
-    }
-
-    .sales-panel-body {
-        flex: 1;
-        overflow: auto;
-        padding: 1rem;
-    }
-
-    .sales-table {
-        width: 100%;
-        border-collapse: collapse;
-        min-width: 700px;
-    }
-
-    .sales-table th {
-        background: #f8fafc;
-        padding: 0.8rem;
-        text-align: left;
-        color: #718096;
-        font-weight: 600;
-        font-size: 0.8rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        border-bottom: 2px solid #e2e8f0;
-        position: sticky;
-        top: 0;
-        white-space: nowrap;
-    }
-
-    .sales-table td {
-        padding: 0.8rem;
-        border-bottom: 1px solid #f7fafc;
-        color: #4a5568;
-        font-size: 0.85rem;
-    }
-
-    .sales-table tr:hover {
-        background: #f8fafc;
-    }
-
-    .date-filter {
-        display: flex;
-        gap: 0.4rem;
-        align-items: center;
-        margin-bottom: 0.8rem;
-        flex-wrap: wrap;
-    }
-
-    .date-filter input[type="date"] {
-        padding: 0.5rem;
-        border: 1px solid #e2e8f0;
-        border-radius: 6px;
-        font-size: 0.85rem;
-    }
-
-    .preset-buttons {
-        display: flex;
-        gap: 0.4rem;
-        margin-left: auto;
-        flex-wrap: wrap;
-    }
-
-    .preset-btn {
-        padding: 0.5rem 0.8rem;
-        background: #e2e8f0;
-        color: #4a5568;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 0.8rem;
-        font-weight: 600;
-        white-space: nowrap;
-    }
-
-    .preset-btn:hover {
-        background: #cbd5e0;
+    .close-sale-btn:hover {
+        background: #c53030;
     }
 
     /* LOADING STATES */
@@ -768,103 +822,52 @@
         50% { opacity: 0.5; }
     }
 
-    /* MOBILE SIDEBAR TOGGLE - AUTO FIT */
-    .sidebar-mobile-toggle {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background: #4299e1;
-        color: white;
-        border: none;
-        cursor: pointer;
-        z-index: 1000;
-        box-shadow: 0 4px 10px rgba(66, 153, 225, 0.3);
-        align-items: center;
-        justify-content: center;
-        font-size: 20px;
-        display: none;
-    }
-
-    /* SCROLLBAR STYLING */
-    .table-container::-webkit-scrollbar,
-    .cart-items::-webkit-scrollbar,
-    .sales-panel-body::-webkit-scrollbar {
-        width: 6px;
-    }
-
-    .table-container::-webkit-scrollbar-track,
-    .cart-items::-webkit-scrollbar-track,
-    .sales-panel-body::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 4px;
-    }
-
-    .table-container::-webkit-scrollbar-thumb,
-    .cart-items::-webkit-scrollbar-thumb,
-    .sales-panel-body::-webkit-scrollbar-thumb {
-        background: #cbd5e0;
-        border-radius: 4px;
-    }
-
-    .table-container::-webkit-scrollbar-thumb:hover,
-    .cart-items::-webkit-scrollbar-thumb:hover,
-    .sales-panel-body::-webkit-scrollbar-thumb:hover {
-        background: #a0aec0;
-    }
-
-    /* AUTO SCALING FOR SMALL SCREENS */
-    @media (max-width: 1024px) {
-        .content-wrapper {
-            grid-template-columns: 1fr;
-        }
-    }
-
+    /* RESPONSIVE DESIGN */
     @media (max-width: 768px) {
-        .dashboard-container {
-            grid-template-columns: 1fr;
-            grid-template-rows: auto 1fr;
-        }
-        
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: -250px;
-            height: 100vh;
-            z-index: 1001;
-            transition: left 0.3s ease;
-            padding-top: 4rem;
-        }
-        
-        .sidebar.open {
-            left: 0;
-        }
-        
-        .main-content {
-            grid-column: 1;
-            grid-row: 2;
-        }
-        
-        .stats-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-        
-        .sidebar-mobile-toggle {
+        .menu-toggle {
             display: flex;
         }
-        
+
+        .sidebar {
+            width: 250px;
+        }
+
         .header {
+            margin-left: 0;
             padding: 0.8rem;
         }
-        
-        .header h1 {
-            font-size: 1.1rem;
+
+        .header-content {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
         }
-        
+
         .user-info {
-            gap: 0.3rem;
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .sales-action-bar {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .date-filter {
+            width: 100%;
+        }
+
+        .preset-buttons {
+            justify-content: center;
+        }
+
+        .sale-panel-body {
+            flex-direction: column;
+        }
+
+        .inventory-section {
+            border-right: none;
+            border-bottom: 1px solid #e2e8f0;
         }
     }
 
@@ -872,121 +875,88 @@
         .stats-grid {
             grid-template-columns: 1fr;
         }
-        
-        .header {
-            flex-direction: column;
-            text-align: center;
-            gap: 0.5rem;
-        }
-        
-        .header-left {
-            justify-content: center;
+
+        .make-sale-btn {
             width: 100%;
-        }
-        
-        .user-info {
             justify-content: center;
-            width: 100%;
         }
-        
+
         .search-controls {
             flex-direction: column;
         }
-        
+
         .search-input {
             width: 100%;
         }
-        
+
         .search-btn {
             width: 100%;
         }
-        
-        .qty-input {
-            width: 60px;
-        }
-        
+
         .cart-action-btn {
             min-width: 100%;
         }
-        
-        .cart-item-controls {
-            justify-content: center;
-        }
-    }
 
-    /* Small phones */
-    @media (max-width: 360px) {
-        .header h1 {
-            font-size: 1rem;
-        }
-        
-        .stat-card {
-            padding: 0.8rem;
-        }
-        
-        .stat-value {
-            font-size: 1.2rem;
-        }
-        
-        .qty-input {
-            width: 50px;
-            font-size: 0.8rem;
-        }
-        
-        .add-btn {
-            padding: 0.4rem 0.6rem;
-            font-size: 0.75rem;
+        .preset-btn {
+            flex: 1;
+            text-align: center;
         }
     }
 </style>
 </head>
 <body>
-    <div class="dashboard-container" id="dashboardContainer">
-        <!-- Header -->
-        <div class="header">
-            <div style="display: flex; align-items: center; gap: 0.8rem;">
-                <button class="sidebar-toggle" onclick="toggleSidebar()" id="sidebarToggle">☰</button>
-                <h1>Wamz Arts & Prints - Sales</h1>
-            </div>
-            <div class="user-info">
-                <span class="user-name">Welcome, <strong id="currentUser">User</strong></span>
-                <span class="branch-badge" id="branchBadge">Branch</span>
-                <span class="admin-badge" id="adminBadge" style="display: none;">ADMIN</span>
-                <button class="logout-btn" onclick="logout()">Logout</button>
-            </div>
-        </div>
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
+    <!-- Mobile Menu Toggle -->
+    <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="dashboard-container">
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
             <div class="sidebar-title">Navigation</div>
             <div class="nav-menu">
                 <a href="user-dashboard.html" class="nav-item" onclick="checkAdminAccess(event, 'user-dashboard.html')">
-                     Overview
+                    <i class="fas fa-home"></i> Overview
                 </a>
                 <a href="inventory.html" class="nav-item" onclick="checkAdminAccess(event, 'inventory.html')">
-                     Inventory
+                    <i class="fas fa-box"></i> Inventory
                 </a>
                 <a href="sales.html" class="nav-item active">
-                     Sales
+                    <i class="fas fa-shopping-cart"></i> Sales
                 </a>
                 <a href="reports.html" class="nav-item" onclick="checkAdminAccess(event, 'reports.html')">
-                     Reports
+                    <i class="fas fa-chart-bar"></i> Reports
                 </a>
                 <a href="cashflow.html" class="nav-item" onclick="checkAdminAccess(event, 'cashflow.html')">
-                     Cash Flow
+                    <i class="fas fa-money-bill-wave"></i> Cash Flow
                 </a>
-              
                 <!-- Admin-only option -->
                 <button class="nav-item" onclick="openAdminPanel()" id="adminPanelBtn" style="display: none;">
-                    🔧 Admin Panel
+                    <i class="fas fa-cog"></i> Admin Panel
                 </button>
             </div>
         </div>
 
         <!-- Main Content -->
         <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-content">
+                    <h1>Wamz Arts & Prints - Sales</h1>
+                    <div class="user-info">
+                        <span class="user-name">Welcome, <strong id="currentUser">User</strong></span>
+                        <span class="branch-badge" id="branchBadge">Branch</span>
+                        <span class="admin-badge" id="adminBadge" style="display: none;">ADMIN</span>
+                        <button class="logout-btn" onclick="logout()">Logout</button>
+                    </div>
+                </div>
+            </div>
+
             <!-- Admin Access Alert -->
-            <div class="admin-access-alert" id="adminAccessAlert">
+            <div class="admin-access-alert" id="adminAccessAlert" style="display: none;">
                 <h3>⚠️ ADMIN ACCESS DETECTED</h3>
                 <p><strong id="adminName">Wamz (Admin)</strong> is accessing another user's account.</p>
                 <div class="alert-details" style="background: rgba(255, 255, 255, 0.1); padding: 0.8rem; border-radius: 6px; margin-top: 0.5rem; font-size: 0.85rem; border-left: 4px solid white;">
@@ -1007,7 +977,7 @@
             <!-- Message Display -->
             <div class="message" id="message"></div>
 
-            <!-- Stats Grid -->
+            <!-- Quick Stats -->
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-value" id="totalItems">0</div>
@@ -1019,17 +989,79 @@
                 </div>
                 <div class="stat-card">
                     <div class="stat-value" id="totalValue">ZMW 0.00</div>
-                    <div class="stat-label">Total Value</div>
+                    <div class="stat-label">Inventory Value</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value" id="outOfStock">0</div>
-                    <div class="stat-label">Out of Stock</div>
+                    <div class="stat-value" id="todaySales">ZMW 0.00</div>
+                    <div class="stat-label">Today's Sales</div>
                 </div>
             </div>
 
-            <!-- Main Content Area -->
-            <div class="content-wrapper">
-                <!-- Inventory Section -->
+            <!-- Sales Action Bar -->
+            <div class="sales-action-bar">
+                <button class="make-sale-btn" id="makeSaleBtn">
+                    <i class="fas fa-plus"></i> Make New Sale
+                </button>
+                
+                <div class="date-filter">
+                    <span style="color: #718096; font-size: 0.85rem;">From:</span>
+                    <input type="date" class="date-input" id="salesFrom">
+                    <span style="color: #718096; font-size: 0.85rem;">To:</span>
+                    <input type="date" class="date-input" id="salesTo">
+                    <button class="filter-btn" id="applyDateFilterBtn">Apply</button>
+                    <button class="filter-btn" style="background: #e2e8f0; color: #4a5568;" id="clearDateFilterBtn">Clear</button>
+                    
+                    <div class="preset-buttons">
+                        <button class="preset-btn" id="presetTodayBtn">Today</button>
+                        <button class="preset-btn" id="preset7Btn">Last 7 Days</button>
+                        <button class="preset-btn" id="presetMonthBtn">This Month</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sales Section - ALWAYS VISIBLE -->
+            <div class="sales-section">
+                <div class="section-header">
+                    <h3>Recent Sales</h3>
+                    <div class="total-display" id="salesTotalDisplay">Total: ZMW 0.00</div>
+                </div>
+                <div class="table-container">
+                    <table class="sales-table" id="salesTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Customer</th>
+                                <th>Items</th>
+                                <th>Total Amount</th>
+                                <th>Cashier</th>
+                            </tr>
+                        </thead>
+                        <tbody id="salesBody">
+                            <tr>
+                                <td colspan="5" style="text-align: center; padding: 40px;">
+                                    <span class="loading">Loading sales...</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sale Overlay (Hidden by Default) -->
+    <div class="sale-overlay" id="saleOverlay">
+        <div class="sale-panel">
+            <div class="sale-panel-header">
+                <h3 style="font-size: 1.1rem;">Make New Sale</h3>
+                <div style="display: flex; gap: 0.8rem;">
+                    <button class="checkout-btn" id="checkoutBtn" disabled>Complete Sale</button>
+                    <button class="clear-btn" id="clearCartBtn">Clear Cart</button>
+                    <button class="close-sale-btn" id="closeSaleBtn">Cancel</button>
+                </div>
+            </div>
+            <div class="sale-panel-body">
+                <!-- Inventory Section (Left Side) -->
                 <div class="inventory-section">
                     <div class="section-header">
                         <h3>Available Items</h3>
@@ -1053,14 +1085,13 @@
                                     <th>Category</th>
                                     <th>Stock</th>
                                     <th>Sale Price</th>
-                                    <th>Total Value</th>
                                     <th>Location</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody id="inventoryBody">
                                 <tr>
-                                    <td colspan="8" style="text-align: center; padding: 40px;">
+                                    <td colspan="7" style="text-align: center; padding: 40px;">
                                         <span class="loading">Loading inventory...</span>
                                     </td>
                                 </tr>
@@ -1069,7 +1100,7 @@
                     </div>
                 </div>
 
-                <!-- Cart Section -->
+                <!-- Cart Section (Right Side) -->
                 <div class="cart-section">
                     <div class="cart-header">
                         <h3>Cart</h3>
@@ -1109,59 +1140,7 @@
                         <input type="text" id="customerInput" 
                                placeholder="Customer name (optional)" 
                                style="width: 100%; padding: 0.7rem; margin-top: 0.8rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.85rem;">
-                        
-                        <div class="cart-actions">
-                            <button class="cart-action-btn checkout-btn" id="checkoutBtn" disabled>
-                                Process Sale
-                            </button>
-                            <button class="cart-action-btn clear-btn" id="clearCartBtn">
-                                Clear Cart
-                            </button>
-                        </div>
-                        
-                        <button class="cart-action-btn view-sales-btn" id="openSalesPanelBtn">
-                            View Recent Sales
-                        </button>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Mobile Sidebar Toggle -->
-    <button class="sidebar-mobile-toggle" id="mobileSidebarToggle" onclick="toggleMobileSidebar()">☰</button>
-
-    <!-- Sales Overlay -->
-    <div class="sales-overlay" id="salesOverlay">
-        <div class="sales-panel">
-            <div class="sales-panel-header">
-                <h3>Recent Sales</h3>
-                <div style="display: flex; gap: 0.8rem;">
-                    <button class="search-btn" id="exportCsvBtn">Export CSV</button>
-                    <button class="clear-btn" id="closeSalesPanelBtn">Close</button>
-                </div>
-            </div>
-            
-            <div style="padding: 1rem; border-bottom: 1px solid #e2e8f0;">
-                <div class="date-filter">
-                    <span style="color: #718096;">From:</span>
-                    <input type="date" id="salesFrom">
-                    <span style="color: #718096;">To:</span>
-                    <input type="date" id="salesTo">
-                    <button class="search-btn" id="applyDateFilterBtn">Apply</button>
-                    <button class="clear-btn" id="clearDateFilterBtn">Clear</button>
-                    
-                    <div class="preset-buttons">
-                        <button class="preset-btn" id="presetTodayBtn">Today</button>
-                        <button class="preset-btn" id="preset7Btn">Last 7 Days</button>
-                        <button class="preset-btn" id="presetMonthBtn">This Month</button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="sales-panel-body" id="salesPanelBody">
-                <div style="text-align: center; padding: 2rem; color: #a0aec0;">
-                    Loading sales...
                 </div>
             </div>
         </div>
@@ -1193,13 +1172,41 @@
         let cart = [];
         let lastRenderedSales = [];
         let unsubscribeInventory = null;
+        let unsubscribeSales = null;
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
             console.log("💰 Sales Dashboard loaded");
+            initializeSidebar();
             checkLogin();
-            loadSidebarState();
         });
+
+        // Initialize sidebar toggle
+        function initializeSidebar() {
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            menuToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+                overlay.classList.toggle('active');
+            });
+            
+            overlay.addEventListener('click', () => {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+            });
+            
+            // Close sidebar when clicking on links (mobile)
+            document.querySelectorAll('.nav-item').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.remove('open');
+                        overlay.classList.remove('active');
+                    }
+                });
+            });
+        }
 
         // Check login
         function checkLogin() {
@@ -1253,8 +1260,11 @@
             // Setup event listeners
             setupEventListeners();
             
-            // Load inventory
-            setupInventoryListener();
+            // Load sales data (always visible)
+            setupSalesListener();
+            
+            // Load inventory for stats
+            setupInventoryStats();
             
             // Log admin access if detected
             if (isAdminAccessingOther) {
@@ -1346,7 +1356,18 @@
 
         // Setup event listeners
         function setupEventListeners() {
-            // Search functionality
+            // Sales action buttons
+            document.getElementById('makeSaleBtn').addEventListener('click', openSaleOverlay);
+            document.getElementById('closeSaleBtn').addEventListener('click', closeSaleOverlay);
+            
+            // Date filter buttons
+            document.getElementById('applyDateFilterBtn').addEventListener('click', applyDateFilter);
+            document.getElementById('clearDateFilterBtn').addEventListener('click', clearDateFilter);
+            document.getElementById('presetTodayBtn').addEventListener('click', presetToday);
+            document.getElementById('preset7Btn').addEventListener('click', presetLast7Days);
+            document.getElementById('presetMonthBtn').addEventListener('click', presetThisMonth);
+            
+            // Sale overlay functionality
             document.getElementById('searchBtn').addEventListener('click', searchItems);
             document.getElementById('searchInput').addEventListener('keyup', function(event) {
                 if (event.key === 'Enter') {
@@ -1354,8 +1375,6 @@
                 }
             });
             document.getElementById('refreshBtn').addEventListener('click', refreshItems);
-            
-            // Cart functionality
             document.getElementById('clearCartBtn').addEventListener('click', clearCart);
             document.getElementById('checkoutBtn').addEventListener('click', checkout);
             
@@ -1366,29 +1385,17 @@
             });
             document.getElementById('discountValue').addEventListener('input', renderCart);
             
-            // Sales panel functionality
-            document.getElementById('openSalesPanelBtn').addEventListener('click', openSalesPanel);
-            document.getElementById('closeSalesPanelBtn').addEventListener('click', closeSalesPanel);
-            document.getElementById('exportCsvBtn').addEventListener('click', exportCSV);
-            
-            // Date filters
-            document.getElementById('applyDateFilterBtn').addEventListener('click', applyDateFilter);
-            document.getElementById('clearDateFilterBtn').addEventListener('click', clearDateFilter);
-            document.getElementById('presetTodayBtn').addEventListener('click', presetToday);
-            document.getElementById('preset7Btn').addEventListener('click', presetLast7Days);
-            document.getElementById('presetMonthBtn').addEventListener('click', presetThisMonth);
-            
             // Close overlay on backdrop click
-            document.getElementById('salesOverlay').addEventListener('click', function(e) {
+            document.getElementById('saleOverlay').addEventListener('click', function(e) {
                 if (e.target === this) {
-                    closeSalesPanel();
+                    closeSaleOverlay();
                 }
             });
             
             // Escape key to close overlay
             document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && document.getElementById('salesOverlay').classList.contains('show')) {
-                    closeSalesPanel();
+                if (e.key === 'Escape' && document.getElementById('saleOverlay').classList.contains('show')) {
+                    closeSaleOverlay();
                 }
             });
         }
@@ -1404,15 +1411,98 @@
             if (!timestamp) return 'N/A';
             try {
                 const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-                return date.toLocaleString();
+                return date.toLocaleDateString('en-GB', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
             } catch (e) {
                 return 'Invalid Date';
             }
         }
 
-        // Setup real-time inventory listener - MODIFIED TO GET salePrice
-        function setupInventoryListener() {
-            console.log(`🔍 Setting up Firestore listener for branch: ${currentBranch}`);
+        // Setup sales listener (ALWAYS VISIBLE)
+        function setupSalesListener() {
+            console.log(`📊 Setting up sales listener for branch: ${currentBranch}`);
+            
+            // Unsubscribe from previous listener if exists
+            if (unsubscribeSales) {
+                unsubscribeSales();
+            }
+            
+            // Query Firestore for sales in this branch
+            const q = db.collection('sales').where('branchId', '==', currentBranch);
+            
+            unsubscribeSales = q.onSnapshot((snapshot) => {
+                console.log(`💰 Sales update received:`, snapshot.size, "sales");
+                
+                lastRenderedSales = [];
+                let todaySales = 0;
+                const today = new Date().toISOString().split('T')[0];
+                
+                if (snapshot.empty) {
+                    const salesBody = document.getElementById('salesBody');
+                    salesBody.innerHTML = `
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 40px;">
+                                <div style="color: #666; font-size: 14px;">
+                                    📭 No sales recorded yet
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    document.getElementById('todaySales').textContent = formatCurrency(0);
+                    document.getElementById('salesTotalDisplay').textContent = 'Total: ZMW 0.00';
+                    return;
+                }
+                
+                // Process all sales
+                snapshot.forEach((doc) => {
+                    const sale = doc.data();
+                    sale.id = doc.id;
+                    lastRenderedSales.push(sale);
+                    
+                    // Calculate today's sales
+                    const saleDate = sale.timestamp ? 
+                        sale.timestamp.toDate().toISOString().split('T')[0] : 
+                        (sale.date || '');
+                    
+                    if (saleDate === today) {
+                        todaySales += sale.total || 0;
+                    }
+                });
+                
+                // Sort by timestamp (newest first)
+                lastRenderedSales.sort((a, b) => {
+                    const dateA = a.timestamp ? a.timestamp.toDate() : new Date(a.date || 0);
+                    const dateB = b.timestamp ? b.timestamp.toDate() : new Date(b.date || 0);
+                    return dateB - dateA;
+                });
+                
+                // Update today's sales in stats
+                document.getElementById('todaySales').textContent = formatCurrency(todaySales);
+                
+                // Apply current date filter
+                applyDateFilter();
+                
+            }, (error) => {
+                console.error("❌ Sales listener error:", error);
+                const salesBody = document.getElementById('salesBody');
+                salesBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 40px; color: #c53030;">
+                            ❌ Error loading sales
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Setup inventory for stats only
+        function setupInventoryStats() {
+            console.log(`📦 Setting up inventory stats for branch: ${currentBranch}`);
             
             // Unsubscribe from previous listener if exists
             if (unsubscribeInventory) {
@@ -1423,7 +1513,7 @@
             const q = db.collection('inventory').where('branchId', '==', currentBranch);
             
             unsubscribeInventory = q.onSnapshot((snapshot) => {
-                console.log(`📦 Firestore update received for ${currentBranch}:`, snapshot.size, "items");
+                console.log(`📦 Inventory update received for stats:`, snapshot.size, "items");
                 
                 allItems = [];
                 let totalItems = 0;
@@ -1432,29 +1522,17 @@
                 let outOfStockCount = 0;
                 
                 if (snapshot.empty) {
-                    const inventoryBody = document.getElementById('inventoryBody');
-                    inventoryBody.innerHTML = `
-                        <tr>
-                            <td colspan="8" style="text-align: center; padding: 40px;">
-                                <div style="color: #666; font-size: 14px;">
-                                    📭 No items in inventory
-                                </div>
-                            </td>
-                        </tr>
-                    `;
                     updateStats(0, 0, 0, 0);
                     return;
                 }
                 
-                // Process all items
+                // Process all items for stats only
                 snapshot.forEach((doc) => {
                     const item = doc.data();
                     item.id = doc.id;
                     
-                    // MODIFIED: Get salePrice instead of price
-                    // First check for salePrice, then fall back to price for backward compatibility
+                    // Get sale price for calculations
                     item.price = parseFloat(item.salePrice || item.price) || 0;
-                    item.orderPrice = parseFloat(item.orderPrice) || 0;
                     item.stock = parseInt(item.stock) || 0;
                     item.totalValue = item.price * item.stock;
                     
@@ -1470,45 +1548,160 @@
                     }
                 });
                 
-                console.log(`📊 Processed ${totalItems} items, Total value: ${formatCurrency(totalValue)}`);
-                
-                // Sort by item code
-                allItems.sort((a, b) => (a.code || '').localeCompare(b.code || ''));
-                
-                // Display items
-                displayInventory(allItems);
+                console.log(`📊 Stats: ${totalItems} items, Value: ${formatCurrency(totalValue)}`);
                 updateStats(totalItems, lowStockCount, totalValue, outOfStockCount);
                 
             }, (error) => {
-                console.error("❌ Firestore listener error:", error);
-                const inventoryBody = document.getElementById('inventoryBody');
-                inventoryBody.innerHTML = `
+                console.error("❌ Inventory stats listener error:", error);
+                updateStats(0, 0, 0, 0);
+            });
+        }
+
+        // Update stats
+        function updateStats(totalItems, lowStockCount, totalValue, outOfStockCount) {
+            document.getElementById('totalItems').textContent = totalItems;
+            document.getElementById('lowStockCount').textContent = lowStockCount;
+            document.getElementById('totalValue').textContent = formatCurrency(totalValue);
+        }
+
+        // Display sales in table
+        function displaySales(sales) {
+            const salesBody = document.getElementById('salesBody');
+            salesBody.innerHTML = '';
+            
+            if (sales.length === 0) {
+                salesBody.innerHTML = `
                     <tr>
-                        <td colspan="8" style="text-align: center; padding: 40px; color: #c53030;">
-                            ❌ Error loading inventory
+                        <td colspan="5" style="text-align: center; padding: 40px;">
+                            No sales found for selected period
                         </td>
                     </tr>
+                `;
+                document.getElementById('salesTotalDisplay').textContent = 'Total: ZMW 0.00';
+                return;
+            }
+            
+            // Calculate total for display
+            const totalAmount = sales.reduce((sum, sale) => sum + (sale.total || 0), 0);
+            document.getElementById('salesTotalDisplay').textContent = `Total: ${formatCurrency(totalAmount)}`;
+            
+            // Display sales
+            sales.forEach(sale => {
+                const row = salesBody.insertRow();
+                
+                const date = formatDate(sale.timestamp);
+                const customer = sale.customerName || 'Walk-in';
+                const itemCount = sale.items ? sale.items.length : 0;
+                const total = formatCurrency(sale.total || 0);
+                const cashier = sale.processedBy || 'Unknown';
+                
+                row.innerHTML = `
+                    <td>${date}</td>
+                    <td>${escapeHtml(customer)}</td>
+                    <td>${itemCount} item${itemCount !== 1 ? 's' : ''}</td>
+                    <td><strong>${total}</strong></td>
+                    <td>${escapeHtml(cashier)}</td>
                 `;
             });
         }
 
-        // Display inventory in table - MODIFIED to show sale price
-        function displayInventory(items) {
+        // Apply date filter to sales
+        function applyDateFilter() {
+            const startDate = document.getElementById('salesFrom').value;
+            const endDate = document.getElementById('salesTo').value;
+            
+            let filteredSales = lastRenderedSales;
+            
+            if (startDate || endDate) {
+                filteredSales = lastRenderedSales.filter(sale => {
+                    const saleDate = sale.timestamp ? 
+                        sale.timestamp.toDate().toISOString().split('T')[0] : 
+                        (sale.date || '');
+                    
+                    let include = true;
+                    
+                    if (startDate && saleDate < startDate) {
+                        include = false;
+                    }
+                    
+                    if (endDate && saleDate > endDate) {
+                        include = false;
+                    }
+                    
+                    return include;
+                });
+            }
+            
+            // Limit to 50 most recent sales
+            filteredSales = filteredSales.slice(0, 50);
+            displaySales(filteredSales);
+        }
+
+        function clearDateFilter() {
+            document.getElementById('salesFrom').value = '';
+            document.getElementById('salesTo').value = '';
+            applyDateFilter();
+        }
+
+        function presetToday() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('salesFrom').value = today;
+            document.getElementById('salesTo').value = today;
+            applyDateFilter();
+        }
+
+        function presetLast7Days() {
+            const today = new Date();
+            const lastWeek = new Date(today);
+            lastWeek.setDate(today.getDate() - 6);
+            
+            document.getElementById('salesFrom').value = lastWeek.toISOString().split('T')[0];
+            document.getElementById('salesTo').value = today.toISOString().split('T')[0];
+            applyDateFilter();
+        }
+
+        function presetThisMonth() {
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+            const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+            
+            document.getElementById('salesFrom').value = firstDay.toISOString().split('T')[0];
+            document.getElementById('salesTo').value = lastDay.toISOString().split('T')[0];
+            applyDateFilter();
+        }
+
+        // Open sale overlay
+        function openSaleOverlay() {
+            document.getElementById('saleOverlay').classList.add('show');
+            loadInventoryForSale();
+        }
+
+        // Close sale overlay
+        function closeSaleOverlay() {
+            document.getElementById('saleOverlay').classList.remove('show');
+            clearCart();
+        }
+
+        // Load inventory for sale
+        function loadInventoryForSale() {
             const inventoryBody = document.getElementById('inventoryBody');
             inventoryBody.innerHTML = '';
             
-            if (items.length === 0) {
+            if (allItems.length === 0) {
                 inventoryBody.innerHTML = `
                     <tr>
-                        <td colspan="8" style="text-align: center; padding: 40px;">
-                            No items found
+                        <td colspan="7" style="text-align: center; padding: 40px;">
+                            <div style="color: #666; font-size: 14px;">
+                                📭 No items in inventory
+                            </div>
                         </td>
                     </tr>
                 `;
                 return;
             }
             
-            items.forEach(item => {
+            // Display items for sale
+            allItems.forEach(item => {
                 const row = inventoryBody.insertRow();
                 
                 // Determine if item can be added to cart
@@ -1520,7 +1713,6 @@
                     <td>${getCategoryName(item.category)}</td>
                     <td>${item.stock}</td>
                     <td><strong>${formatCurrency(item.price)}</strong></td>
-                    <td><strong>${formatCurrency(item.totalValue || 0)}</strong></td>
                     <td>${escapeHtml(item.location || '')}</td>
                     <td>
                         <div style="display: flex; gap: 0.5rem; align-items: center;">
@@ -1562,20 +1754,12 @@
             return categories[categoryCode] || categoryCode || 'Uncategorized';
         }
 
-        // Update stats
-        function updateStats(totalItems, lowStockCount, totalValue, outOfStockCount) {
-            document.getElementById('totalItems').textContent = totalItems;
-            document.getElementById('lowStockCount').textContent = lowStockCount;
-            document.getElementById('totalValue').textContent = formatCurrency(totalValue);
-            document.getElementById('outOfStock').textContent = outOfStockCount;
-        }
-
-        // Search items
+        // Search items in sale overlay
         function searchItems() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             
             if (!searchTerm) {
-                displayInventory(allItems);
+                loadInventoryForSale();
                 return;
             }
             
@@ -1588,16 +1772,63 @@
                 );
             });
             
-            displayInventory(filteredItems);
+            const inventoryBody = document.getElementById('inventoryBody');
+            inventoryBody.innerHTML = '';
+            
+            if (filteredItems.length === 0) {
+                inventoryBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 40px;">
+                            No items found
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            // Display filtered items
+            filteredItems.forEach(item => {
+                const row = inventoryBody.insertRow();
+                const canAdd = item.stock > 0;
+                
+                row.innerHTML = `
+                    <td><span class="code-badge">${escapeHtml(item.code || '')}</span></td>
+                    <td><strong>${escapeHtml(item.name || '')}</strong></td>
+                    <td>${getCategoryName(item.category)}</td>
+                    <td>${item.stock}</td>
+                    <td><strong>${formatCurrency(item.price)}</strong></td>
+                    <td>${escapeHtml(item.location || '')}</td>
+                    <td>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <input type="number" class="qty-input" id="qty-${item.id}" 
+                                   value="1" min="1" max="${item.stock}" ${!canAdd ? 'disabled' : ''}>
+                            <button class="add-btn" data-id="${item.id}" ${!canAdd ? 'disabled' : ''}>
+                                Add
+                            </button>
+                        </div>
+                    </td>
+                `;
+            });
+            
+            // Re-add event listeners
+            inventoryBody.querySelectorAll('button[data-id]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const itemId = this.getAttribute('data-id');
+                    const qtyInput = document.getElementById(`qty-${itemId}`);
+                    const quantity = parseInt(qtyInput.value) || 1;
+                    
+                    addToCart(itemId, quantity);
+                });
+            });
         }
 
-        // Refresh items
+        // Refresh items in sale overlay
         function refreshItems() {
             document.getElementById('searchInput').value = '';
-            displayInventory(allItems);
+            loadInventoryForSale();
         }
 
-        // Add to cart - MODIFIED to use sale price
+        // Add to cart
         function addToCart(itemId, quantity) {
             const item = allItems.find(i => i.id === itemId);
             if (!item) {
@@ -1633,8 +1864,8 @@
                     id: itemId,
                     code: item.code,
                     name: item.name,
-                    price: item.price, // This is the sale price from the GRV system
-                    orderPrice: item.orderPrice, // Keep track of order price too
+                    price: item.price,
+                    orderPrice: item.orderPrice,
                     quantity: quantity,
                     subtotal: quantity * item.price
                 });
@@ -1770,7 +2001,7 @@
             }
         }
 
-        // Checkout - MODIFIED to track profit margin
+        // Checkout
         async function checkout() {
             if (cart.length === 0) {
                 showMessage('Cart is empty', 'error');
@@ -1797,15 +2028,15 @@
                 const total = Math.max(0, subtotal - discountAmount);
                 const customerName = document.getElementById('customerInput').value.trim() || 'Walk-in';
                 
-                // Calculate total cost and profit
+                // Calculate total cost for profit (but not shown in table)
                 const totalCost = cart.reduce((sum, item) => {
-                    return sum + (item.quantity * item.orderPrice);
+                    return sum + (item.quantity * (item.orderPrice || 0));
                 }, 0);
                 
                 const profit = total - totalCost;
                 const profitMargin = total > 0 ? (profit / total) * 100 : 0;
                 
-                // Create sale record with profit data
+                // Create sale record
                 const sale = {
                     customerName: customerName,
                     items: cart.map(item => ({
@@ -1813,10 +2044,10 @@
                         code: item.code,
                         name: item.name,
                         price: item.price,
-                        cost: item.orderPrice,
+                        cost: item.orderPrice || 0,
                         quantity: item.quantity,
                         subtotal: item.subtotal,
-                        costTotal: item.quantity * item.orderPrice
+                        costTotal: item.quantity * (item.orderPrice || 0)
                     })),
                     subtotal: subtotal,
                     discount: {
@@ -1853,224 +2084,13 @@
                 document.getElementById('discountValue').disabled = true;
                 
                 renderCart();
-                showMessage(`Sale processed successfully! Receipt ID: ${saleRef.id.substring(0, 8)} Profit: ${formatCurrency(profit)}`, 'success');
+                closeSaleOverlay();
+                showMessage(`Sale processed successfully! Receipt ID: ${saleRef.id.substring(0, 8)}`, 'success');
                 
             } catch (error) {
                 console.error('Checkout error:', error);
                 showMessage('Error processing sale: ' + error.message, 'error');
             }
-        }
-
-        // Sales panel functions
-        async function openSalesPanel() {
-            document.getElementById('salesOverlay').classList.add('show');
-            await loadRecentSales();
-        }
-
-        function closeSalesPanel() {
-            document.getElementById('salesOverlay').classList.remove('show');
-        }
-
-        async function loadRecentSales(filters = {}) {
-            const salesPanelBody = document.getElementById('salesPanelBody');
-            salesPanelBody.innerHTML = '<div style="text-align: center; padding: 2rem; color: #a0aec0;">Loading sales...</div>';
-            
-            try {
-                let query = db.collection('sales').where('branchId', '==', currentBranch);
-                
-                // Apply date filters if provided
-                if (filters.startDate || filters.endDate) {
-                    // For simplicity, we'll filter client-side
-                    const snapshot = await query.get();
-                    let sales = [];
-                    
-                    snapshot.forEach(doc => {
-                        const sale = doc.data();
-                        sale.id = doc.id;
-                        
-                        // Apply date filtering
-                        const saleDate = sale.timestamp ? sale.timestamp.toDate() : new Date();
-                        let include = true;
-                        
-                        if (filters.startDate) {
-                            const startDate = new Date(filters.startDate);
-                            startDate.setHours(0, 0, 0, 0);
-                            if (saleDate < startDate) include = false;
-                        }
-                        
-                        if (filters.endDate) {
-                            const endDate = new Date(filters.endDate);
-                            endDate.setHours(23, 59, 59, 999);
-                            if (saleDate > endDate) include = false;
-                        }
-                        
-                        if (include) {
-                            sales.push(sale);
-                        }
-                    });
-                    
-                    // Sort by timestamp (newest first)
-                    sales.sort((a, b) => {
-                        const dateA = a.timestamp ? a.timestamp.toDate() : new Date();
-                        const dateB = b.timestamp ? b.timestamp.toDate() : new Date();
-                        return dateB - dateA;
-                    });
-                    
-                    lastRenderedSales = sales;
-                    renderSales(sales);
-                } else {
-                    // Get all sales and sort client-side
-                    const snapshot = await query.get();
-                    const sales = [];
-                    
-                    snapshot.forEach(doc => {
-                        const sale = doc.data();
-                        sale.id = doc.id;
-                        sales.push(sale);
-                    });
-                    
-                    // Sort by timestamp (newest first)
-                    sales.sort((a, b) => {
-                        const dateA = a.timestamp ? a.timestamp.toDate() : new Date();
-                        const dateB = b.timestamp ? b.timestamp.toDate() : new Date();
-                        return dateB - dateA;
-                    });
-                    
-                    lastRenderedSales = sales;
-                    renderSales(sales);
-                }
-            } catch (error) {
-                console.error('Error loading sales:', error);
-                salesPanelBody.innerHTML = '<div style="text-align: center; padding: 2rem; color: #c53030;">Error loading sales</div>';
-            }
-        }
-
-        function renderSales(sales) {
-            const salesPanelBody = document.getElementById('salesPanelBody');
-            
-            if (sales.length === 0) {
-                salesPanelBody.innerHTML = '<div style="text-align: center; padding: 2rem; color: #a0aec0;">No sales found</div>';
-                return;
-            }
-            
-            let html = `
-                <table class="sales-table">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Customer</th>
-                            <th>Items</th>
-                            <th>Total</th>
-                            <th>Profit</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-            
-            sales.forEach(sale => {
-                const date = formatDate(sale.timestamp);
-                const customer = sale.customerName || 'Walk-in';
-                const itemCount = sale.items ? sale.items.length : 0;
-                const total = formatCurrency(sale.total || 0);
-                const profit = formatCurrency(sale.profit || 0);
-                
-                html += `
-                    <tr>
-                        <td>${date}</td>
-                        <td>${escapeHtml(customer)}</td>
-                        <td>${itemCount} item${itemCount !== 1 ? 's' : ''}</td>
-                        <td><strong>${total}</strong></td>
-                        <td style="color: ${(sale.profit || 0) >= 0 ? '#38a169' : '#c53030'}">
-                            <strong>${profit}</strong>
-                        </td>
-                    </tr>
-                `;
-            });
-            
-            html += `
-                    </tbody>
-                </table>
-            `;
-            
-            salesPanelBody.innerHTML = html;
-        }
-
-        function applyDateFilter() {
-            const startDate = document.getElementById('salesFrom').value;
-            const endDate = document.getElementById('salesTo').value;
-            
-            loadRecentSales({ startDate, endDate });
-        }
-
-        function clearDateFilter() {
-            document.getElementById('salesFrom').value = '';
-            document.getElementById('salesTo').value = '';
-            loadRecentSales();
-        }
-
-        function presetToday() {
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('salesFrom').value = today;
-            document.getElementById('salesTo').value = today;
-            applyDateFilter();
-        }
-
-        function presetLast7Days() {
-            const today = new Date();
-            const lastWeek = new Date(today);
-            lastWeek.setDate(today.getDate() - 6);
-            
-            document.getElementById('salesFrom').value = lastWeek.toISOString().split('T')[0];
-            document.getElementById('salesTo').value = today.toISOString().split('T')[0];
-            applyDateFilter();
-        }
-
-        function presetThisMonth() {
-            const today = new Date();
-            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-            const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-            
-            document.getElementById('salesFrom').value = firstDay.toISOString().split('T')[0];
-            document.getElementById('salesTo').value = lastDay.toISOString().split('T')[0];
-            applyDateFilter();
-        }
-
-        function exportCSV() {
-            if (!lastRenderedSales || lastRenderedSales.length === 0) {
-                showMessage('No sales data to export', 'error');
-                return;
-            }
-            
-            // Create CSV content
-            let csv = 'Date,Customer,Items,Total,Subtotal,Discount,Discount Type,Total Cost,Profit,Profit Margin\n';
-            
-            lastRenderedSales.forEach(sale => {
-                const date = formatDate(sale.timestamp);
-                const customer = (sale.customerName || 'Walk-in').replace(/"/g, '""');
-                const itemCount = sale.items ? sale.items.length : 0;
-                const total = sale.total || 0;
-                const subtotal = sale.subtotal || 0;
-                const discount = sale.discount ? sale.discount.amount || 0 : 0;
-                const discountType = sale.discount ? sale.discount.type || 'none' : 'none';
-                const totalCost = sale.totalCost || 0;
-                const profit = sale.profit || 0;
-                const profitMargin = sale.profitMargin ? sale.profitMargin.toFixed(2) + '%' : '0%';
-                
-                csv += `"${date}","${customer}",${itemCount},${total},${subtotal},${discount},"${discountType}",${totalCost},${profit},"${profitMargin}"\n`;
-            });
-            
-            // Create download link
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `sales_export_${new Date().toISOString().slice(0, 10)}.csv`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            showMessage('CSV exported successfully', 'success');
         }
 
         // Utility functions
@@ -2095,38 +2115,6 @@
             }, 5000);
         }
 
-        // Toggle sidebar
-        function toggleSidebar() {
-            const container = document.getElementById('dashboardContainer');
-            const isHidden = container.classList.contains('sidebar-hidden');
-            
-            if (isHidden) {
-                container.classList.remove('sidebar-hidden');
-                localStorage.setItem('sidebarState', 'visible');
-            } else {
-                container.classList.add('sidebar-hidden');
-                localStorage.setItem('sidebarState', 'hidden');
-            }
-        }
-
-        // Toggle mobile sidebar
-        function toggleMobileSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('open');
-        }
-
-        // Load sidebar state from localStorage
-        function loadSidebarState() {
-            const savedState = localStorage.getItem('sidebarState');
-            const container = document.getElementById('dashboardContainer');
-            
-            if (savedState === 'hidden') {
-                container.classList.add('sidebar-hidden');
-            } else {
-                container.classList.remove('sidebar-hidden');
-            }
-        }
-
         // Open admin panel
         function openAdminPanel() {
             window.location.href = 'admin-dashboard.html';
@@ -2134,9 +2122,12 @@
 
         // Logout function
         function logout() {
-            // Unsubscribe from Firestore listener
+            // Unsubscribe from Firestore listeners
             if (unsubscribeInventory) {
                 unsubscribeInventory();
+            }
+            if (unsubscribeSales) {
+                unsubscribeSales();
             }
             
             if (isAdminAccessingOther) {
@@ -2161,13 +2152,6 @@
 
         // Set dashboard start time
         window.dashboardStartTime = Date.now();
-
-        // Auto-refresh data every 30 seconds
-        setInterval(() => {
-            if (unsubscribeInventory) {
-                setupInventoryListener();
-            }
-        }, 30000);
     </script>
 </body>
 </html>
