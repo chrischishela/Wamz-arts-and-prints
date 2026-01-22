@@ -443,21 +443,21 @@
         -webkit-overflow-scrolling: touch;
     }
 
-    /* COMPACT TABLE FOR PHONES */
+    /* COMPACT TABLE FOR PHONES - UPDATED COLUMNS */
     .sales-table {
         width: 100%;
         border-collapse: collapse;
-        font-size: 0.75rem;
-        min-width: 600px;
+        font-size: 0.7rem;
+        min-width: 500px;
     }
 
     .sales-table th {
         background: #f8fafc;
-        padding: 0.6rem;
+        padding: 0.5rem;
         text-align: left;
         color: #718096;
         font-weight: 600;
-        font-size: 0.7rem;
+        font-size: 0.65rem;
         text-transform: uppercase;
         letter-spacing: 0.5px;
         border-bottom: 2px solid #e2e8f0;
@@ -465,38 +465,31 @@
     }
 
     .sales-table td {
-        padding: 0.6rem;
+        padding: 0.5rem;
         border-bottom: 1px solid #f7fafc;
         color: #4a5568;
-        font-size: 0.75rem;
-        line-height: 1.3;
+        font-size: 0.7rem;
+        line-height: 1.2;
+        vertical-align: top;
     }
 
     .sales-table tr:hover {
         background: #f8fafc;
     }
 
-    .sale-id {
-        font-size: 0.7rem;
-        color: #718096;
+    /* Code column - plain text, no blue background */
+    .item-code {
         font-family: monospace;
+        font-weight: 600;
+        color: #2d3748;
+        background: none;
+        padding: 0;
     }
 
     .item-details {
-        max-width: 200px;
+        max-width: 150px;
         overflow: hidden;
         text-overflow: ellipsis;
-    }
-
-    .item-code {
-        background: #4299e1;
-        color: white;
-        padding: 0.1rem 0.3rem;
-        border-radius: 3px;
-        font-size: 0.7rem;
-        font-weight: 600;
-        font-family: monospace;
-        margin-right: 0.2rem;
     }
 
     .discount-badge {
@@ -504,7 +497,7 @@
         color: white;
         padding: 0.1rem 0.3rem;
         border-radius: 3px;
-        font-size: 0.7rem;
+        font-size: 0.65rem;
         font-weight: 600;
     }
 
@@ -512,6 +505,36 @@
         font-weight: 600;
         color: #2d3748;
         white-space: nowrap;
+    }
+
+    /* Action buttons for reversing sales */
+    .action-btn {
+        padding: 0.2rem 0.5rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.65rem;
+        font-weight: 600;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.2rem;
+        white-space: nowrap;
+    }
+
+    .reverse-btn {
+        background: #feb2b2;
+        color: #9b2c2c;
+    }
+
+    .reverse-btn:hover {
+        background: #fc8181;
+    }
+
+    .reverse-btn:disabled {
+        background: #e2e8f0;
+        color: #a0aec0;
+        cursor: not-allowed;
     }
 
     /* SALES OVERLAY */
@@ -948,6 +971,17 @@
         .cart-action-btn {
             min-width: 100%;
         }
+
+        /* Make table even more compact on mobile */
+        .sales-table {
+            font-size: 0.65rem;
+            min-width: 450px;
+        }
+
+        .sales-table th,
+        .sales-table td {
+            padding: 0.4rem 0.3rem;
+        }
     }
 
     @media (min-width: 769px) {
@@ -992,12 +1026,13 @@
         }
 
         .sales-table {
-            font-size: 0.7rem;
+            font-size: 0.6rem;
+            min-width: 400px;
         }
 
         .sales-table th,
         .sales-table td {
-            padding: 0.4rem;
+            padding: 0.3rem;
         }
 
         .date-input {
@@ -1137,17 +1172,18 @@
                         <thead>
                             <tr>
                                 <th>Date</th>
-                                <th>Customer</th>
-                                <th>Items Sold</th>
-                                <th>Qty</th>
+                                <th>Code</th>
+                                <th>Item</th>
                                 <th>Unit Price</th>
-                                <th>Total</th>
+                                <th>Qty</th>
                                 <th>Discount</th>
+                                <th>Total</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody id="salesBody">
                             <tr>
-                                <td colspan="7" style="text-align: center; padding: 30px;">
+                                <td colspan="8" style="text-align: center; padding: 30px;">
                                     <span class="loading">Loading sales...</span>
                                 </td>
                             </tr>
@@ -1567,7 +1603,7 @@
                     const salesBody = document.getElementById('salesBody');
                     salesBody.innerHTML = `
                         <tr>
-                            <td colspan="7" style="text-align: center; padding: 30px;">
+                            <td colspan="8" style="text-align: center; padding: 30px;">
                                 <div style="color: #666; font-size: 12px;">
                                     📭 No sales recorded yet
                                 </div>
@@ -1600,7 +1636,7 @@
                 const salesBody = document.getElementById('salesBody');
                 salesBody.innerHTML = `
                     <tr>
-                        <td colspan="7" style="text-align: center; padding: 30px; color: #c53030;">
+                        <td colspan="8" style="text-align: center; padding: 30px; color: #c53030;">
                             ❌ Error loading sales
                         </td>
                     </tr>
@@ -1646,7 +1682,7 @@
             });
         }
 
-        // Display sales in table with detailed item information
+        // Display sales in table with detailed item information - FIXED COLUMNS
         function displaySales(sales) {
             const salesBody = document.getElementById('salesBody');
             salesBody.innerHTML = '';
@@ -1654,7 +1690,7 @@
             if (sales.length === 0) {
                 salesBody.innerHTML = `
                     <tr>
-                        <td colspan="7" style="text-align: center; padding: 30px;">
+                        <td colspan="8" style="text-align: center; padding: 30px;">
                             No sales found for selected period
                         </td>
                     </tr>
@@ -1663,14 +1699,13 @@
                 return;
             }
             
-            // Calculate total for display
+            // Calculate total for display - AFTER DISCOUNT
             const totalAmount = sales.reduce((sum, sale) => sum + (sale.total || 0), 0);
             document.getElementById('salesTotalDisplay').textContent = `Total: ${formatCurrency(totalAmount)}`;
             
             // Display sales - showing individual items
             sales.forEach(sale => {
                 const items = sale.items || [];
-                const customer = sale.customerName || 'Walk-in';
                 const discount = sale.discount?.amount || 0;
                 
                 // If no items, show at least one row for the sale
@@ -1678,9 +1713,11 @@
                     const row = salesBody.insertRow();
                     row.innerHTML = `
                         <td>${formatDate(sale.timestamp)}</td>
-                        <td>${escapeHtml(customer)}</td>
-                        <td colspan="4" style="color: #a0aec0; font-style: italic;">No item details</td>
+                        <td colspan="3" style="color: #a0aec0; font-style: italic;">No item details</td>
+                        <td></td>
                         <td>${discount > 0 ? formatCurrency(discount) : '-'}</td>
+                        <td>${formatCurrency(sale.total || 0)}</td>
+                        <td><button class="action-btn reverse-btn" onclick="reverseSale('${sale.id}')" title="Reverse/Delete Sale">Reverse</button></td>
                     `;
                 } else {
                     // Show each item in the sale
@@ -1688,23 +1725,74 @@
                         const row = salesBody.insertRow();
                         const isFirstItem = index === 0;
                         
+                        // Calculate item total after discount proportion
+                        const itemSubtotal = item.subtotal || 0;
+                        const discountProportion = discount > 0 ? (itemSubtotal / sale.subtotal) : 0;
+                        const itemDiscount = discount * discountProportion;
+                        const itemTotal = itemSubtotal - itemDiscount;
+                        
                         row.innerHTML = `
                             <td>${isFirstItem ? formatDate(sale.timestamp) : ''}</td>
-                            <td>${isFirstItem ? escapeHtml(customer) : ''}</td>
-                            <td>
-                                <div class="item-details">
-                                    <span class="item-code">${escapeHtml(item.code || '')}</span>
-                                    ${escapeHtml(item.name || 'Item')}
-                                </div>
-                            </td>
-                            <td>${item.quantity || 1}</td>
+                            <td><span class="item-code">${escapeHtml(item.code || '')}</span></td>
+                            <td class="item-details">${escapeHtml(item.name || 'Item')}</td>
                             <td>${formatCurrency(item.price || 0)}</td>
-                            <td class="amount">${formatCurrency(item.subtotal || 0)}</td>
+                            <td>${item.quantity || 1}</td>
                             <td>${isFirstItem && discount > 0 ? formatCurrency(discount) : (isFirstItem ? '-' : '')}</td>
+                            <td class="amount">${formatCurrency(itemTotal)}</td>
+                            <td>
+                                ${isFirstItem ? `<button class="action-btn reverse-btn" onclick="reverseSale('${sale.id}')" title="Reverse/Delete Sale">Reverse</button>` : ''}
+                            </td>
                         `;
                     });
                 }
             });
+        }
+
+        // Reverse/delete a sale
+        async function reverseSale(saleId) {
+            if (!confirm('Are you sure you want to reverse this sale? This will restore inventory stock.')) {
+                return;
+            }
+            
+            try {
+                showMessage('Reversing sale...', 'info');
+                
+                // Get the sale data
+                const saleRef = db.collection('sales').doc(saleId);
+                const saleDoc = await saleRef.get();
+                
+                if (!saleDoc.exists) {
+                    showMessage('Sale not found', 'error');
+                    return;
+                }
+                
+                const sale = saleDoc.data();
+                
+                // Restore inventory for each item
+                for (const item of sale.items || []) {
+                    if (item.itemId) {
+                        const itemRef = db.collection('inventory').doc(item.itemId);
+                        await itemRef.update({
+                            stock: FieldValue.increment(item.quantity),
+                            sold: FieldValue.increment(-item.quantity)
+                        });
+                    }
+                }
+                
+                // Mark sale as reversed instead of deleting (for audit trail)
+                await saleRef.update({
+                    status: 'reversed',
+                    reversedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    reversedBy: isAdminAccessingOther ? currentUserData.username : originalLoggedInUser,
+                    originalTotal: sale.total
+                });
+                
+                showMessage('Sale reversed successfully', 'success');
+                
+            } catch (error) {
+                console.error('Error reversing sale:', error);
+                showMessage('Error reversing sale: ' + error.message, 'error');
+            }
         }
 
         // Apply date filter to sales
@@ -1712,10 +1800,10 @@
             const startDate = document.getElementById('salesFrom').value;
             const endDate = document.getElementById('salesTo').value;
             
-            let filteredSales = lastRenderedSales;
+            let filteredSales = lastRenderedSales.filter(sale => sale.status !== 'reversed');
             
             if (startDate || endDate) {
-                filteredSales = lastRenderedSales.filter(sale => {
+                filteredSales = filteredSales.filter(sale => {
                     const saleDate = sale.timestamp ? 
                         sale.timestamp.toDate().toISOString().split('T')[0] : 
                         (sale.date || '');
@@ -2014,7 +2102,7 @@
                 discountAmount = Math.min(discountValue, subtotal);
             }
             
-            // Calculate total
+            // Calculate total - AFTER DISCOUNT
             const total = Math.max(0, subtotal - discountAmount);
             
             // Update displays
@@ -2152,7 +2240,8 @@
                     total: total,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp(),
                     processedBy: isAdminAccessingOther ? currentUserData.username : originalLoggedInUser,
-                    branchId: currentBranch
+                    branchId: currentBranch,
+                    status: 'completed'
                 };
                 
                 // Save to Firestore
