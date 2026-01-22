@@ -579,12 +579,14 @@
         background: #f8fafc;
         flex-wrap: wrap;
         gap: 0.8rem;
+        flex-shrink: 0;
     }
 
     .sale-panel-body {
         flex: 1;
         overflow: hidden;
         display: flex;
+        min-height: 0;
     }
 
     /* INVENTORY SECTION */
@@ -593,11 +595,13 @@
         display: flex;
         flex-direction: column;
         border-right: 1px solid #e2e8f0;
+        min-height: 0;
     }
 
     .inventory-section .section-header {
         padding: 0.8rem;
         border-bottom: 1px solid #e2e8f0;
+        flex-shrink: 0;
     }
 
     .search-controls {
@@ -606,6 +610,7 @@
         padding: 0.8rem;
         border-bottom: 1px solid #e2e8f0;
         flex-wrap: wrap;
+        flex-shrink: 0;
     }
 
     .search-input {
@@ -702,13 +707,14 @@
         background: #3182ce;
     }
 
-    /* CART SECTION - FIXED WITH SCROLLING */
+    /* CART SECTION - FIXED SCROLLING ISSUE */
     .cart-section {
         flex: 1;
         display: flex;
         flex-direction: column;
         min-width: 0;
-        overflow: hidden;
+        height: 100%;
+        min-height: 0;
     }
 
     .cart-header {
@@ -728,27 +734,8 @@
         overflow-x: hidden;
         padding: 0.8rem;
         min-height: 150px;
-        max-height: 300px;
+        max-height: 400px;
         -webkit-overflow-scrolling: touch;
-    }
-
-    /* Style scrollbar for cart items */
-    .cart-items::-webkit-scrollbar {
-        width: 6px;
-    }
-
-    .cart-items::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 10px;
-    }
-
-    .cart-items::-webkit-scrollbar-thumb {
-        background: #c1c1c1;
-        border-radius: 10px;
-    }
-
-    .cart-items::-webkit-scrollbar-thumb:hover {
-        background: #a8a8a8;
     }
 
     .cart-item {
@@ -759,50 +746,42 @@
         border-bottom: 1px solid #f7fafc;
         flex-wrap: wrap;
         gap: 0.6rem;
-        background: white;
-        border-radius: 6px;
-        margin-bottom: 0.5rem;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        min-height: 60px;
     }
 
     .cart-item:last-child {
         border-bottom: none;
-        margin-bottom: 0;
     }
 
     .cart-item-info {
         flex: 1;
         min-width: 120px;
-        overflow: hidden;
     }
 
     .cart-item-controls {
         display: flex;
         gap: 0.3rem;
         align-items: center;
-        flex-shrink: 0;
     }
 
     .cart-item-btn {
         background: #e2e8f0;
         color: #4a5568;
         border: none;
-        width: 24px;
-        height: 24px;
+        width: 22px;
+        height: 22px;
         border-radius: 4px;
         cursor: pointer;
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         font-weight: 600;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        transition: all 0.2s ease;
     }
 
     .cart-item-btn:hover {
         background: #cbd5e0;
-        transform: scale(1.05);
     }
 
     .remove-btn {
@@ -826,61 +805,32 @@
         justify-content: space-between;
         margin-bottom: 0.3rem;
         font-size: 0.8rem;
-        padding: 0.3rem 0;
     }
 
-    /* DISCOUNT SECTION - IMPROVED VISIBILITY */
-    .discount-section {
-        background: #f0fff4;
-        border: 1px solid #c6f6d5;
-        border-radius: 6px;
-        padding: 0.6rem;
-        margin: 0.6rem 0;
+    .total-row {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin-top: 0.3rem;
+        padding-top: 0.3rem;
+        border-top: 1px solid #e2e8f0;
     }
 
     .discount-controls {
         display: flex;
         gap: 0.3rem;
-        margin: 0.3rem 0;
+        margin: 0.6rem 0;
         align-items: center;
         flex-wrap: wrap;
     }
 
-    .discount-type {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-bottom: 0.5rem;
-    }
-
-    .discount-type label {
-        font-size: 0.8rem;
-        color: #4a5568;
-        font-weight: 500;
-    }
-
     .discount-select {
         flex: 1;
-        min-width: 120px;
+        min-width: 100px;
         padding: 0.4rem;
         border: 1px solid #e2e8f0;
         border-radius: 6px;
         font-size: 0.8rem;
-        background: white;
-        cursor: pointer;
-    }
-
-    .discount-select:focus {
-        outline: none;
-        border-color: #4299e1;
-        box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
-    }
-
-    .discount-input-group {
-        display: flex;
-        align-items: center;
-        gap: 0.3rem;
-        flex: 1;
     }
 
     .discount-input {
@@ -890,45 +840,6 @@
         border: 1px solid #e2e8f0;
         border-radius: 6px;
         font-size: 0.8rem;
-        text-align: right;
-    }
-
-    .discount-input:focus {
-        outline: none;
-        border-color: #4299e1;
-        box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.1);
-    }
-
-    .discount-suffix {
-        font-size: 0.8rem;
-        color: #718096;
-        min-width: 30px;
-    }
-
-    .discount-display {
-        text-align: right;
-        color: #38a169;
-        font-size: 0.85rem;
-        font-weight: 600;
-        padding: 0.3rem 0;
-        background: #f0fff4;
-        border-radius: 4px;
-        margin-top: 0.3rem;
-    }
-
-    .discount-display.no-discount {
-        color: #718096;
-        font-weight: normal;
-        background: #f8fafc;
-    }
-
-    .total-row {
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: #2d3748;
-        margin-top: 0.3rem;
-        padding-top: 0.3rem;
-        border-top: 2px solid #e2e8f0;
     }
 
     .cart-actions {
@@ -1061,17 +972,40 @@
             text-align: center;
         }
 
+        .sale-panel {
+            max-height: 100vh;
+            height: 100vh;
+            border-radius: 0;
+        }
+
         .sale-panel-body {
             flex-direction: column;
+            height: calc(100vh - 120px);
         }
 
         .inventory-section {
             border-right: none;
             border-bottom: 1px solid #e2e8f0;
+            height: 50%;
+            min-height: 50%;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .inventory-section .table-container {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .cart-section {
+            height: 50%;
+            min-height: 50%;
         }
 
         .cart-items {
-            max-height: 200px;
+            max-height: 250px;
         }
 
         .cart-action-btn {
@@ -1144,6 +1078,18 @@
         .date-input {
             min-width: 100px;
             max-width: 110px;
+        }
+        
+        .cart-items {
+            max-height: 200px;
+        }
+        
+        .inventory-section {
+            height: 45%;
+        }
+        
+        .cart-section {
+            height: 55%;
         }
     }
 
@@ -1351,76 +1297,49 @@
                     </div>
                 </div>
 
-                <!-- Cart Section (Right Side) - UPDATED -->
+                <!-- Cart Section (Right Side) -->
                 <div class="cart-section">
                     <div class="cart-header">
-                        <h3 style="font-size: 1rem; font-weight: 600;">🛒 Cart Items</h3>
-                        <span id="cartIndicator" style="color: #718096; font-size: 0.8rem; background: #e2e8f0; padding: 0.2rem 0.5rem; border-radius: 12px;">0 items</span>
+                        <h3>Cart</h3>
+                        <span id="cartIndicator" style="color: #718096; font-size: 0.8rem;">0 items</span>
                     </div>
                     
                     <div class="cart-items" id="cartList">
-                        <div style="text-align: center; padding: 2rem; color: #a0aec0;">
-                            <div style="font-size: 2rem; margin-bottom: 0.5rem;">🛒</div>
-                            <div>Your cart is empty</div>
-                            <div style="font-size: 0.75rem; margin-top: 0.5rem;">Add items from the inventory</div>
+                        <div style="text-align: center; padding: 2rem; color: #a0aec0; height: 100%; display: flex; align-items: center; justify-content: center;">
+                            <div>
+                                <i class="fas fa-shopping-cart" style="font-size: 2rem; margin-bottom: 0.5rem; opacity: 0.3;"></i>
+                                <div>Cart is empty</div>
+                            </div>
                         </div>
                     </div>
                     
                     <div class="cart-summary">
-                        <!-- Subtotal -->
                         <div class="summary-row">
-                            <span style="font-weight: 500;">Subtotal:</span>
-                            <span id="subtotalDisplay" style="font-weight: 600;">ZMW 0.00</span>
+                            <span>Subtotal:</span>
+                            <span id="subtotalDisplay">ZMW 0.00</span>
                         </div>
                         
-                        <!-- Discount Section - IMPROVED -->
-                        <div class="discount-section">
-                            <div class="summary-row" style="margin-bottom: 0.5rem;">
-                                <span style="font-weight: 500; color: #2d3748;">Discount:</span>
-                                <div id="discountAmountDisplay" class="discount-display no-discount">No discount</div>
-                            </div>
-                            
-                            <div class="discount-controls">
-                                <div class="discount-type">
-                                    <label for="discountType">Type:</label>
-                                    <select class="discount-select" id="discountType">
-                                        <option value="none">No Discount</option>
-                                        <option value="percent">Percentage (%)</option>
-                                        <option value="fixed">Fixed Amount</option>
-                                    </select>
-                                </div>
-                                
-                                <div class="discount-input-group">
-                                    <input type="number" class="discount-input" id="discountValue" 
-                                           placeholder="0" min="0" step="0.01" disabled>
-                                    <span class="discount-suffix" id="discountSuffix"></span>
-                                </div>
-                            </div>
+                        <div class="discount-controls">
+                            <select class="discount-select" id="discountType">
+                                <option value="none">No Discount</option>
+                                <option value="percent">Percentage (%)</option>
+                                <option value="fixed">Fixed Amount</option>
+                            </select>
+                            <input type="number" class="discount-input" id="discountValue" 
+                                   placeholder="0" min="0" step="0.01" disabled>
+                        </div>
+                        <div id="discountAmountDisplay" style="text-align: right; color: #718096; font-size: 0.8rem;">
+                            -
                         </div>
                         
-                        <!-- Total -->
                         <div class="summary-row total-row">
-                            <span style="font-size: 1rem;">TOTAL:</span>
-                            <span id="totalDisplay" style="font-size: 1.1rem; color: #2d3748;">ZMW 0.00</span>
+                            <span>TOTAL:</span>
+                            <span id="totalDisplay">ZMW 0.00</span>
                         </div>
                         
-                        <!-- Customer Input -->
                         <input type="text" id="customerInput" 
                                placeholder="Customer name (optional)" 
-                               style="width: 100%; padding: 0.6rem; margin: 0.8rem 0; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.8rem;">
-                        
-                        <!-- Action Buttons -->
-                        <div class="cart-actions">
-                            <button class="cart-action-btn checkout-btn" id="checkoutBtn" disabled>
-                                <i class="fas fa-check-circle"></i> Complete Sale
-                            </button>
-                            <button class="cart-action-btn clear-btn" id="clearCartBtn">
-                                <i class="fas fa-trash"></i> Clear Cart
-                            </button>
-                            <button class="cart-action-btn close-sale-btn" id="closeSaleBtn">
-                                <i class="fas fa-times"></i> Cancel
-                            </button>
-                        </div>
+                               style="width: 100%; padding: 0.6rem; margin-top: 0.6rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.8rem;">
                     </div>
                 </div>
             </div>
@@ -1460,6 +1379,7 @@
             console.log("💰 Sales Dashboard loaded");
             initializeSidebar();
             checkLogin();
+            setupCartScrollingFix();
         });
 
         // Initialize sidebar toggle for both desktop and mobile
@@ -1502,6 +1422,18 @@
                     }
                 });
             });
+        }
+
+        // Setup cart scrolling fix
+        function setupCartScrollingFix() {
+            // Ensure cart scrolls properly on mobile
+            document.addEventListener('touchmove', function(e) {
+                const cartList = document.getElementById('cartList');
+                if (cartList && cartList.contains(e.target)) {
+                    // Allow scrolling within cart
+                    e.stopPropagation();
+                }
+            }, { passive: true });
         }
 
         // Check login
@@ -1674,33 +1606,12 @@
             document.getElementById('clearCartBtn').addEventListener('click', clearCart);
             document.getElementById('checkoutBtn').addEventListener('click', checkout);
             
-            // Discount functionality - UPDATED
+            // Discount functionality
             document.getElementById('discountType').addEventListener('change', function() {
-                const discountValue = document.getElementById('discountValue');
-                const discountSuffix = document.getElementById('discountSuffix');
-                
-                if (this.value === 'none') {
-                    discountValue.disabled = true;
-                    discountValue.value = '';
-                    discountSuffix.textContent = '';
-                } else if (this.value === 'percent') {
-                    discountValue.disabled = false;
-                    discountValue.placeholder = '0';
-                    discountValue.max = 100;
-                    discountSuffix.textContent = '%';
-                } else if (this.value === 'fixed') {
-                    discountValue.disabled = false;
-                    discountValue.placeholder = '0.00';
-                    discountValue.max = null;
-                    discountSuffix.textContent = 'ZMW';
-                }
-                
+                document.getElementById('discountValue').disabled = this.value === 'none';
                 renderCart();
             });
-            
-            document.getElementById('discountValue').addEventListener('input', function() {
-                renderCart();
-            });
+            document.getElementById('discountValue').addEventListener('input', renderCart);
             
             // Close overlay on backdrop click
             document.getElementById('saleOverlay').addEventListener('click', function(e) {
@@ -2021,6 +1932,10 @@
         function openSaleOverlay() {
             document.getElementById('saleOverlay').classList.add('show');
             loadInventoryForSale();
+            // Auto-focus search input for better UX
+            setTimeout(() => {
+                document.getElementById('searchInput').focus();
+            }, 100);
         }
 
         // Close sale overlay
@@ -2081,6 +1996,9 @@
                     const quantity = parseInt(qtyInput.value) || 1;
                     
                     addToCart(itemId, quantity);
+                    
+                    // Reset quantity input to 1
+                    qtyInput.value = 1;
                 });
             });
         }
@@ -2165,6 +2083,9 @@
                     const quantity = parseInt(qtyInput.value) || 1;
                     
                     addToCart(itemId, quantity);
+                    
+                    // Reset quantity input to 1
+                    qtyInput.value = 1;
                 });
             });
         }
@@ -2222,7 +2143,7 @@
             showMessage(`Added ${quantity} ${item.name} to cart`, 'success');
         }
 
-        // Render cart - UPDATED
+        // Render cart - FIXED
         function renderCart() {
             const cartList = document.getElementById('cartList');
             const cartIndicator = document.getElementById('cartIndicator');
@@ -2233,17 +2154,17 @@
             
             if (cart.length === 0) {
                 cartList.innerHTML = `
-                    <div style="text-align: center; padding: 2rem; color: #a0aec0;">
-                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">🛒</div>
-                        <div>Your cart is empty</div>
-                        <div style="font-size: 0.75rem; margin-top: 0.5rem;">Add items from the inventory</div>
+                    <div style="text-align: center; padding: 2rem; color: #a0aec0; height: 100%; display: flex; align-items: center; justify-content: center;">
+                        <div>
+                            <i class="fas fa-shopping-cart" style="font-size: 2rem; margin-bottom: 0.5rem; opacity: 0.3;"></i>
+                            <div>Cart is empty</div>
+                        </div>
                     </div>
                 `;
                 cartIndicator.textContent = '0 items';
                 subtotalDisplay.textContent = formatCurrency(0);
                 totalDisplay.textContent = formatCurrency(0);
-                discountAmountDisplay.textContent = 'No discount';
-                discountAmountDisplay.className = 'discount-display no-discount';
+                discountAmountDisplay.textContent = '-';
                 checkoutBtn.disabled = true;
                 return;
             }
@@ -2268,15 +2189,7 @@
             // Update displays
             subtotalDisplay.textContent = formatCurrency(subtotal);
             totalDisplay.textContent = formatCurrency(total);
-            
-            // Update discount display
-            if (discountAmount > 0) {
-                discountAmountDisplay.textContent = `-${formatCurrency(discountAmount)}`;
-                discountAmountDisplay.className = 'discount-display';
-            } else {
-                discountAmountDisplay.textContent = 'No discount';
-                discountAmountDisplay.className = 'discount-display no-discount';
-            }
+            discountAmountDisplay.textContent = discountAmount > 0 ? `-${formatCurrency(discountAmount)}` : '-';
             
             // Update cart indicator
             const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -2314,6 +2227,11 @@
             });
             
             checkoutBtn.disabled = false;
+            
+            // Scroll to bottom to show newest items
+            setTimeout(() => {
+                cartList.scrollTop = cartList.scrollHeight;
+            }, 50);
         }
 
         // Update cart item
@@ -2354,11 +2272,6 @@
             
             if (confirm('Clear all items from cart?')) {
                 cart = [];
-                document.getElementById('customerInput').value = '';
-                document.getElementById('discountType').value = 'none';
-                document.getElementById('discountValue').value = '';
-                document.getElementById('discountValue').disabled = true;
-                document.getElementById('discountSuffix').textContent = '';
                 renderCart();
                 showMessage('Cart cleared', 'info');
             }
@@ -2435,7 +2348,6 @@
                 document.getElementById('discountType').value = 'none';
                 document.getElementById('discountValue').value = '';
                 document.getElementById('discountValue').disabled = true;
-                document.getElementById('discountSuffix').textContent = '';
                 
                 renderCart();
                 closeSaleOverlay();
