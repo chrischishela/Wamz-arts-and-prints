@@ -363,16 +363,16 @@
             background: #2f855a;
         }
 
-        /* Main Grid Layout */
+        /* Main Grid Layout - MODIFIED: Default to single column showing only history */
         .main-grid {
             display: grid;
-            grid-template-columns: 1fr 300px;
+            grid-template-columns: 1fr;
             gap: 1rem;
             transition: grid-template-columns 0.3s ease;
         }
 
-        .main-grid.form-hidden {
-            grid-template-columns: 1fr;
+        .main-grid.form-visible {
+            grid-template-columns: 1fr 300px;
         }
 
         .main-grid.history-hidden {
@@ -749,12 +749,8 @@
                 gap: 0.5rem;
             }
 
-            .main-grid {
+            .main-grid.form-visible {
                 grid-template-columns: 1fr;
-            }
-
-            .history-section {
-                order: -1;
             }
 
             .page-header {
@@ -951,20 +947,25 @@
                             <i class="fas fa-plus"></i>
                             <span>Add New Item</span>
                         </button>
-                        <button class="btn secondary" id="toggleFormBtn" title="Show / hide Add Form">Hide Form</button>
+                        <button class="btn secondary" id="toggleFormBtn" title="Show / hide Add Form" style="display: none;">Show Form</button>
                         <button class="btn secondary" id="toggleHistoryBtn" title="Show / hide GRV History">Hide History</button>
                     </div>
                 </div>
 
                 <div class="main-grid" id="mainGrid">
-                    <!-- Left: Form and Items List -->
-                    <div id="formSection">
+                    <!-- Left: Form and Items List - INITIALLY HIDDEN -->
+                    <div id="formSection" style="display: none;">
                         <!-- Add Form (Collapsible) -->
                         <div class="card" id="addForm">
                             <div class="card-header">
                                 <div>
                                     <div class="card-title">Add New Item</div>
                                     <div class="card-subtitle">Fill in the details below to add items to GRV</div>
+                                </div>
+                                <div>
+                                    <button id="hideFormBtn" class="btn ghost">
+                                        <i class="fas fa-times"></i> Hide
+                                    </button>
                                 </div>
                             </div>
                             
@@ -1074,7 +1075,7 @@
                         </div>
                     </div>
 
-                    <!-- Right: GRV History -->
+                    <!-- Right: GRV History - INITIALLY VISIBLE -->
                     <div class="card" id="historySection">
                         <div class="card-header">
                             <div>
@@ -1267,6 +1268,7 @@
     const toggleHistoryBtn = $id('toggleHistoryBtn');
     const mainGrid = $id('mainGrid');
     const addNewBtn = $id('addNewBtn');
+    const hideFormBtn = $id('hideFormBtn');
 
     function toggleSection(type) {
         if (type === 'form') {
@@ -1274,11 +1276,13 @@
             if (isHidden) {
                 formSection.style.display = 'block';
                 toggleFormBtn.textContent = 'Hide Form';
-                mainGrid.classList.remove('form-hidden');
+                toggleFormBtn.style.display = 'block';
+                mainGrid.classList.add('form-visible');
             } else {
                 formSection.style.display = 'none';
                 toggleFormBtn.textContent = 'Show Form';
-                mainGrid.classList.add('form-hidden');
+                toggleFormBtn.style.display = 'block';
+                mainGrid.classList.remove('form-visible');
             }
         } else if (type === 'history') {
             const isHidden = historySectionEl.style.display === 'none';
@@ -1306,9 +1310,17 @@
         if (formSection.style.display === 'none') {
             formSection.style.display = 'block';
             toggleFormBtn.textContent = 'Hide Form';
-            mainGrid.classList.remove('form-hidden');
+            toggleFormBtn.style.display = 'block';
+            mainGrid.classList.add('form-visible');
         }
         $id('itemCode').focus();
+    });
+
+    hideFormBtn.addEventListener('click', () => {
+        formSection.style.display = 'none';
+        toggleFormBtn.textContent = 'Show Form';
+        toggleFormBtn.style.display = 'block';
+        mainGrid.classList.remove('form-visible');
     });
 
     // Render rows in GRV list
@@ -1399,7 +1411,8 @@
         if (formSection.style.display === 'none') {
             formSection.style.display = 'block';
             toggleFormBtn.textContent = 'Hide Form';
-            mainGrid.classList.remove('form-hidden');
+            toggleFormBtn.style.display = 'block';
+            mainGrid.classList.add('form-visible');
         }
         
         // Remove row while editing
