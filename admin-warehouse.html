@@ -8,6 +8,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -19,116 +21,89 @@
         body {
             background: #f5f7fa;
             color: #2c3e50;
-            line-height: 1.6;
-            height: 100vh;
+            line-height: 1.5;
+            min-height: 100vh;
+            width: 100%;
             overflow-x: hidden;
         }
 
-        /* Full screen layout with sidebar */
+        /* DASHBOARD LAYOUT */
         .dashboard-container {
-            display: grid;
-            grid-template-columns: 250px 1fr;
-            grid-template-rows: auto 1fr;
-            height: 100vh;
-            transition: grid-template-columns 0.3s ease;
-        }
-
-        .dashboard-container.sidebar-hidden {
-            grid-template-columns: 0px 1fr;
-        }
-
-        /* Header */
-        .header {
-            grid-column: 1 / -1;
-            background: #1a365d;
-            color: white;
-            padding: 1rem 2rem;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            z-index: 100;
+            min-height: 100vh;
+            width: 100%;
+            position: relative;
         }
 
-        .header h1 {
-            font-size: 1.4rem;
-            font-weight: 600;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .user-name {
-            font-weight: 500;
-            color: #e2e8f0;
-        }
-
-        .branch-badge {
-            background: #4299e1;
-            color: white;
-            padding: 0.4rem 0.8rem;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-
-        .admin-badge {
-            background: #e53e3e;
-            color: white;
-            padding: 0.4rem 0.8rem;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-
-        /* Sidebar */
+        /* SIDEBAR - COLLAPSIBLE ON ALL SCREENS */
         .sidebar {
             background: #2d3748;
             color: white;
-            padding: 2rem 1rem;
+            width: 250px;
+            min-width: 250px;
+            padding: 1.5rem 0.8rem;
             border-right: 1px solid #4a5568;
             overflow-y: auto;
-            transition: transform 0.3s ease, opacity 0.3s ease;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            z-index: 100;
+            transition: width 0.3s ease, min-width 0.3s ease;
         }
 
-        .sidebar-hidden .sidebar {
-            transform: translateX(-100%);
-            opacity: 0;
+        .sidebar.collapsed {
+            width: 70px;
+            min-width: 70px;
         }
 
         .sidebar-title {
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: #cbd5e0;
-            margin-bottom: 1.5rem;
-            padding: 0 1rem;
+            margin-bottom: 1.2rem;
+            padding: 0 0.8rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             font-weight: 600;
+            text-align: center;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .sidebar.collapsed .sidebar-title {
+            opacity: 0;
+            height: 0;
+            margin: 0;
+            padding: 0;
         }
 
         .nav-menu {
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
+            gap: 0.4rem;
         }
 
         .nav-item {
             display: flex;
             align-items: center;
-            gap: 0.8rem;
-            padding: 0.9rem 1rem;
+            gap: 0.6rem;
+            padding: 0.8rem;
             background: none;
             border: none;
             text-align: left;
             color: #cbd5e0;
             cursor: pointer;
             border-radius: 8px;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             transition: all 0.2s;
             text-decoration: none;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .sidebar.collapsed .nav-item {
+            justify-content: center;
+            padding: 0.8rem 0.5rem;
         }
 
         .nav-item:hover {
@@ -141,35 +116,134 @@
             color: white;
         }
 
-        /* Toggle Button */
+        .nav-item span {
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar.collapsed .nav-item span {
+            opacity: 0;
+            width: 0;
+            display: none;
+        }
+
+        .nav-item i {
+            min-width: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        /* SIDEBAR TOGGLE BUTTON */
         .sidebar-toggle {
+            position: absolute;
+            top: 1rem;
+            right: -12px;
             background: #4299e1;
             color: white;
             border: none;
-            width: 36px;
-            height: 36px;
-            border-radius: 6px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 1rem;
-            transition: all 0.2s;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            z-index: 101;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
         .sidebar-toggle:hover {
             background: #3182ce;
+            transform: scale(1.1);
+        }
+
+        .sidebar.collapsed .sidebar-toggle {
+            right: -12px;
+        }
+
+        /* MAIN CONTENT AREA */
+        .main-content {
+            flex: 1;
+            background: #f5f7fa;
+            padding: 1rem;
+            overflow-y: auto;
+            min-height: 100vh;
+            width: 100%;
+            transition: margin-left 0.3s ease;
+        }
+
+        /* HEADER */
+        .header {
+            background: #1a365d;
+            color: white;
+            padding: 0.8rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            flex-wrap: wrap;
+            gap: 0.8rem;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+        }
+
+        .header h1 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        .user-name {
+            font-weight: 500;
+            color: #e2e8f0;
+            font-size: 0.85rem;
+        }
+
+        .branch-badge {
+            background: #4299e1;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .admin-badge {
+            background: #e53e3e;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            white-space: nowrap;
         }
 
         .logout-btn {
             background: #2d3748;
             color: white;
             border: none;
-            padding: 0.6rem 1.2rem;
+            padding: 0.4rem 0.8rem;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             transition: all 0.2s;
+            white-space: nowrap;
         }
 
         .logout-btn:hover {
@@ -180,73 +254,90 @@
             background: #38a169;
             color: white;
             border: none;
-            padding: 0.6rem 1.2rem;
+            padding: 0.4rem 0.8rem;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 0.9rem;
-            margin-right: 1rem;
+            font-size: 0.8rem;
             transition: all 0.2s;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
         }
 
         .grv-btn:hover {
             background: #2f855a;
         }
 
-        /* Main Content */
-        .main-content {
-            background: #f5f7fa;
-            padding: 2rem;
-            overflow-y: auto;
-            height: 100%;
-        }
-
         /* Welcome Banner */
         .welcome-banner {
             background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
             color: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 4px 12px rgba(66, 153, 225, 0.2);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 10px rgba(66, 153, 225, 0.2);
         }
 
         .welcome-banner h2 {
-            font-size: 1.4rem;
-            margin-bottom: 0.5rem;
+            font-size: 1rem;
+            margin-bottom: 0.3rem;
             font-weight: 600;
         }
 
         .welcome-banner p {
             opacity: 0.9;
-            font-size: 0.95rem;
+            font-size: 0.8rem;
         }
 
-        /* Main Layout */
+        /* Message Display */
+        .message {
+            padding: 0.6rem;
+            border-radius: 6px;
+            margin-bottom: 0.8rem;
+            display: none;
+            border: 1px solid transparent;
+            font-size: 0.8rem;
+        }
+
+        .message.success {
+            background: #f0fff4;
+            color: #276749;
+            border-color: #c6f6d5;
+        }
+
+        .message.error {
+            background: #fff5f5;
+            color: #c53030;
+            border-color: #fed7d7;
+        }
+
+        .message.info {
+            background: #ebf8ff;
+            color: #2c5282;
+            border-color: #bee3f8;
+        }
+
+        /* Main Admin Layout */
         .admin-container {
             display: grid;
-            grid-template-columns: 300px 1fr;
-            gap: 1.5rem;
+            grid-template-columns: 250px 1fr;
+            gap: 1rem;
             height: calc(100vh - 250px);
-            min-height: 500px;
-        }
-
-        @media (max-width: 1024px) {
-            .admin-container {
-                grid-template-columns: 1fr;
-                height: auto;
-            }
+            min-height: 400px;
         }
 
         /* Side Navigation */
         .side-nav {
             background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
             border: 1px solid #e2e8f0;
-            padding: 1rem;
+            padding: 0.8rem;
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
+            overflow: hidden;
         }
 
         .nav-header {
@@ -256,30 +347,31 @@
         }
 
         .nav-header h3 {
-            font-size: 1.1rem;
+            font-size: 0.9rem;
             color: #2d3748;
             font-weight: 600;
         }
 
         .nav-header p {
-            font-size: 0.85rem;
+            font-size: 0.7rem;
             color: #718096;
-            margin-top: 0.25rem;
+            margin-top: 0.2rem;
         }
 
         .nav-btn {
             background: none;
             border: none;
             text-align: left;
-            padding: 0.9rem 1rem;
-            border-radius: 8px;
+            padding: 0.8rem;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 0.95rem;
+            font-size: 0.8rem;
             color: #4a5568;
             transition: all 0.2s;
             display: flex;
             align-items: center;
-            gap: 0.8rem;
+            gap: 0.6rem;
+            white-space: nowrap;
         }
 
         .nav-btn:hover {
@@ -294,26 +386,26 @@
 
         .nav-tools {
             margin-top: auto;
-            padding-top: 1rem;
+            padding-top: 0.8rem;
             border-top: 2px solid #f7fafc;
             display: flex;
             flex-direction: column;
-            gap: 0.8rem;
+            gap: 0.5rem;
         }
 
         .tool-btn {
             background: #f8fafc;
             color: #4a5568;
             border: 1px solid #e2e8f0;
-            padding: 0.8rem;
-            border-radius: 8px;
+            padding: 0.6rem;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             font-weight: 600;
             transition: all 0.2s;
             display: flex;
             align-items: center;
-            gap: 0.8rem;
+            gap: 0.6rem;
         }
 
         .tool-btn:hover {
@@ -334,31 +426,34 @@
         /* Content Area */
         .content-area {
             background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
             border: 1px solid #e2e8f0;
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            min-height: 400px;
         }
 
         .content-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 1.5rem;
+            padding: 0.8rem 1rem;
             border-bottom: 2px solid #f7fafc;
             background: #f8fafc;
+            flex-wrap: wrap;
+            gap: 0.8rem;
         }
 
         .content-header h3 {
-            font-size: 1.1rem;
+            font-size: 0.9rem;
             color: #2d3748;
             font-weight: 600;
         }
 
         .last-updated {
-            font-size: 0.85rem;
+            font-size: 0.7rem;
             color: #718096;
         }
 
@@ -370,28 +465,30 @@
         .inventory-table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 1000px;
+            min-width: 900px;
         }
 
         .inventory-table th {
             background: #f8fafc;
-            padding: 1rem;
+            padding: 0.6rem;
             text-align: left;
             color: #718096;
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.7rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             border-bottom: 2px solid #e2e8f0;
             position: sticky;
             top: 0;
+            white-space: nowrap;
         }
 
         .inventory-table td {
-            padding: 1rem;
+            padding: 0.6rem;
             border-bottom: 1px solid #f7fafc;
             color: #4a5568;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
+            vertical-align: middle;
         }
 
         .inventory-table tr:hover {
@@ -400,9 +497,9 @@
 
         /* Status Badges */
         .status-badge {
-            padding: 0.4rem 0.8rem;
+            padding: 0.2rem 0.4rem;
             border-radius: 4px;
-            font-size: 0.75rem;
+            font-size: 0.65rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.3px;
@@ -428,34 +525,35 @@
         .code-badge {
             background: #4299e1;
             color: white;
-            padding: 0.3rem 0.6rem;
+            padding: 0.2rem 0.4rem;
             border-radius: 4px;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             font-weight: 600;
             font-family: monospace;
             display: inline-block;
+            white-space: nowrap;
         }
 
         /* Footer Note */
         .footer-note {
             background: white;
-            border-radius: 10px;
-            padding: 1rem 1.5rem;
-            margin-top: 1.5rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-radius: 8px;
+            padding: 0.8rem 1rem;
+            margin-top: 1rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
             border: 1px solid #e2e8f0;
             text-align: center;
         }
 
         .footer-note h4 {
-            font-size: 1rem;
+            font-size: 0.85rem;
             color: #2d3748;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.3rem;
             font-weight: 600;
         }
 
         .footer-note p {
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             color: #718096;
         }
 
@@ -463,6 +561,7 @@
         .loading {
             color: #a0aec0;
             font-style: italic;
+            font-size: 0.8rem;
             animation: pulse 1.5s infinite;
         }
 
@@ -471,169 +570,273 @@
             50% { opacity: 0.5; }
         }
 
-        /* Message Display */
-        .message {
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
-            display: none;
-            border: 1px solid transparent;
-        }
-
-        .message.success {
-            background: #f0fff4;
-            color: #276749;
-            border-color: #c6f6d5;
-        }
-
-        .message.error {
-            background: #fff5f5;
-            color: #c53030;
-            border-color: #fed7d7;
-        }
-
-        /* Responsive */
-        @media (max-width: 1024px) {
-            .dashboard-container {
-                grid-template-columns: 1fr;
-            }
-
-            .sidebar {
-                display: none;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .main-content {
-                padding: 1rem;
-            }
-
-            .header {
-                padding: 1rem;
-                flex-direction: column;
-                gap: 1rem;
-                text-align: center;
-            }
-
-            .user-info {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-
-            .admin-container {
-                gap: 1rem;
-            }
-        }
-
-        /* Mobile Sidebar Toggle */
-        .sidebar-mobile-toggle {
-            display: none;
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: #4299e1;
-            color: white;
-            border: none;
-            cursor: pointer;
-            z-index: 1000;
-            box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3);
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-        }
-
-        @media (max-width: 1024px) {
-            .sidebar-mobile-toggle {
-                display: flex;
-            }
-        }
-
-        /* Scrollbar Styling */
-        .table-container::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-
-        .table-container::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 4px;
-        }
-
-        .table-container::-webkit-scrollbar-thumb {
-            background: #cbd5e0;
-            border-radius: 4px;
-        }
-
-        .table-container::-webkit-scrollbar-thumb:hover {
-            background: #a0aec0;
-        }
-
         /* Empty State */
         .empty-state {
             text-align: center;
-            padding: 3rem;
+            padding: 2rem;
             color: #a0aec0;
         }
 
         .empty-state h3 {
-            font-size: 1.1rem;
-            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
             color: #718096;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .admin-container {
+                grid-template-columns: 200px 1fr;
+                gap: 0.8rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                z-index: 1000;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .sidebar.collapsed {
+                width: 250px;
+                min-width: 250px;
+                transform: translateX(-100%);
+            }
+
+            .sidebar.collapsed.open {
+                transform: translateX(0);
+            }
+
+            .sidebar-toggle {
+                display: none;
+            }
+
+            .mobile-menu-toggle {
+                display: flex;
+                background: #4299e1;
+                color: white;
+                border: none;
+                width: 32px;
+                height: 32px;
+                border-radius: 6px;
+                cursor: pointer;
+                align-items: center;
+                justify-content: center;
+                font-size: 0.9rem;
+            }
+
+            .header-left {
+                gap: 0.5rem;
+            }
+
+            .admin-container {
+                grid-template-columns: 1fr;
+                height: auto;
+                min-height: 0;
+            }
+
+            .side-nav {
+                order: 2;
+                margin-top: 1rem;
+            }
+
+            .content-area {
+                order: 1;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.8rem;
+            }
+
+            .user-info {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .content-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .table-container {
+                max-height: 50vh;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.5rem;
+            }
+
+            .header-left {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .user-info {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .inventory-table {
+                min-width: 800px;
+            }
+
+            .content-header h3 {
+                font-size: 0.8rem;
+            }
+
+            .last-updated {
+                font-size: 0.65rem;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .mobile-menu-toggle {
+                display: none;
+            }
+        }
+
+        /* Sidebar overlay for mobile */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            backdrop-filter: blur(3px);
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* Scrollbar Styling */
+        .table-container::-webkit-scrollbar,
+        .side-nav::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        .table-container::-webkit-scrollbar-track,
+        .side-nav::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb,
+        .side-nav::-webkit-scrollbar-thumb {
+            background: #cbd5e0;
+            border-radius: 4px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb:hover,
+        .side-nav::-webkit-scrollbar-thumb:hover {
+            background: #a0aec0;
+        }
+
+        /* Custom sidebar scrollbar */
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: #2d3748;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #4a5568;
+            border-radius: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: #718096;
         }
     </style>
 </head>
 <body>
-    <div class="dashboard-container" id="dashboardContainer">
-        <!-- Header -->
-        <div class="header">
-            <div style="display: flex; align-items: center; gap: 1rem;">
-                <button class="sidebar-toggle" onclick="toggleSidebar()" id="sidebarToggle">☰</button>
-                <h1>Wamz Arts & Prints - Admin Warehouse</h1>
-            </div>
-            <div class="user-info">
-                <span class="user-name">Welcome, <strong id="currentUser">Admin</strong></span>
-                <span class="admin-badge">ADMIN</span>
-                <button class="grv-btn" id="grvBtn">GRV ⤴</button>
-                <button class="logout-btn" onclick="logout()">Logout</button>
-            </div>
-        </div>
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
+    <div class="dashboard-container">
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <i class="fas fa-chevron-left"></i>
+            </button>
             <div class="sidebar-title">Navigation</div>
             <div class="nav-menu">
                 <a href="admin-dashboard.html" class="nav-item">
-                    📊 Dashboard
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
                 </a>
                 <a href="branches.html" class="nav-item">
-                    🏢 Branches
+                    <i class="fas fa-building"></i>
+                    <span>Branches</span>
                 </a>
                 <a href="grv.html" class="nav-item">
-                     Add Stock
+                    <i class="fas fa-upload"></i>
+                    <span>Add Stock</span>
                 </a>
                 <a href="admin-warehouse.html" class="nav-item active">
-                     Warehouse
+                    <i class="fas fa-warehouse"></i>
+                    <span>Warehouse</span>
                 </a>
                 <a href="admin-sales.html" class="nav-item">
-                     Sales
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Sales</span>
                 </a>
                 <a href="admin-reports.html" class="nav-item">
-                     Reports
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Reports</span>
                 </a>
                 <a href="admin-cashflow.html" class="nav-item">
-                     Cash Flow
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>Cash Flow</span>
                 </a>
-                <a href="index.html" class="nav-item">
-                  🚪 Logout
-                </a>
+                <button class="nav-item" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
             </div>
         </div>
 
         <!-- Main Content -->
         <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-left">
+                    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1>Wamz Arts & Prints - Admin Warehouse</h1>
+                </div>
+                <div class="user-info">
+                    <span class="user-name">Welcome, <strong id="currentUser">Admin</strong></span>
+                    <span class="admin-badge">ADMIN</span>
+                    <button class="grv-btn" id="grvBtn">
+                        <i class="fas fa-upload"></i> GRV
+                    </button>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
+            </div>
+
             <!-- Welcome Banner -->
             <div class="welcome-banner">
                 <h2>Admin Warehouse Management</h2>
@@ -653,26 +856,32 @@
                     </div>
                     
                     <button class="nav-btn active" data-view="all">
-                        📊 All Branches
+                        <i class="fas fa-chart-bar"></i>
+                        <span>All Branches</span>
                     </button>
                     <button class="nav-btn" data-view="branch1">
-                        🏢 Branch 1 (Main)
+                        <i class="fas fa-building"></i>
+                        <span>Branch 1 (Main)</span>
                     </button>
                     <button class="nav-btn" data-view="branch2">
-                        🏢 Branch 2
+                        <i class="fas fa-building"></i>
+                        <span>Branch 2</span>
                     </button>
                     <button class="nav-btn" data-view="branch3">
-                        🏢 Branch 3
+                        <i class="fas fa-building"></i>
+                        <span>Branch 3</span>
                     </button>
                     
                     <div class="nav-tools">
                         <button class="tool-btn" id="exportViewCsv">
-                            📁 Export CSV
+                            <i class="fas fa-file-export"></i>
+                            <span>Export CSV</span>
                         </button>
                         <button class="tool-btn primary" id="refreshBtn">
-                            🔄 Refresh
+                            <i class="fas fa-sync"></i>
+                            <span>Refresh</span>
                         </button>
-                        <div style="font-size: 0.8rem; color: #718096; text-align: center; margin-top: 0.5rem;">
+                        <div style="font-size: 0.7rem; color: #718096; text-align: center; margin-top: 0.3rem;">
                             Real-time Firestore updates
                         </div>
                     </div>
@@ -696,14 +905,14 @@
                                     <th>Category</th>
                                     <th>Branch Qty</th>
                                     <th>Total Qty</th>
-                                    <th>Unit Price (ZMW)</th>
-                                    <th>Value (ZMW)</th>
+                                    <th>Unit Price</th>
+                                    <th>Value</th>
                                     <th>Location(s)</th>
                                 </tr>
                             </thead>
                             <tbody id="inventoryBody">
                                 <tr>
-                                    <td colspan="8" style="text-align: center; padding: 40px;">
+                                    <td colspan="8" style="text-align: center; padding: 2rem;">
                                         <span class="loading">Connecting to Firestore...</span>
                                     </td>
                                 </tr>
@@ -720,9 +929,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Mobile Sidebar Toggle -->
-    <button class="sidebar-mobile-toggle" id="mobileSidebarToggle" onclick="toggleMobileSidebar()">☰</button>
 
     <script>
         // Firebase Configuration
@@ -750,11 +956,53 @@
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
             console.log("🏬 Admin Warehouse loaded");
+            initializeSidebar();
             checkAccess();
-            loadSidebarState();
             setupUI();
             setupInventoryListener();
         });
+
+        // Initialize sidebar toggle for both desktop and mobile
+        function initializeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            // Load saved sidebar state
+            const savedState = localStorage.getItem('sidebarCollapsed');
+            if (savedState === 'true') {
+                sidebar.classList.add('collapsed');
+            }
+            
+            // Desktop sidebar toggle
+            sidebarToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('collapsed');
+                localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+            });
+            
+            // Mobile menu toggle
+            mobileMenuToggle.addEventListener('click', () => {
+                sidebar.classList.add('open');
+                overlay.classList.add('active');
+            });
+            
+            // Close sidebar on overlay click (mobile)
+            overlay.addEventListener('click', () => {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+            });
+            
+            // Close sidebar when clicking on links (mobile)
+            document.querySelectorAll('.nav-item').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.remove('open');
+                        overlay.classList.remove('active');
+                    }
+                });
+            });
+        }
 
         // Check admin access
         function checkAccess() {
@@ -826,7 +1074,7 @@
             }, err => {
                 console.error('Firestore listener error:', err);
                 const tbody = document.getElementById('inventoryBody');
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:40px;color:#c53030">Error loading inventory: ${err.message}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:2rem;color:#c53030; font-size: 0.8rem;">Error loading inventory: ${err.message}</td></tr>`;
             });
         }
 
@@ -878,7 +1126,7 @@
             const rows = Object.values(map).sort((a, b) => b.total - a.total || a.code.localeCompare(b.code));
             
             if (!rows.length) {
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:40px">No items found</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:2rem; font-size: 0.8rem; color: #718096;">No items found</td></tr>`;
                 return;
             }
             
@@ -896,7 +1144,7 @@
                     <td>${numberWithCommas(r.total)}</td>
                     <td>${formatZMW(price)}</td>
                     <td>${formatZMW(value)}</td>
-                    <td>${escapeHtml(locations)}</td>
+                    <td style="font-size: 0.75rem;">${escapeHtml(locations)}</td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -910,7 +1158,7 @@
             const list = rawDocs.filter(d => d.branchId === branchId);
             
             if (!list.length) {
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:40px">No items for ${branchId}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:2rem; font-size: 0.8rem; color: #718096;">No items for ${branchId}</td></tr>`;
                 return;
             }
             
@@ -955,7 +1203,7 @@
                         <td>${numberWithCommas(it.qty)}</td>
                         <td>${formatZMW(it.price)}</td>
                         <td>${formatZMW(val)}</td>
-                        <td>${escapeHtml(Array.from(it.locations).join('; '))}</td>
+                        <td style="font-size: 0.75rem;">${escapeHtml(Array.from(it.locations).join('; '))}</td>
                     `;
                     tbody.appendChild(tr);
                 });
@@ -1080,50 +1328,6 @@
                 .replace(/>/g, '&gt;')
                 .replace(/"/g, '&quot;')
                 .replace(/'/g, '&#039;');
-        }
-
-        // Toggle sidebar
-        function toggleSidebar() {
-            const container = document.getElementById('dashboardContainer');
-            const isHidden = container.classList.contains('sidebar-hidden');
-            
-            if (isHidden) {
-                container.classList.remove('sidebar-hidden');
-                localStorage.setItem('sidebarState', 'visible');
-            } else {
-                container.classList.add('sidebar-hidden');
-                localStorage.setItem('sidebarState', 'hidden');
-            }
-        }
-
-        // Toggle mobile sidebar
-        function toggleMobileSidebar() {
-            const container = document.getElementById('dashboardContainer');
-            const sidebar = document.getElementById('sidebar');
-            
-            if (sidebar.style.display === 'block') {
-                sidebar.style.display = 'none';
-            } else {
-                sidebar.style.display = 'block';
-                sidebar.style.position = 'fixed';
-                sidebar.style.left = '0';
-                sidebar.style.top = '70px';
-                sidebar.style.width = '250px';
-                sidebar.style.height = 'calc(100vh - 70px)';
-                sidebar.style.zIndex = '999';
-            }
-        }
-
-        // Load sidebar state from localStorage
-        function loadSidebarState() {
-            const savedState = localStorage.getItem('sidebarState');
-            const container = document.getElementById('dashboardContainer');
-            
-            if (savedState === 'hidden') {
-                container.classList.add('sidebar-hidden');
-            } else {
-                container.classList.remove('sidebar-hidden');
-            }
         }
 
         // Show message
