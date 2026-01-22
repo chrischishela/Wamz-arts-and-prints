@@ -8,796 +8,917 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
-   <style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    }
-
-    body {
-        background: #f5f7fa;
-        color: #2c3e50;
-        line-height: 1.6;
-        min-height: 100vh;
-        width: 100%;
-        overflow-x: hidden;
-    }
-
-    /* AUTO FIT LAYOUT */
-    .dashboard-container {
-        display: grid;
-        grid-template-columns: minmax(200px, 250px) 1fr;
-        grid-template-rows: auto 1fr;
-        min-height: 100vh;
-        width: 100%;
-    }
-
-    .dashboard-container.sidebar-hidden {
-        grid-template-columns: 0px 1fr;
-    }
-
-    /* HEADER - AUTO FIT */
-    .header {
-        grid-column: 1 / -1;
-        background: #1a365d;
-        color: white;
-        padding: clamp(0.8rem, 1.5vw, 1rem) clamp(1rem, 2vw, 2rem);
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        align-items: center;
-        gap: clamp(0.5rem, 1vw, 1rem);
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        z-index: 100;
-    }
-
-    .header h1 {
-        font-size: clamp(1.1rem, 2.5vw, 1.4rem);
-        font-weight: 600;
-        white-space: nowrap;
-    }
-
-    .user-info {
-        display: flex;
-        align-items: center;
-        gap: clamp(0.5rem, 1vw, 1rem);
-        flex-wrap: wrap;
-    }
-
-    .user-name {
-        font-weight: 500;
-        color: #e2e8f0;
-        font-size: clamp(0.85rem, 1.5vw, 0.95rem);
-    }
-
-    .branch-badge {
-        background: #4299e1;
-        color: white;
-        padding: clamp(0.2rem, 0.5vw, 0.4rem) clamp(0.4rem, 1vw, 0.8rem);
-        border-radius: 4px;
-        font-size: clamp(0.75rem, 1.3vw, 0.85rem);
-        font-weight: 500;
-        white-space: nowrap;
-    }
-
-    .admin-badge {
-        background: #e53e3e;
-        color: white;
-        padding: clamp(0.2rem, 0.5vw, 0.4rem) clamp(0.4rem, 1vw, 0.8rem);
-        border-radius: 4px;
-        font-size: clamp(0.75rem, 1.3vw, 0.85rem);
-        font-weight: 600;
-        white-space: nowrap;
-    }
-
-    /* TOGGLE BUTTONS - AUTO FIT */
-    .sidebar-toggle {
-        background: #4299e1;
-        color: white;
-        border: none;
-        width: clamp(32px, 3vw, 36px);
-        height: clamp(32px, 3vw, 36px);
-        border-radius: 6px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-right: clamp(0.5rem, 1vw, 1rem);
-        transition: all 0.2s;
-        flex-shrink: 0;
-        font-size: clamp(1rem, 1.5vw, 1.2rem);
-    }
-
-    .sidebar-toggle:hover {
-        background: #3182ce;
-    }
-
-    .logout-btn {
-        background: #2d3748;
-        color: white;
-        border: none;
-        padding: clamp(0.4rem, 0.8vw, 0.6rem) clamp(0.8rem, 1.5vw, 1.2rem);
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: clamp(0.8rem, 1.2vw, 0.9rem);
-        transition: all 0.2s;
-        white-space: nowrap;
-    }
-
-    .logout-btn:hover {
-        background: #4a5568;
-    }
-
-    /* SIDEBAR - AUTO FIT */
-    .sidebar {
-        background: #2d3748;
-        color: white;
-        padding: clamp(1rem, 2vw, 2rem) clamp(0.5rem, 1vw, 1rem);
-        border-right: 1px solid #4a5568;
-        overflow-y: auto;
-        min-width: min-content;
-    }
-
-    .sidebar-hidden .sidebar {
-        transform: translateX(-100%);
-        opacity: 0;
-    }
-
-    .sidebar-title {
-        font-size: clamp(0.85rem, 1.5vw, 1rem);
-        color: #cbd5e0;
-        margin-bottom: clamp(1rem, 2vw, 1.5rem);
-        padding: 0 clamp(0.5rem, 1vw, 1rem);
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        font-weight: 600;
-    }
-
-    .nav-menu {
-        display: flex;
-        flex-direction: column;
-        gap: clamp(0.3rem, 0.5vw, 0.5rem);
-    }
-
-    .nav-item {
-        display: flex;
-        align-items: center;
-        gap: clamp(0.5rem, 1vw, 0.8rem);
-        padding: clamp(0.7rem, 1vw, 0.9rem) clamp(0.8rem, 1.5vw, 1rem);
-        background: none;
-        border: none;
-        text-align: left;
-        color: #cbd5e0;
-        cursor: pointer;
-        border-radius: 8px;
-        font-size: clamp(0.85rem, 1.2vw, 0.95rem);
-        transition: all 0.2s;
-        text-decoration: none;
-        white-space: nowrap;
-    }
-
-    .nav-item:hover {
-        background: rgba(255, 255, 255, 0.1);
-        color: white;
-    }
-
-    .nav-item.active {
-        background: #4299e1;
-        color: white;
-    }
-
-    /* MAIN CONTENT - AUTO FIT */
-    .main-content {
-        background: #f5f7fa;
-        padding: clamp(1rem, 2vw, 2rem);
-        overflow-y: auto;
-        min-width: 0;
-    }
-
-    /* WELCOME BANNER - AUTO FIT */
-    .welcome-banner {
-        background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
-        color: white;
-        padding: clamp(1rem, 1.5vw, 2rem);
-        border-radius: clamp(8px, 1.2vw, 12px);
-        margin-bottom: clamp(1rem, 2vw, 2rem);
-        box-shadow: 0 4px 12px rgba(66, 153, 225, 0.2);
-    }
-
-    .welcome-banner h2 {
-        font-size: clamp(1.2rem, 2.5vw, 1.6rem);
-        margin-bottom: clamp(0.3rem, 0.5vw, 0.5rem);
-        font-weight: 600;
-    }
-
-    .welcome-banner p {
-        opacity: 0.9;
-        font-size: clamp(0.9rem, 1.5vw, 1rem);
-    }
-
-    .date-display {
-        font-size: clamp(0.8rem, 1.2vw, 0.9rem);
-        opacity: 0.8;
-        margin-top: clamp(0.3rem, 0.5vw, 0.5rem);
-    }
-
-    /* ADMIN ACCESS ALERT - AUTO FIT */
-    .admin-access-alert {
-        background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
-        color: white;
-        padding: clamp(1rem, 1.5vw, 1.5rem);
-        border-radius: clamp(8px, 1vw, 10px);
-        margin-bottom: clamp(1rem, 1.5vw, 1.5rem);
-        box-shadow: 0 4px 12px rgba(229, 62, 62, 0.2);
-        display: none;
-        border: 2px solid #fed7d7;
-    }
-
-    .admin-access-alert h3 {
-        font-size: clamp(1rem, 1.5vw, 1.3rem);
-        margin-bottom: clamp(0.3rem, 0.5vw, 0.5rem);
-        font-weight: 600;
-    }
-
-    .admin-access-alert p {
-        opacity: 0.9;
-        margin-bottom: clamp(0.3rem, 0.5vw, 0.5rem);
-        font-size: clamp(0.85rem, 1.2vw, 0.9rem);
-    }
-
-    .alert-details {
-        background: rgba(255, 255, 255, 0.1);
-        padding: clamp(0.8rem, 1vw, 1rem);
-        border-radius: clamp(4px, 0.6vw, 6px);
-        margin-top: clamp(0.8rem, 1vw, 1rem);
-        font-size: clamp(0.8rem, 1.1vw, 0.9rem);
-        border-left: 4px solid white;
-    }
-
-    /* CASH FLOW APP - AUTO FIT */
-    .app {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        gap: clamp(6px, 1vw, 10px);
-        min-width: 0;
-    }
-
-    /* TOP BAR - AUTO FIT */
-    .topbar {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: space-between;
-        gap: clamp(4px, 0.8vw, 8px);
-        background: transparent;
-        padding: clamp(4px, 0.6vw, 6px) clamp(2px, 0.4vw, 4px);
-    }
-
-    .title {
-        color: #4299e1;
-        font-weight: 800;
-        font-size: clamp(0.9rem, 1.5vw, 1.05rem);
-        white-space: nowrap;
-    }
-
-    .controls {
-        display: flex;
-        gap: clamp(4px, 0.8vw, 8px);
-        align-items: center;
-        flex-wrap: wrap;
-    }
-
-    .btn {
-        padding: clamp(6px, 0.8vw, 8px) clamp(8px, 1.2vw, 12px);
-        border-radius: clamp(6px, 0.8vw, 8px);
-        border: none;
-        cursor: pointer;
-        font-weight: 700;
-        background: #4299e1;
-        color: #fff;
-        transition: all 0.2s;
-        font-size: clamp(0.75rem, 1.1vw, 0.9rem);
-        white-space: nowrap;
-    }
-
-    .btn:hover {
-        background: #3182ce;
-    }
-
-    .btn.ghost {
-        background: rgba(255, 255, 255, 0.85);
-        color: #4299e1;
-        border: 1px solid rgba(66, 153, 225, 0.1);
-    }
-
-    .btn.ghost:hover {
-        background: rgba(255, 255, 255, 0.95);
-    }
-
-    .small {
-        color: #718096;
-        font-size: clamp(0.75rem, 1.1vw, 0.85rem);
-    }
-
-    /* THREE DOT MENU - AUTO FIT */
-    .menu-btn {
-        width: clamp(32px, 4vw, 40px);
-        height: clamp(32px, 4vw, 40px);
-        border-radius: clamp(6px, 0.8vw, 8px);
-        border: none;
-        background: rgba(255, 255, 255, 0.9);
-        font-size: clamp(1rem, 1.5vw, 1.2rem);
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #4299e1;
-        transition: all 0.2s;
-        flex-shrink: 0;
-    }
-
-    .menu-btn:hover {
-        background: rgba(255, 255, 255, 1);
-    }
-
-    .dropdown {
-        position: absolute;
-        right: clamp(10px, 1.5vw, 14px);
-        top: clamp(44px, 5vw, 56px);
-        min-width: clamp(180px, 25vw, 220px);
-        background: white;
-        border-radius: clamp(6px, 0.8vw, 8px);
-        box-shadow: 0 12px 30px rgba(10, 30, 60, 0.12);
-        border: 1px solid rgba(2, 60, 120, 0.05);
-        padding: clamp(8px, 1vw, 10px);
-        display: none;
-        z-index: 999;
-    }
-
-    .dropdown.show {
-        display: block;
-    }
-
-    .dropdown .item {
-        width: 100%;
-        padding: clamp(6px, 0.8vw, 8px) clamp(8px, 1vw, 10px);
-        text-align: left;
-        border-radius: clamp(4px, 0.6vw, 6px);
-        background: transparent;
-        border: none;
-        cursor: pointer;
-        color: #4299e1;
-        font-weight: 700;
-        margin-bottom: clamp(4px, 0.6vw, 6px);
-        transition: all 0.2s;
-        font-size: clamp(0.8rem, 1.1vw, 0.9rem);
-    }
-
-    .dropdown .item:hover {
-        background: #f7fafc;
-    }
-
-    .dropdown .sep {
-        height: 1px;
-        background: #e2e8f0;
-        margin: clamp(6px, 0.8vw, 8px) 0;
-        border-radius: 2px;
-    }
-
-    /* MAIN AREA - AUTO FIT */
-    .main {
-        display: flex;
-        gap: clamp(8px, 1.2vw, 12px);
-        flex: 1 1 auto;
-        min-height: 0;
-        width: 100%;
-    }
-
-    .table-area {
-        flex: 1 1 65%;
-        background: white;
-        border-radius: clamp(8px, 1vw, 10px);
-        padding: clamp(6px, 0.8vw, 8px);
-        overflow: hidden;
-        border: 1px solid rgba(2, 60, 120, 0.04);
-        display: flex;
-        flex-direction: column;
-        min-width: 0;
-        min-height: 400px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-
-    .table-scroll {
-        overflow: auto;
-        flex: 1 1 auto;
-        -webkit-overflow-scrolling: touch;
-        padding: clamp(4px, 0.6vw, 6px);
-        width: 100%;
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        min-width: min(600px, 100%);
-        font-size: clamp(0.8rem, 1.2vw, 0.9rem);
-    }
-
-    thead th {
-        text-align: left;
-        padding: clamp(8px, 1vw, 10px) clamp(6px, 0.8vw, 8px);
-        background: #f7fafc;
-        color: #718096;
-        font-size: clamp(0.7rem, 1.1vw, 0.85rem);
-        position: sticky;
-        top: 0;
-        z-index: 1;
-        border-bottom: 2px solid #e2e8f0;
-        white-space: nowrap;
-    }
-
-    tbody td {
-        padding: clamp(8px, 1vw, 10px) clamp(6px, 0.8vw, 8px);
-        border-bottom: 1px solid #f1f6ff;
-        vertical-align: middle;
-    }
-
-    td.num {
-        text-align: right;
-        font-variant-numeric: tabular-nums;
-    }
-
-    .empty {
-        text-align: center;
-        padding: clamp(1rem, 2vw, 1.5rem);
-        color: #718096;
-        font-size: clamp(0.85rem, 1.2vw, 0.9rem);
-    }
-
-    /* HIGHLIGHT POSITIVE/NEGATIVE - AUTO FIT */
-    .positive {
-        color: #38a169;
-        font-weight: 600;
-        font-size: clamp(0.8rem, 1.2vw, 0.9rem);
-    }
-
-    .negative {
-        color: #e53e3e;
-        font-weight: 600;
-        font-size: clamp(0.8rem, 1.2vw, 0.9rem);
-    }
-
-    /* FORM PANE - AUTO FIT */
-    .form-pane {
-        flex: 0 0 minmax(260px, 360px);
-        max-width: 360px;
-        min-width: 260px;
-        background: white;
-        border-radius: clamp(8px, 1vw, 10px);
-        padding: clamp(8px, 1vw, 10px);
-        border: 1px solid rgba(2, 60, 120, 0.04);
-        display: flex;
-        flex-direction: column;
-        gap: clamp(6px, 0.8vw, 8px);
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        min-height: 400px;
-    }
-
-    .form-pane.hidden {
-        display: none;
-    }
-
-    .form-pane header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: clamp(4px, 0.8vw, 8px);
-    }
-
-    .form-pane header .label {
-        font-weight: 800;
-        color: #4299e1;
-        font-size: clamp(0.9rem, 1.4vw, 1rem);
-    }
-
-    .form-branch {
-        font-size: clamp(0.7rem, 1.1vw, 0.85rem);
-        color: #718096;
-        font-weight: 700;
-        margin-left: clamp(4px, 0.8vw, 8px);
-    }
-
-    form.simple-form {
-        display: flex;
-        flex-direction: column;
-        gap: clamp(6px, 0.8vw, 8px);
-    }
-
-    label {
-        font-size: clamp(0.75rem, 1.1vw, 0.85rem);
-        color: #718096;
-        margin-bottom: clamp(2px, 0.4vw, 4px);
-        display: block;
-    }
-
-    input[type="text"],
-    input[type="date"],
-    input[type="number"] {
-        padding: clamp(6px, 0.8vw, 8px) clamp(8px, 1vw, 10px);
-        border-radius: clamp(6px, 0.8vw, 8px);
-        border: 1px solid #e2e8f0;
-        font-size: clamp(0.8rem, 1.2vw, 0.9rem);
-        background: #fff;
-        width: 100%;
-        transition: border-color 0.2s;
-    }
-
-    input[type="text"]:focus,
-    input[type="date"]:focus,
-    input[type="number"]:focus {
-        outline: none;
-        border-color: #4299e1;
-        box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
-    }
-
-    .form-row {
-        display: flex;
-        gap: clamp(6px, 0.8vw, 8px);
-        flex-wrap: wrap;
-    }
-
-    .form-row>div {
-        flex: 1;
-        min-width: 120px;
-    }
-
-    .form-actions {
-        display: flex;
-        gap: clamp(6px, 0.8vw, 8px);
-        justify-content: flex-end;
-        margin-top: clamp(4px, 0.6vw, 6px);
-        flex-wrap: wrap;
-    }
-
-    /* EDIT/DELETE BUTTONS - AUTO FIT */
-    .editBtn,
-    .delBtn {
-        padding: clamp(3px, 0.4vw, 4px) clamp(6px, 0.8vw, 8px);
-        border-radius: clamp(3px, 0.4vw, 4px);
-        border: none;
-        font-size: clamp(0.7rem, 1vw, 0.85rem);
-        cursor: pointer;
-        font-weight: 600;
-        transition: all 0.2s;
-        white-space: nowrap;
-    }
-
-    .editBtn {
-        background: #4299e1;
-        color: white;
-        margin-right: clamp(4px, 0.6vw, 6px);
-    }
-
-    .editBtn:hover {
-        background: #3182ce;
-    }
-
-    .delBtn {
-        background: #e53e3e;
-        color: white;
-    }
-
-    .delBtn:hover {
-        background: #c53030;
-    }
-
-    .disabled {
-        opacity: 0.6;
-        pointer-events: none;
-    }
-
-    /* MESSAGE DISPLAY - AUTO FIT */
-    .message {
-        padding: clamp(0.8rem, 1vw, 1rem);
-        border-radius: clamp(6px, 0.8vw, 8px);
-        margin-bottom: clamp(1rem, 1.5vw, 1.5rem);
-        display: none;
-        border: 1px solid transparent;
-        font-size: clamp(0.85rem, 1.2vw, 0.9rem);
-    }
-
-    .message.success {
-        background: #f0fff4;
-        color: #276749;
-        border-color: #c6f6d5;
-    }
-
-    .message.error {
-        background: #fff5f5;
-        color: #c53030;
-        border-color: #fed7d7;
-    }
-
-    .message.info {
-        background: #ebf8ff;
-        color: #2c5282;
-        border-color: #bee3f8;
-    }
-
-    /* LOADING STATES */
-    .loading {
-        color: #a0aec0;
-        font-style: italic;
-        font-size: clamp(0.85rem, 1.2vw, 0.9rem);
-    }
-
-    /* MOBILE SIDEBAR TOGGLE - AUTO FIT */
-    .sidebar-mobile-toggle {
-        position: fixed;
-        bottom: clamp(15px, 3vw, 20px);
-        right: clamp(15px, 3vw, 20px);
-        width: clamp(50px, 8vw, 60px);
-        height: clamp(50px, 8vw, 60px);
-        border-radius: 50%;
-        background: #4299e1;
-        color: white;
-        border: none;
-        cursor: pointer;
-        z-index: 1000;
-        box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3);
-        align-items: center;
-        justify-content: center;
-        font-size: clamp(18px, 3vw, 24px);
-        display: none;
-    }
-
-    /* AUTO SCALING FIXES */
-    @media (max-width: 768px) {
-        .dashboard-container {
-            grid-template-columns: 1fr;
-            grid-template-rows: auto auto 1fr;
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         }
-        
-        .sidebar {
-            grid-row: 2;
-            border-right: none;
-            border-bottom: 1px solid #4a5568;
-        }
-        
-        .main-content {
-            grid-row: 3;
-        }
-        
-        .main {
-            flex-direction: column;
-        }
-        
-        .table-area,
-        .form-pane {
+
+        body {
+            background: #f5f7fa;
+            color: #2c3e50;
+            line-height: 1.5;
+            min-height: 100vh;
             width: 100%;
-            max-width: none;
-            min-width: 0;
-            flex: 1 1 auto;
+            overflow-x: hidden;
         }
-        
-        .form-pane {
-            order: -1; /* Show form on top on mobile */
-        }
-        
-        .sidebar-mobile-toggle {
+
+        /* DASHBOARD LAYOUT */
+        .dashboard-container {
             display: flex;
+            min-height: 100vh;
+            width: 100%;
+            position: relative;
         }
-        
-        .header {
-            flex-direction: column;
+
+        /* SIDEBAR - COLLAPSIBLE ON ALL SCREENS */
+        .sidebar {
+            background: #2d3748;
+            color: white;
+            width: 250px;
+            min-width: 250px;
+            padding: 1.5rem 0.8rem;
+            border-right: 1px solid #4a5568;
+            overflow-y: auto;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            z-index: 100;
+            transition: width 0.3s ease, min-width 0.3s ease;
+        }
+
+        .sidebar.collapsed {
+            width: 70px;
+            min-width: 70px;
+        }
+
+        .sidebar-title {
+            font-size: 0.9rem;
+            color: #cbd5e0;
+            margin-bottom: 1.2rem;
+            padding: 0 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
             text-align: center;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .sidebar.collapsed .sidebar-title {
+            opacity: 0;
+            height: 0;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.8rem;
+            background: none;
+            border: none;
+            text-align: left;
+            color: #cbd5e0;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            text-decoration: none;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .sidebar.collapsed .nav-item {
+            justify-content: center;
+            padding: 0.8rem 0.5rem;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .nav-item.active {
+            background: #4299e1;
+            color: white;
+        }
+
+        .nav-item span {
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar.collapsed .nav-item span {
+            opacity: 0;
+            width: 0;
+            display: none;
+        }
+
+        .nav-item i {
+            min-width: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        /* SIDEBAR TOGGLE BUTTON */
+        .sidebar-toggle {
+            position: absolute;
+            top: 1rem;
+            right: -12px;
+            background: #4299e1;
+            color: white;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            z-index: 101;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .sidebar-toggle:hover {
+            background: #3182ce;
+            transform: scale(1.1);
+        }
+
+        .sidebar.collapsed .sidebar-toggle {
+            right: -12px;
+        }
+
+        /* MAIN CONTENT AREA */
+        .main-content {
+            flex: 1;
+            background: #f5f7fa;
+            padding: 1rem;
+            overflow-y: auto;
+            min-height: 100vh;
+            width: 100%;
+            transition: margin-left 0.3s ease;
+        }
+
+        /* HEADER */
+        .header {
+            background: #1a365d;
+            color: white;
+            padding: 0.8rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            flex-wrap: wrap;
             gap: 0.8rem;
         }
-        
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+        }
+
+        .header h1 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
         .user-info {
-            justify-content: center;
-            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            flex-wrap: wrap;
         }
-        
-        .controls {
-            justify-content: center;
-            width: 100%;
-        }
-    }
 
-    @media (max-width: 480px) {
-        .main-content {
+        .user-name {
+            font-weight: 500;
+            color: #e2e8f0;
+            font-size: 0.85rem;
+        }
+
+        .branch-badge {
+            background: #4299e1;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .admin-badge {
+            background: #e53e3e;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .logout-btn {
+            background: #2d3748;
+            color: white;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .logout-btn:hover {
+            background: #4a5568;
+        }
+
+        /* ADMIN ACCESS ALERT */
+        .admin-access-alert {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+            color: white;
             padding: 0.8rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(229, 62, 62, 0.2);
+            display: none;
+            border: 1px solid #fed7d7;
         }
-        
+
+        .admin-access-alert h3 {
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+            font-weight: 600;
+        }
+
+        .admin-access-alert p {
+            opacity: 0.9;
+            font-size: 0.8rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .alert-details {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.6rem;
+            border-radius: 6px;
+            margin-top: 0.3rem;
+            font-size: 0.75rem;
+            border-left: 4px solid white;
+        }
+
+        /* WELCOME BANNER */
         .welcome-banner {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white;
             padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 10px rgba(66, 153, 225, 0.2);
         }
-        
-        .form-row {
+
+        .welcome-banner h2 {
+            font-size: 1rem;
+            margin-bottom: 0.3rem;
+            font-weight: 600;
+        }
+
+        .welcome-banner p {
+            opacity: 0.9;
+            font-size: 0.8rem;
+        }
+
+        .date-display {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            margin-top: 0.3rem;
+            font-style: italic;
+        }
+
+        /* MESSAGE DISPLAY */
+        .message {
+            padding: 0.6rem;
+            border-radius: 6px;
+            margin-bottom: 0.8rem;
+            display: none;
+            border: 1px solid transparent;
+            font-size: 0.8rem;
+        }
+
+        .message.success {
+            background: #f0fff4;
+            color: #276749;
+            border-color: #c6f6d5;
+        }
+
+        .message.error {
+            background: #fff5f5;
+            color: #c53030;
+            border-color: #fed7d7;
+        }
+
+        .message.info {
+            background: #ebf8ff;
+            color: #2c5282;
+            border-color: #bee3f8;
+        }
+
+        /* CASH FLOW APP - RESPONSIVE */
+        .app {
+            width: 100%;
+            height: 100%;
+            display: flex;
             flex-direction: column;
+            gap: 0.8rem;
+            min-width: 0;
         }
-        
-        .form-row>div {
-            min-width: 100%;
+
+        /* TOP BAR - COMPACT */
+        .topbar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.6rem;
+            background: white;
+            padding: 0.8rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
         }
-        
+
+        .title {
+            color: #4299e1;
+            font-weight: 700;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .controls {
+            display: flex;
+            gap: 0.4rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            background: #4299e1;
+            color: #fff;
+            transition: all 0.2s;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .btn:hover {
+            background: #3182ce;
+        }
+
+        .btn.ghost {
+            background: transparent;
+            color: #4299e1;
+            border: 1px solid #4299e1;
+        }
+
+        .btn.ghost:hover {
+            background: rgba(66, 153, 225, 0.1);
+        }
+
+        /* THREE DOT MENU */
+        .menu-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            border: none;
+            background: white;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4299e1;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            border: 1px solid #e2e8f0;
+        }
+
+        .menu-btn:hover {
+            background: #f7fafc;
+        }
+
+        .dropdown {
+            position: absolute;
+            right: 0.5rem;
+            top: 2.5rem;
+            min-width: 180px;
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+            padding: 0.6rem;
+            display: none;
+            z-index: 999;
+        }
+
+        .dropdown.show {
+            display: block;
+        }
+
+        .dropdown .item {
+            width: 100%;
+            padding: 0.5rem 0.6rem;
+            text-align: left;
+            border-radius: 4px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: #4a5568;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            transition: all 0.2s;
+            font-size: 0.75rem;
+        }
+
+        .dropdown .item:hover {
+            background: #f7fafc;
+        }
+
+        .dropdown .sep {
+            height: 1px;
+            background: #e2e8f0;
+            margin: 0.4rem 0;
+            border-radius: 2px;
+        }
+
+        /* MAIN AREA - RESPONSIVE */
+        .main {
+            display: flex;
+            gap: 0.8rem;
+            flex: 1 1 auto;
+            min-height: 0;
+            width: 100%;
+        }
+
+        .table-area {
+            flex: 1 1 65%;
+            background: white;
+            border-radius: 8px;
+            padding: 0.6rem;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            min-height: 300px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+
+        .table-scroll {
+            overflow: auto;
+            flex: 1 1 auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 0.4rem;
+            width: 100%;
+        }
+
         table {
-            min-width: 500px;
+            width: 100%;
+            border-collapse: collapse;
+            min-width: min(600px, 100%);
+            font-size: 0.75rem;
         }
-    }
 
-    /* SCROLLBAR STYLING */
-    .table-scroll::-webkit-scrollbar {
-        width: clamp(4px, 0.8vw, 6px);
-        height: clamp(4px, 0.8vw, 6px);
-    }
+        thead th {
+            text-align: left;
+            padding: 0.6rem 0.5rem;
+            background: #f8fafc;
+            color: #718096;
+            font-size: 0.7rem;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            border-bottom: 2px solid #e2e8f0;
+            white-space: nowrap;
+        }
 
-    .table-scroll::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 4px;
-    }
+        tbody td {
+            padding: 0.6rem 0.5rem;
+            border-bottom: 1px solid #f7fafc;
+            vertical-align: middle;
+        }
 
-    .table-scroll::-webkit-scrollbar-thumb {
-        background: #cbd5e0;
-        border-radius: 4px;
-    }
+        td.num {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
 
-    .table-scroll::-webkit-scrollbar-thumb:hover {
-        background: #a0aec0;
-    }
-</style>
+        .empty {
+            text-align: center;
+            padding: 1.5rem;
+            color: #a0aec0;
+            font-size: 0.8rem;
+            font-style: italic;
+        }
+
+        /* HIGHLIGHT POSITIVE/NEGATIVE */
+        .positive {
+            color: #38a169;
+            font-weight: 600;
+        }
+
+        .negative {
+            color: #e53e3e;
+            font-weight: 600;
+        }
+
+        /* FORM PANE - RESPONSIVE */
+        .form-pane {
+            flex: 0 0 300px;
+            max-width: 300px;
+            min-width: 280px;
+            background: white;
+            border-radius: 8px;
+            padding: 0.8rem;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            min-height: 300px;
+        }
+
+        .form-pane.hidden {
+            display: none;
+        }
+
+        .form-pane header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .form-pane header .label {
+            font-weight: 700;
+            color: #4299e1;
+            font-size: 0.9rem;
+        }
+
+        .form-branch {
+            font-size: 0.7rem;
+            color: #718096;
+            font-weight: 600;
+            margin-left: 0.4rem;
+        }
+
+        form.simple-form {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        label {
+            font-size: 0.75rem;
+            color: #718096;
+            margin-bottom: 0.2rem;
+            display: block;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        input[type="number"] {
+            padding: 0.5rem 0.6rem;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            font-size: 0.8rem;
+            background: #fff;
+            width: 100%;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #4299e1;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .form-row>div {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+            margin-top: 0.4rem;
+            flex-wrap: wrap;
+        }
+
+        /* EDIT/DELETE BUTTONS */
+        .editBtn,
+        .delBtn {
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            border: none;
+            font-size: 0.7rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .editBtn {
+            background: #4299e1;
+            color: white;
+            margin-right: 0.3rem;
+        }
+
+        .editBtn:hover {
+            background: #3182ce;
+        }
+
+        .delBtn {
+            background: #e53e3e;
+            color: white;
+        }
+
+        .delBtn:hover {
+            background: #c53030;
+        }
+
+        .disabled {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        /* LOADING STATES */
+        .loading {
+            color: #a0aec0;
+            font-style: italic;
+            font-size: 0.8rem;
+        }
+
+        /* RESPONSIVE DESIGN */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                z-index: 1000;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .sidebar.collapsed {
+                width: 250px;
+                min-width: 250px;
+                transform: translateX(-100%);
+            }
+
+            .sidebar.collapsed.open {
+                transform: translateX(0);
+            }
+
+            .sidebar-toggle {
+                display: none;
+            }
+
+            .mobile-menu-toggle {
+                display: flex;
+                background: #4299e1;
+                color: white;
+                border: none;
+                width: 36px;
+                height: 36px;
+                border-radius: 6px;
+                cursor: pointer;
+                align-items: center;
+                justify-content: center;
+                font-size: 1rem;
+            }
+
+            .header-left {
+                gap: 0.5rem;
+            }
+
+            .main {
+                flex-direction: column;
+            }
+
+            .table-area,
+            .form-pane {
+                width: 100%;
+                max-width: none;
+                min-width: 0;
+                flex: 1 1 auto;
+            }
+
+            .form-pane {
+                order: -1; /* Show form on top on mobile */
+            }
+
+            table {
+                min-width: 600px;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.8rem;
+            }
+
+            .controls {
+                justify-content: flex-end;
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.5rem;
+            }
+
+            .header-left {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .user-info {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .form-row {
+                flex-direction: column;
+            }
+
+            .form-row>div {
+                min-width: 100%;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .form-actions .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .dropdown {
+                min-width: 160px;
+                right: 0.3rem;
+            }
+
+            table {
+                min-width: 550px;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .mobile-menu-toggle {
+                display: none;
+            }
+        }
+
+        /* Sidebar overlay for mobile */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            backdrop-filter: blur(3px);
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* SCROLLBAR STYLING */
+        .table-scroll::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        .table-scroll::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .table-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e0;
+            border-radius: 4px;
+        }
+
+        .table-scroll::-webkit-scrollbar-thumb:hover {
+            background: #a0aec0;
+        }
+    </style>
 </head>
 <body>
-    <div class="dashboard-container" id="dashboardContainer">
-        <!-- Header -->
-        <div class="header">
-            <div style="display: flex; align-items: center; gap: 1rem;">
-                <button class="sidebar-toggle" onclick="toggleSidebar()" id="sidebarToggle">☰</button>
-                <h1>Wamz Arts & Prints - Cash Flow</h1>
-            </div>
-            <div class="user-info">
-                <span class="user-name">Welcome, <strong id="currentUser">User</strong></span>
-                <span class="branch-badge" id="branchBadge">Branch</span>
-                <span class="admin-badge" id="adminBadge" style="display: none;">ADMIN</span>
-                <button class="logout-btn" onclick="logout()">Logout</button>
-            </div>
-        </div>
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
+    <div class="dashboard-container">
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <i class="fas fa-chevron-left"></i>
+            </button>
             <div class="sidebar-title">Navigation</div>
             <div class="nav-menu">
                 <a href="user-dashboard.html" class="nav-item" onclick="checkAdminAccess(event, 'user-dashboard.html')">
-                     Overview
+                    <i class="fas fa-home"></i>
+                    <span>Overview</span>
                 </a>
                 <a href="inventory.html" class="nav-item" onclick="checkAdminAccess(event, 'inventory.html')">
-                     Inventory
+                    <i class="fas fa-box"></i>
+                    <span>Inventory</span>
                 </a>
                 <a href="sales.html" class="nav-item" onclick="checkAdminAccess(event, 'sales.html')">
-                     Sales
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Sales</span>
                 </a>
                 <a href="reports.html" class="nav-item" onclick="checkAdminAccess(event, 'reports.html')">
-                     Reports
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Reports</span>
                 </a>
                 <a href="cashflow.html" class="nav-item active" onclick="checkAdminAccess(event, 'cashflow.html')">
-                     Cash Flow
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>Cash Flow</span>
                 </a>
                 <!-- Admin-only option -->
                 <button class="nav-item" onclick="openAdminPanel()" id="adminPanelBtn" style="display: none;">
-                     Admin Panel
+                    <i class="fas fa-cog"></i>
+                    <span>Admin Panel</span>
                 </button>
             </div>
         </div>
 
         <!-- Main Content -->
         <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-left">
+                    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1>Wamz Arts & Prints - Cash Flow</h1>
+                </div>
+                <div class="user-info">
+                    <span class="user-name">Welcome, <strong id="currentUser">User</strong></span>
+                    <span class="branch-badge" id="branchBadge">Branch</span>
+                    <span class="admin-badge" id="adminBadge" style="display: none;">ADMIN</span>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
+            </div>
+
             <!-- Admin Access Alert -->
-            <div class="admin-access-alert" id="adminAccessAlert">
+            <div class="admin-access-alert" id="adminAccessAlert" style="display: none;">
                 <h3>⚠️ ADMIN ACCESS DETECTED</h3>
                 <p><strong id="adminName">Wamz (Admin)</strong> is accessing another user's account.</p>
                 <div class="alert-details">
@@ -806,7 +927,7 @@
                     <p><strong>Branch Being Accessed:</strong> <span id="targetBranch">Branch 3</span></p>
                     <p><strong>Time:</strong> <span id="accessTime">Just now</span></p>
                 </div>
-                <p style="margin-top: 1rem; font-size: 0.9rem;">All actions will be logged for security purposes.</p>
+                <p style="margin-top: 0.6rem; font-size: 0.75rem;">All actions will be logged for security purposes.</p>
             </div>
 
             <!-- Welcome Banner -->
@@ -822,30 +943,39 @@
             <!-- Cash Flow App -->
             <div class="app" id="appRoot">
                 <div class="topbar">
-                    <div class="title"> Cash Flow Transactions</div>
+                    <div class="title">Cash Flow Transactions</div>
                     <div class="controls">
-                        <button class="btn" id="addBtn">Add Transaction</button>
+                        <button class="btn" id="addBtn">
+                            <i class="fas fa-plus"></i> Add Transaction
+                        </button>
                         <div style="position:relative;">
-                            <button id="menuBtn" class="menu-btn" aria-label="more">⋮</button>
+                            <button id="menuBtn" class="menu-btn" aria-label="more">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
                             <div id="dropdown" class="dropdown" role="menu" aria-hidden="true">
-                                <button id="toggleFormFromMenu" class="item">Toggle Form</button>
-                                <button id="exportCsvBtn" class="item">Export CSV</button>
-                                <button id="printBtn" class="item">Print Report</button>
+                                <button id="toggleFormFromMenu" class="item">
+                                    <i class="fas fa-eye"></i> Toggle Form
+                                </button>
+                                <button id="exportCsvBtn" class="item">
+                                    <i class="fas fa-file-export"></i> Export CSV
+                                </button>
+                                <button id="printBtn" class="item">
+                                    <i class="fas fa-print"></i> Print Report
+                                </button>
                                 <div class="sep"></div>
-                                <div style="font-size:12px;color:#718096;font-weight:700;margin-bottom:6px">Filter period</div>
-                                <div style="display:flex;gap:6px;margin-bottom:8px">
-                                    <input id="filterFrom" type="date" style="flex:1;padding:6px;border-radius:6px;border:1px solid #e2e8f0" />
-                                    <input id="filterTo" type="date" style="flex:1;padding:6px;border-radius:6px;border:1px solid #e2e8f0" />
+                                <div style="font-size: 11px; color: #718096; font-weight: 600; margin-bottom: 6px; padding: 0 0.4rem;">Filter period</div>
+                                <div style="display: flex; gap: 0.3rem; margin-bottom: 0.6rem; padding: 0 0.4rem;">
+                                    <input id="filterFrom" type="date" style="flex:1; padding: 0.4rem; border-radius: 4px; border: 1px solid #e2e8f0; font-size: 0.7rem;" />
+                                    <input id="filterTo" type="date" style="flex:1; padding: 0.4rem; border-radius: 4px; border: 1px solid #e2e8f0; font-size: 0.7rem;" />
                                 </div>
-                                <div style="display:flex;gap:6px">
-                                    <button id="applyFilterBtn" class="btn" style="flex:1">Apply</button>
-                                    <button id="clearFilterBtn" class="btn ghost" style="flex:1">Clear</button>
+                                <div style="display: flex; gap: 0.3rem; padding: 0 0.4rem;">
+                                    <button id="applyFilterBtn" class="btn" style="flex:1; padding: 0.3rem; font-size: 0.7rem;">Apply</button>
+                                    <button id="clearFilterBtn" class="btn ghost" style="flex:1; padding: 0.3rem; font-size: 0.7rem;">Clear</button>
                                 </div>
-                                <div class="sep" style="margin-top:8px"></div>
-                              
+                                <div class="sep" style="margin-top: 0.6rem"></div>
                                 <!-- Admin-only options -->
                                 <button id="adminViewAllBtn" class="item" style="display: none; background: #f7fafc; color: #e53e3e; border: 1px solid #fed7d7;">
-                                     View All Branches (Admin)
+                                    <i class="fas fa-eye"></i> View All Branches (Admin)
                                 </button>
                             </div>
                         </div>
@@ -858,12 +988,12 @@
                             <table aria-label="transactions">
                                 <thead>
                                     <tr id="tableHeader">
-                                        <th style="width:120px">Date</th>
-                                        <th style="width:120px">Tid</th>
+                                        <th style="width:100px">Date</th>
+                                        <th style="width:100px">Tid</th>
                                         <th>Description</th>
-                                        <th style="width:110px">Cash In</th>
-                                        <th style="width:110px">Cash Out</th>
-                                        <th style="width:120px">Balance</th>
+                                        <th style="width:90px">Cash In</th>
+                                        <th style="width:90px">Cash Out</th>
+                                        <th style="width:100px">Balance</th>
                                         <!-- Actions column will be shown/hidden based on user -->
                                     </tr>
                                 </thead>
@@ -883,7 +1013,9 @@
                                 <div id="formBranch" class="form-branch" aria-hidden="true"></div>
                             </div>
                             <div>
-                                <button id="hideFormBtn" class="btn ghost">Hide</button>
+                                <button id="hideFormBtn" class="btn ghost">
+                                    <i class="fas fa-times"></i> Hide
+                                </button>
                             </div>
                         </header>
 
@@ -918,8 +1050,12 @@
                             <input type="hidden" id="branchIdInput" />
 
                             <div class="form-actions">
-                                <button type="button" id="cancelEdit" class="btn ghost">Cancel</button>
-                                <button type="submit" id="saveBtn" class="btn">Save</button>
+                                <button type="button" id="cancelEdit" class="btn ghost">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
+                                <button type="submit" id="saveBtn" class="btn">
+                                    <i class="fas fa-save"></i> Save
+                                </button>
                             </div>
                         </form>
                     </aside>
@@ -928,356 +1064,628 @@
         </div>
     </div>
 
-    <!-- Mobile Sidebar Toggle -->
-    <button class="sidebar-mobile-toggle" id="mobileSidebarToggle" onclick="toggleMobileSidebar()">☰</button>
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDTslfW2YQOw1XqiTn4RgTNKusi4w6NcHI",
+            authDomain: "wamz-arts-and-prints.firebaseapp.com",
+            projectId: "wamz-arts-and-prints",
+            storageBucket: "wamz-arts-and-prints.firebasestorage.app",
+            messagingSenderId: "495100135771",
+            appId: "1:495100135771:web:d63ab48db021b4b02c327e",
+            measurementId: "G-1HL55EC1D1"
+        };
 
-   <script>
-    // Firebase Configuration
-    const firebaseConfig = {
-        apiKey: "AIzaSyDTslfW2YQOw1XqiTn4RgTNKusi4w6NcHI",
-        authDomain: "wamz-arts-and-prints.firebaseapp.com",
-        projectId: "wamz-arts-and-prints",
-        storageBucket: "wamz-arts-and-prints.firebasestorage.app",
-        messagingSenderId: "495100135771",
-        appId: "1:495100135771:web:d63ab48db021b4b02c327e",
-        measurementId: "G-1HL55EC1D1"
-    };
-
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    
-    let currentUserData = null;
-    let currentBranch = '';
-    let isAdmin = false;
-    let isAdminAccessingOther = false;
-    let originalLoggedInUser = '';
-    let allTransactions = [];
-    let listenerUnsub = null;
-    let isSaving = false;
-    let indexError = false; // Track if we have index error
-
-    // Initialize page
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log("💸 Cash Flow Dashboard loaded");
-        checkLogin();
-        loadSidebarState();
-    });
-
-    // Check login
-    function checkLogin() {
-        const currentUser = localStorage.getItem('currentUser');
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
         
-        if (!currentUser) {
-            window.location.href = 'index.html';
-            return;
+        let currentUserData = null;
+        let currentBranch = '';
+        let isAdmin = false;
+        let isAdminAccessingOther = false;
+        let originalLoggedInUser = '';
+        let allTransactions = [];
+        let listenerUnsub = null;
+        let isSaving = false;
+        let indexError = false; // Track if we have index error
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("💸 Cash Flow Dashboard loaded");
+            initializeSidebar();
+            checkLogin();
+        });
+
+        // Initialize sidebar toggle for both desktop and mobile
+        function initializeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            // Load saved sidebar state
+            const savedState = localStorage.getItem('sidebarCollapsed');
+            if (savedState === 'true') {
+                sidebar.classList.add('collapsed');
+            }
+            
+            // Desktop sidebar toggle
+            sidebarToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('collapsed');
+                localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+            });
+            
+            // Mobile menu toggle
+            mobileMenuToggle.addEventListener('click', () => {
+                sidebar.classList.add('open');
+                overlay.classList.add('active');
+            });
+            
+            // Close sidebar on overlay click (mobile)
+            overlay.addEventListener('click', () => {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+            });
+            
+            // Close sidebar when clicking on links (mobile)
+            document.querySelectorAll('.nav-item').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.remove('open');
+                        overlay.classList.remove('active');
+                    }
+                });
+            });
         }
 
-        currentUserData = JSON.parse(currentUser);
-        const username = currentUserData.username;
-        originalLoggedInUser = username;
-        
-        // Check URL parameters for admin access and admin view
-        const urlParams = new URLSearchParams(window.location.search);
-        const adminView = urlParams.get('admin_view');
-        
-        // Handle admin view all FIRST
-        if (adminView === 'all' && username === 'Wamz') {
-            currentBranch = 'all';
-            isAdmin = true;
-            document.getElementById('branchBadge').textContent = 'All Branches';
-            document.getElementById('adminBadge').style.display = 'inline-block';
-            document.getElementById('adminPanelBtn').style.display = 'flex';
-            document.getElementById('adminViewAllBtn').style.display = 'block';
-            document.getElementById('branchDescription').textContent = 'Admin view: Track cash flow for all branches';
-            document.getElementById('currentUser').textContent = username;
-            document.getElementById('welcomeMessage').textContent = `Cash Flow - All Branches`;
-        } else {
-            // Check if admin is accessing another account
-            checkAdminAccess();
+        // Check login
+        function checkLogin() {
+            const currentUser = localStorage.getItem('currentUser');
             
-            // Set welcome message
-            document.getElementById('currentUser').textContent = username;
+            if (!currentUser) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            currentUserData = JSON.parse(currentUser);
+            const username = currentUserData.username;
+            originalLoggedInUser = username;
             
-            // Set current date
-            const now = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', options);
+            // Check URL parameters for admin access and admin view
+            const urlParams = new URLSearchParams(window.location.search);
+            const adminView = urlParams.get('admin_view');
             
-            // Assign branches and set UI
-            if (username === 'Samz') {
-                currentBranch = 'branch2';
-                document.getElementById('branchBadge').textContent = 'Branch 2';
-                document.getElementById('branchDescription').textContent = 'Track cash flow for Branch 2';
-            } else if (username === 'Namz') {
-                currentBranch = 'branch3';
-                document.getElementById('branchBadge').textContent = 'Branch 3';
-                document.getElementById('branchDescription').textContent = 'Track cash flow for Branch 3';
-            } else if (username === 'Wamz') {
-                currentBranch = 'branch1';
+            // Handle admin view all FIRST
+            if (adminView === 'all' && username === 'Wamz') {
+                currentBranch = 'all';
                 isAdmin = true;
-                document.getElementById('branchBadge').textContent = 'Branch 1';
+                document.getElementById('branchBadge').textContent = 'All Branches';
                 document.getElementById('adminBadge').style.display = 'inline-block';
                 document.getElementById('adminPanelBtn').style.display = 'flex';
                 document.getElementById('adminViewAllBtn').style.display = 'block';
-                document.getElementById('branchDescription').textContent = 'Admin view: Track cash flow for Branch 1';
+                document.getElementById('branchDescription').textContent = 'Admin view: Track cash flow for all branches';
+                document.getElementById('currentUser').textContent = username;
+                document.getElementById('welcomeMessage').textContent = `Cash Flow - All Branches`;
             } else {
-                currentBranch = 'unassigned';
-                document.getElementById('branchBadge').textContent = 'Unassigned';
-                document.getElementById('branchDescription').textContent = 'Please contact admin for branch assignment';
-            }
-            
-            // Update welcome message
-            if (isAdminAccessingOther) {
-                document.getElementById('welcomeMessage').textContent = `Admin View: ${username}'s Cash Flow`;
-            } else {
-                document.getElementById('welcomeMessage').textContent = `Cash Flow - ${username}`;
-            }
-        }
-        
-        // Initialize cash flow app
-        initCashFlowApp();
-        
-        // Log admin access if detected
-        if (isAdminAccessingOther) {
-            logAdminAccess();
-        }
-        
-        // Log admin view all if active
-        if (currentBranch === 'all') {
-            logAdminViewAll();
-        }
-    }
-
-    // Check if admin is accessing another account
-    function checkAdminAccess(event = null, targetPage = null) {
-        // Check URL parameters for admin access
-        const urlParams = new URLSearchParams(window.location.search);
-        const accessAs = urlParams.get('access_as');
-        
-        if (accessAs && originalLoggedInUser === 'Wamz') {
-            // Admin is accessing another user's account
-            isAdminAccessingOther = true;
-            
-            // Show admin access alert
-            document.getElementById('adminAccessAlert').style.display = 'block';
-            
-            // Update alert details
-            document.getElementById('adminName').textContent = 'Wamz (Admin)';
-            document.getElementById('loggedInAdmin').textContent = 'Wamz';
-            document.getElementById('targetAccount').textContent = accessAs;
-            
-            // Set current user to the accessed account
-            currentUserData.username = accessAs;
-            document.getElementById('currentUser').textContent = accessAs;
-            
-            // Update branch info for accessed user
-            if (accessAs === 'Samz') {
-                currentBranch = 'branch2';
-                document.getElementById('targetBranch').textContent = 'Branch 2';
-                document.getElementById('branchBadge').textContent = 'Branch 2';
-                document.getElementById('branchDescription').textContent = 'Admin View: Cash flow for Branch 2';
-            } else if (accessAs === 'Namz') {
-                currentBranch = 'branch3';
-                document.getElementById('targetBranch').textContent = 'Branch 3';
-                document.getElementById('branchBadge').textContent = 'Branch 3';
-                document.getElementById('branchDescription').textContent = 'Admin View: Cash flow for Branch 3';
-            }
-            
-            // Update access time
-            const now = new Date();
-            document.getElementById('accessTime').textContent = now.toLocaleTimeString();
-            
-            // Show info message
-            showMessage(`Admin mode: Viewing ${accessAs}'s cash flow. All actions are logged.`, 'info');
-        }
-        
-        // If this was called from a link click, handle navigation
-        if (event && targetPage) {
-            event.preventDefault();
-            let url = targetPage;
-            
-            if (isAdminAccessingOther) {
-                url += `?access_as=${currentUserData.username}`;
-            }
-            
-            window.location.href = url;
-        }
-    }
-
-    // Log admin access to Firestore
-    function logAdminAccess() {
-        try {
-            const accessLog = {
-                adminUser: originalLoggedInUser,
-                accessedAccount: currentUserData.username,
-                branch: currentBranch,
-                page: 'cashflow',
-                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                ipAddress: 'N/A',
-                userAgent: navigator.userAgent,
-                url: window.location.href
-            };
-            
-            // Save to Firestore
-            db.collection('admin_access_logs').add(accessLog)
-                .then(() => console.log('✅ Admin access logged for cash flow'))
-                .catch(err => console.error('❌ Error logging admin access:', err));
+                // Check if admin is accessing another account
+                checkAdminAccess();
                 
-        } catch (error) {
-            console.error('Error in admin access logging:', error);
-        }
-    }
-
-    // Log admin view all
-    function logAdminViewAll() {
-        try {
-            const viewLog = {
-                adminUser: originalLoggedInUser,
-                view: 'all_branches',
-                page: 'cashflow',
-                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                userAgent: navigator.userAgent,
-                url: window.location.href
-            };
-            
-            // Save to Firestore
-            db.collection('admin_view_logs').add(viewLog)
-                .then(() => console.log('✅ Admin view all logged'))
-                .catch(err => console.error('❌ Error logging admin view:', err));
+                // Set welcome message
+                document.getElementById('currentUser').textContent = username;
                 
-        } catch (error) {
-            console.error('Error in admin view logging:', error);
-        }
-    }
-
-    // Format ZMW currency
-    function formatCurrency(v) {
-        const n = Number(v) || 0;
-        return 'ZMW ' + n.toFixed(2);
-    }
-
-    function formatCurrencyCell(v) {
-        const n = Number(v) || 0;
-        const formatted = 'ZMW ' + Math.abs(n).toFixed(2);
-        if (n >= 0) return `<span class="positive">${formatted}</span>`;
-        return `<span class="negative">${formatted}</span>`;
-    }
-
-    function formatDate(ts) {
-        const d = ts && ts.toDate ? ts.toDate() : new Date(ts);
-        return d.toLocaleDateString();
-    }
-
-    function escapeHtml(s) {
-        return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    }
- 
-    // Initialize cash flow app
-    function initCashFlowApp() {
-        // Setup DOM elements
-        const addBtn = document.getElementById('addBtn');
-        const menuBtn = document.getElementById('menuBtn');
-        const dropdown = document.getElementById('dropdown');
-        const toggleFormFromMenu = document.getElementById('toggleFormFromMenu');
-        const exportCsvBtn = document.getElementById('exportCsvBtn');
-        const printBtn = document.getElementById('printBtn');
-        const filterFrom = document.getElementById('filterFrom');
-        const filterTo = document.getElementById('filterTo');
-        const applyFilterBtn = document.getElementById('applyFilterBtn');
-        const clearFilterBtn = document.getElementById('clearFilterBtn');
-        const addDemoBtn = document.getElementById('addDemoBtn');
-        const adminViewAllBtn = document.getElementById('adminViewAllBtn');
-        const formPane = document.getElementById('formPane');
-        const hideFormBtn = document.getElementById('hideFormBtn');
-        const transactionForm = document.getElementById('transactionForm');
-        const dateInput = document.getElementById('date');
-        const tidInput = document.getElementById('tid');
-        const descriptionInput = document.getElementById('description');
-        const cashInInput = document.getElementById('cashIn');
-        const cashOutInput = document.getElementById('cashOut');
-        const editIdInput = document.getElementById('editId');
-        const branchIdInput = document.getElementById('branchIdInput');
-        const formBranchLabel = document.getElementById('formBranch');
-        const saveBtn = document.getElementById('saveBtn');
-        const tableBody = document.getElementById('tableBody');
-        const tableHeader = document.getElementById('tableHeader');
-
-        // Set default date for filter
-        const today = new Date();
-        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-        filterFrom.value = firstDay.toISOString().slice(0, 10);
-        filterTo.value = today.toISOString().slice(0, 10);
-        dateInput.valueAsDate = new Date();
-
-        // Setup Firestore listener
-        setupListener();
-
-        // Event Listeners
-        addBtn.addEventListener('click', () => {
-            if (currentBranch === 'all') {
-                alert('Cannot add transactions in "View All" mode. Please select a specific branch.');
-                return;
-            }
-            
-            if (isAdminAccessingOther || isAdmin || currentUserData.username !== 'guest') {
-                branchIdInput.value = currentBranch === 'all' ? 'branch1' : currentBranch;
-                formBranchLabel.textContent = `Branch: ${branchIdInput.value}`;
-                formBranchLabel.setAttribute('aria-hidden', 'false');
-                editIdInput.value = '';
-                showForm();
-                dropdown.classList.remove('show');
-            }
-        });
-
-        menuBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            dropdown.classList.toggle('show');
-            dropdown.setAttribute('aria-hidden', dropdown.classList.contains('show') ? 'false' : 'true');
-        });
-
-        dropdown.addEventListener('click', (e) => e.stopPropagation());
-
-        document.addEventListener('click', () => {
-            if (dropdown.classList.contains('show')) {
-                dropdown.classList.remove('show');
-                dropdown.setAttribute('aria-hidden', 'true');
-            }
-        });
-
-        adminViewAllBtn.addEventListener('click', () => {
-            dropdown.classList.remove('show');
-            if (isAdmin) {
-                if (currentBranch === 'all') {
-                    // Already in view all mode, go back to own branch
-                    window.location.href = 'cashflow.html';
+                // Set current date
+                const now = new Date();
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', options);
+                
+                // Assign branches and set UI
+                if (username === 'Samz') {
+                    currentBranch = 'branch2';
+                    document.getElementById('branchBadge').textContent = 'Branch 2';
+                    document.getElementById('branchDescription').textContent = 'Track cash flow for Branch 2';
+                } else if (username === 'Namz') {
+                    currentBranch = 'branch3';
+                    document.getElementById('branchBadge').textContent = 'Branch 3';
+                    document.getElementById('branchDescription').textContent = 'Track cash flow for Branch 3';
+                } else if (username === 'Wamz') {
+                    currentBranch = 'branch1';
+                    isAdmin = true;
+                    document.getElementById('branchBadge').textContent = 'Branch 1';
+                    document.getElementById('adminBadge').style.display = 'inline-block';
+                    document.getElementById('adminPanelBtn').style.display = 'flex';
+                    document.getElementById('adminViewAllBtn').style.display = 'block';
+                    document.getElementById('branchDescription').textContent = 'Admin view: Track cash flow for Branch 1';
                 } else {
-                    window.location.href = 'cashflow.html?admin_view=all';
+                    currentBranch = 'unassigned';
+                    document.getElementById('branchBadge').textContent = 'Unassigned';
+                    document.getElementById('branchDescription').textContent = 'Please contact admin for branch assignment';
+                }
+                
+                // Update welcome message
+                if (isAdminAccessingOther) {
+                    document.getElementById('welcomeMessage').textContent = `Admin View: ${username}'s Cash Flow`;
+                } else {
+                    document.getElementById('welcomeMessage').textContent = `Cash Flow - ${username}`;
                 }
             }
-        });
+            
+            // Initialize cash flow app
+            initCashFlowApp();
+            
+            // Log admin access if detected
+            if (isAdminAccessingOther) {
+                logAdminAccess();
+            }
+            
+            // Log admin view all if active
+            if (currentBranch === 'all') {
+                logAdminViewAll();
+            }
+        }
 
-        toggleFormFromMenu.addEventListener('click', () => {
-            dropdown.classList.remove('show');
-            if (isAdminAccessingOther || isAdmin || currentUserData.username !== 'guest') {
-                if (formPane.classList.contains('hidden')) {
+        // Check if admin is accessing another account
+        function checkAdminAccess(event = null, targetPage = null) {
+            // Check URL parameters for admin access
+            const urlParams = new URLSearchParams(window.location.search);
+            const accessAs = urlParams.get('access_as');
+            
+            if (accessAs && originalLoggedInUser === 'Wamz') {
+                // Admin is accessing another user's account
+                isAdminAccessingOther = true;
+                
+                // Show admin access alert
+                document.getElementById('adminAccessAlert').style.display = 'block';
+                
+                // Update alert details
+                document.getElementById('adminName').textContent = 'Wamz (Admin)';
+                document.getElementById('loggedInAdmin').textContent = 'Wamz';
+                document.getElementById('targetAccount').textContent = accessAs;
+                
+                // Set current user to the accessed account
+                currentUserData.username = accessAs;
+                document.getElementById('currentUser').textContent = accessAs;
+                
+                // Update branch info for accessed user
+                if (accessAs === 'Samz') {
+                    currentBranch = 'branch2';
+                    document.getElementById('targetBranch').textContent = 'Branch 2';
+                    document.getElementById('branchBadge').textContent = 'Branch 2';
+                    document.getElementById('branchDescription').textContent = 'Admin View: Cash flow for Branch 2';
+                } else if (accessAs === 'Namz') {
+                    currentBranch = 'branch3';
+                    document.getElementById('targetBranch').textContent = 'Branch 3';
+                    document.getElementById('branchBadge').textContent = 'Branch 3';
+                    document.getElementById('branchDescription').textContent = 'Admin View: Cash flow for Branch 3';
+                }
+                
+                // Update access time
+                const now = new Date();
+                document.getElementById('accessTime').textContent = now.toLocaleTimeString();
+                
+                // Show info message
+                showMessage(`Admin mode: Viewing ${accessAs}'s cash flow. All actions are logged.`, 'info');
+            }
+            
+            // If this was called from a link click, handle navigation
+            if (event && targetPage) {
+                event.preventDefault();
+                let url = targetPage;
+                
+                if (isAdminAccessingOther) {
+                    url += `?access_as=${currentUserData.username}`;
+                }
+                
+                window.location.href = url;
+            }
+        }
+
+        // Log admin access to Firestore
+        function logAdminAccess() {
+            try {
+                const accessLog = {
+                    adminUser: originalLoggedInUser,
+                    accessedAccount: currentUserData.username,
+                    branch: currentBranch,
+                    page: 'cashflow',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    ipAddress: 'N/A',
+                    userAgent: navigator.userAgent,
+                    url: window.location.href
+                };
+                
+                // Save to Firestore
+                db.collection('admin_access_logs').add(accessLog)
+                    .then(() => console.log('✅ Admin access logged for cash flow'))
+                    .catch(err => console.error('❌ Error logging admin access:', err));
+                    
+            } catch (error) {
+                console.error('Error in admin access logging:', error);
+            }
+        }
+
+        // Log admin view all
+        function logAdminViewAll() {
+            try {
+                const viewLog = {
+                    adminUser: originalLoggedInUser,
+                    view: 'all_branches',
+                    page: 'cashflow',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    userAgent: navigator.userAgent,
+                    url: window.location.href
+                };
+                
+                // Save to Firestore
+                db.collection('admin_view_logs').add(viewLog)
+                    .then(() => console.log('✅ Admin view all logged'))
+                    .catch(err => console.error('❌ Error logging admin view:', err));
+                    
+            } catch (error) {
+                console.error('Error in admin view logging:', error);
+            }
+        }
+
+        // Format ZMW currency
+        function formatCurrency(v) {
+            const n = Number(v) || 0;
+            return 'ZMW ' + n.toFixed(2);
+        }
+
+        function formatCurrencyCell(v) {
+            const n = Number(v) || 0;
+            const formatted = 'ZMW ' + Math.abs(n).toFixed(2);
+            if (n >= 0) return `<span class="positive">${formatted}</span>`;
+            return `<span class="negative">${formatted}</span>`;
+        }
+
+        function formatDate(ts) {
+            const d = ts && ts.toDate ? ts.toDate() : new Date(ts);
+            return d.toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
+            });
+        }
+
+        function escapeHtml(s) {
+            return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+ 
+        // Initialize cash flow app
+        function initCashFlowApp() {
+            // Setup DOM elements
+            const addBtn = document.getElementById('addBtn');
+            const menuBtn = document.getElementById('menuBtn');
+            const dropdown = document.getElementById('dropdown');
+            const toggleFormFromMenu = document.getElementById('toggleFormFromMenu');
+            const exportCsvBtn = document.getElementById('exportCsvBtn');
+            const printBtn = document.getElementById('printBtn');
+            const filterFrom = document.getElementById('filterFrom');
+            const filterTo = document.getElementById('filterTo');
+            const applyFilterBtn = document.getElementById('applyFilterBtn');
+            const clearFilterBtn = document.getElementById('clearFilterBtn');
+            const adminViewAllBtn = document.getElementById('adminViewAllBtn');
+            const formPane = document.getElementById('formPane');
+            const hideFormBtn = document.getElementById('hideFormBtn');
+            const transactionForm = document.getElementById('transactionForm');
+            const dateInput = document.getElementById('date');
+            const tidInput = document.getElementById('tid');
+            const descriptionInput = document.getElementById('description');
+            const cashInInput = document.getElementById('cashIn');
+            const cashOutInput = document.getElementById('cashOut');
+            const editIdInput = document.getElementById('editId');
+            const branchIdInput = document.getElementById('branchIdInput');
+            const formBranchLabel = document.getElementById('formBranch');
+            const saveBtn = document.getElementById('saveBtn');
+            const cancelEditBtn = document.getElementById('cancelEdit');
+            const tableBody = document.getElementById('tableBody');
+            const tableHeader = document.getElementById('tableHeader');
+
+            // Set default date for filter
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+            filterFrom.value = firstDay.toISOString().slice(0, 10);
+            filterTo.value = today.toISOString().slice(0, 10);
+            dateInput.valueAsDate = new Date();
+
+            // Setup Firestore listener
+            setupListener();
+
+            // Event Listeners
+            addBtn.addEventListener('click', () => {
+                if (currentBranch === 'all') {
+                    alert('Cannot add transactions in "View All" mode. Please select a specific branch.');
+                    return;
+                }
+                
+                if (isAdminAccessingOther || isAdmin || currentUserData.username !== 'guest') {
                     branchIdInput.value = currentBranch === 'all' ? 'branch1' : currentBranch;
                     formBranchLabel.textContent = `Branch: ${branchIdInput.value}`;
                     formBranchLabel.setAttribute('aria-hidden', 'false');
+                    editIdInput.value = '';
                     showForm();
-                } else {
-                    hideForm();
+                    dropdown.classList.remove('show');
                 }
+            });
+
+            menuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dropdown.classList.toggle('show');
+                dropdown.setAttribute('aria-hidden', dropdown.classList.contains('show') ? 'false' : 'true');
+            });
+
+            dropdown.addEventListener('click', (e) => e.stopPropagation());
+
+            document.addEventListener('click', () => {
+                if (dropdown.classList.contains('show')) {
+                    dropdown.classList.remove('show');
+                    dropdown.setAttribute('aria-hidden', 'true');
+                }
+            });
+
+            adminViewAllBtn.addEventListener('click', () => {
+                dropdown.classList.remove('show');
+                if (isAdmin) {
+                    if (currentBranch === 'all') {
+                        // Already in view all mode, go back to own branch
+                        window.location.href = 'cashflow.html';
+                    } else {
+                        window.location.href = 'cashflow.html?admin_view=all';
+                    }
+                }
+            });
+
+            toggleFormFromMenu.addEventListener('click', () => {
+                dropdown.classList.remove('show');
+                if (isAdminAccessingOther || isAdmin || currentUserData.username !== 'guest') {
+                    if (formPane.classList.contains('hidden')) {
+                        branchIdInput.value = currentBranch === 'all' ? 'branch1' : currentBranch;
+                        formBranchLabel.textContent = `Branch: ${branchIdInput.value}`;
+                        formBranchLabel.setAttribute('aria-hidden', 'false');
+                        showForm();
+                    } else {
+                        hideForm();
+                    }
+                }
+            });
+
+            hideFormBtn.addEventListener('click', hideForm);
+            cancelEditBtn.addEventListener('click', () => { hideForm(); });
+
+            // Export CSV
+            exportCsvBtn.addEventListener('click', () => {
+                dropdown.classList.remove('show');
+                let filtered = allTransactions.slice();
+                const from = filterFrom.value ? new Date(filterFrom.value) : null;
+                const to = filterTo.value ? new Date(filterTo.value + 'T23:59:59') : null;
+                if (from || to) {
+                    filtered = filtered.filter(t => {
+                        const d = t.date && t.date.toDate ? t.date.toDate() : new Date(t.date);
+                        if (from && d < from) return false;
+                        if (to && d > to) return false;
+                        return true;
+                    });
+                }
+                if (filtered.length === 0) {
+                    alert('No transactions to export');
+                    return;
+                }
+                const asc = filtered.slice().sort((a, b) => {
+                    const dateA = a.date && a.date.toDate ? a.date.toDate() : new Date(a.date);
+                    const dateB = b.date && b.date.toDate ? b.date.toDate() : new Date(b.date);
+                    return dateA - dateB;
+                });
+                let running = 0;
+                const rows = asc.map(t => {
+                    const inVal = Number(t.cashIn || 0);
+                    const outVal = Number(t.cashOut || 0);
+                    running += inVal - outVal;
+                    return [
+                        formatDate(t.date),
+                        t.tid || '',
+                        (t.description || '').replace(/"/g, '""'),
+                        inVal.toFixed(2),
+                        outVal.toFixed(2),
+                        running.toFixed(2),
+                        t.branchId || 'unknown'
+                    ];
+                });
+                const headers = currentBranch === 'all'
+                    ? ['Date', 'Tid', 'Description', 'Cash In (ZMW)', 'Cash Out (ZMW)', 'Balance (ZMW)', 'Branch']
+                    : ['Date', 'Tid', 'Description', 'Cash In (ZMW)', 'Cash Out (ZMW)', 'Balance (ZMW)'];
+                const csv = [headers.join(','), ...rows.map(r => r.map(c => `"${c}"`).join(','))].join('\n');
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                const fileName = currentBranch === 'all'
+                    ? `cashflow_all_branches_${new Date().toISOString().slice(0, 10)}.csv`
+                    : `cashflow_${currentUserData.username}_${new Date().toISOString().slice(0, 10)}.csv`;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                URL.revokeObjectURL(url);
+            });
+
+            printBtn.addEventListener('click', () => {
+                dropdown.classList.remove('show');
+                window.print();
+            });
+
+            applyFilterBtn.addEventListener('click', () => {
+                dropdown.classList.remove('show');
+                renderTransactions();
+            });
+
+            clearFilterBtn.addEventListener('click', () => {
+                filterFrom.value = '';
+                filterTo.value = '';
+                dropdown.classList.remove('show');
+                renderTransactions();
+            });
+
+            // Form submit
+            transactionForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                if (isSaving) return;
+                const dateVal = dateInput.value;
+                if (!dateVal) {
+                    alert('Select date');
+                    return;
+                }
+
+                const cashInNum = parseFloat(cashInInput.value || 0) || 0;
+                const cashOutNum = parseFloat(cashOutInput.value || 0) || 0;
+                if (cashInNum <= 0 && cashOutNum <= 0) {
+                    alert('Enter a value for Cash In or Cash Out (both cannot be zero).');
+                    return;
+                }
+
+                if (cashInNum < 0 || cashOutNum < 0) {
+                    alert('Cash values cannot be negative.');
+                    return;
+                }
+
+                const id = editIdInput.value;
+                let payload = {
+                    date: firebase.firestore.Timestamp.fromDate(new Date(dateVal)),
+                    tid: tidInput.value.trim(),
+                    description: descriptionInput.value.trim(),
+                    cashIn: cashInNum.toFixed(2),
+                    cashOut: cashOutNum.toFixed(2),
+                    createdBy: isAdminAccessingOther ? currentUserData.username : originalLoggedInUser,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                if (id) {
+                    const existing = allTransactions.find(t => t.id === id);
+                    if (existing && existing.branchId) {
+                        payload.branchId = existing.branchId;
+                    } else if (branchIdInput.value) {
+                        payload.branchId = branchIdInput.value;
+                    } else {
+                        payload.branchId = currentBranch === 'all' ? 'branch1' : currentBranch;
+                    }
+                } else {
+                    payload.branchId = branchIdInput.value || currentBranch;
+                    payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                }
+
+                try {
+                    isSaving = true;
+                    saveBtn.disabled = true;
+                    saveBtn.textContent = 'Saving...';
+
+                    if (id) {
+                        await db.collection('cashflow').doc(id).update(payload);
+                    } else {
+                        await db.collection('cashflow').add(payload);
+                    }
+                    hideForm();
+                    showMessage('Transaction saved successfully!', 'success');
+                } catch (err) {
+                    console.error('save err', err);
+                    alert('Error saving: ' + err.message);
+                } finally {
+                    isSaving = false;
+                    saveBtn.disabled = false;
+                    saveBtn.textContent = 'Save';
+                }
+            });
+
+            // Helper functions
+            function showForm() {
+                formPane.classList.remove('hidden');
+                formPane.setAttribute('aria-hidden', 'false');
+                dateInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
-        });
 
-        hideFormBtn.addEventListener('click', hideForm);
-        document.getElementById('cancelEdit').addEventListener('click', () => { hideForm(); });
+            function hideForm() {
+                formPane.classList.add('hidden');
+                formPane.setAttribute('aria-hidden', 'true');
+                transactionForm.reset();
+                dateInput.valueAsDate = new Date();
+                editIdInput.value = '';
+                branchIdInput.value = '';
+                formBranchLabel.textContent = '';
+                formBranchLabel.setAttribute('aria-hidden', 'true');
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Save';
+                isSaving = false;
+            }
+        }
 
-        // Export CSV
-        exportCsvBtn.addEventListener('click', () => {
-            dropdown.classList.remove('show');
+        // Setup Firestore listener - FIXED VERSION
+        function setupListener() {
+            if (listenerUnsub) listenerUnsub();
+
+            console.log('Setting up listener for branch:', currentBranch);
+
+            try {
+                let q;
+                // Always get all transactions first
+                q = db.collection('cashflow').orderBy('date', 'desc');
+
+                listenerUnsub = q.onSnapshot(snapshot => {
+                    console.log('Received', snapshot.docs.length, 'total transactions');
+                    
+                    // Convert all transactions
+                    let transactions = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                    
+                    // ONLY filter if NOT in "all" mode
+                    if (currentBranch !== 'all') {
+                        transactions = transactions.filter(tx => tx.branchId === currentBranch);
+                        console.log('Filtered to', transactions.length, 'transactions for branch:', currentBranch);
+                    } else {
+                        console.log('Showing ALL', transactions.length, 'transactions from all branches');
+                    }
+                    
+                    allTransactions = transactions;
+                    renderTransactions();
+                }, err => {
+                    console.error('Firestore listener error:', err);
+                    
+                    // Check if it's an index error
+                    if (err.code === 'failed-precondition' || err.message.includes('index')) {
+                        indexError = true;
+                        showMessage('⚠️ Database index required. Please create the composite index in Firebase Console. Data loaded without filtering.', 'error');
+                        
+                        // Fallback: Load all data
+                        db.collection('cashflow').get().then(snapshot => {
+                            let transactions = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                            
+                            // ONLY filter if NOT in "all" mode
+                            if (currentBranch !== 'all') {
+                                transactions = transactions.filter(tx => tx.branchId === currentBranch);
+                            }
+                            
+                            allTransactions = transactions;
+                            renderTransactions();
+                            showMessage('Data loaded with client-side filtering.', 'info');
+                        });
+                    } else {
+                        document.getElementById('tableBody').innerHTML = `<tr><td colspan="7" class="empty">
+                            <div>Error loading transactions</div>
+                            <div style="font-size:11px; margin-top: 5px; color:#e53e3e;">${err.message}</div>
+                        </td></tr>`;
+                    }
+                });
+            } catch (error) {
+                console.error('Error setting up listener:', error);
+            }
+        }
+
+        // Render transactions
+        function renderTransactions() {
+            const tableBody = document.getElementById('tableBody');
+            const tableHeader = document.getElementById('tableHeader');
+            const filterFrom = document.getElementById('filterFrom');
+            const filterTo = document.getElementById('filterTo');
+
             let filtered = allTransactions.slice();
+
             const from = filterFrom.value ? new Date(filterFrom.value) : null;
             const to = filterTo.value ? new Date(filterTo.value + 'T23:59:59') : null;
             if (from || to) {
@@ -1288,528 +1696,196 @@
                     return true;
                 });
             }
+
             if (filtered.length === 0) {
-                alert('No transactions to export');
+                tableBody.innerHTML = `<tr><td colspan="${(isAdmin || isAdminAccessingOther || currentBranch === 'all') ? '7' : '6'}" class="empty">
+                    ${indexError ? 'No transactions found. Index may be building. Try creating composite index.' : 'No transactions found'}
+                </td></tr>`;
                 return;
             }
-            const asc = filtered.slice().sort((a, b) => {
+
+            // Sort by date ASCENDING (oldest first for running balance)
+            const sorted = filtered.slice().sort((a, b) => {
                 const dateA = a.date && a.date.toDate ? a.date.toDate() : new Date(a.date);
                 const dateB = b.date && b.date.toDate ? b.date.toDate() : new Date(b.date);
                 return dateA - dateB;
             });
-            let running = 0;
-            const rows = asc.map(t => {
-                const inVal = Number(t.cashIn || 0);
-                const outVal = Number(t.cashOut || 0);
-                running += inVal - outVal;
-                return [
-                    formatDate(t.date),
-                    t.tid || '',
-                    (t.description || '').replace(/"/g, '""'),
-                    inVal.toFixed(2),
-                    outVal.toFixed(2),
-                    running.toFixed(2),
-                    t.branchId || 'unknown'
-                ];
+
+            // Update table header
+            updateTableHeader();
+
+            // Calculate running balance - reset for each branch in "all" mode
+            let runningBalance = 0;
+            let lastBranch = null;
+            tableBody.innerHTML = '';
+
+            sorted.forEach(tx => {
+                const inVal = Number(tx.cashIn || 0);
+                const outVal = Number(tx.cashOut || 0);
+                
+                // Reset running balance when branch changes in "all" mode
+                if (currentBranch === 'all' && tx.branchId !== lastBranch) {
+                    runningBalance = 0;
+                    lastBranch = tx.branchId;
+                }
+                
+                runningBalance += inVal - outVal;
+
+                const row = document.createElement('tr');
+                const showActions = isAdmin || isAdminAccessingOther || currentBranch === 'all';
+
+                if (showActions) {
+                    row.innerHTML = `
+                        <td>${formatDate(tx.date)}</td>
+                        <td>${escapeHtml(tx.tid || '')}</td>
+                        <td>${escapeHtml(tx.description || '')} ${currentBranch === 'all' ? `<small style="color:#a0aec0; font-size:0.65rem;">(${tx.branchId})</small>` : ''}</td>
+                        <td class="num">${inVal > 0 ? formatCurrency(inVal) : ''}</td>
+                        <td class="num">${outVal > 0 ? formatCurrency(outVal) : ''}</td>
+                        <td class="num">${formatCurrencyCell(runningBalance)}</td>
+                        <td>
+                            <button data-id="${tx.id}" class="editBtn" style="margin-right:0.3rem">
+                                <i class="fas fa-edit" style="font-size:0.7rem"></i>
+                            </button>
+                            <button data-id="${tx.id}" class="delBtn">
+                                <i class="fas fa-trash" style="font-size:0.7rem"></i>
+                            </button>
+                        </td>
+                    `;
+                } else {
+                    row.innerHTML = `
+                        <td>${formatDate(tx.date)}</td>
+                        <td>${escapeHtml(tx.tid || '')}</td>
+                        <td>${escapeHtml(tx.description || '')}</td>
+                        <td class="num">${inVal > 0 ? formatCurrency(inVal) : ''}</td>
+                        <td class="num">${outVal > 0 ? formatCurrency(outVal) : ''}</td>
+                        <td class="num">${formatCurrencyCell(runningBalance)}</td>
+                    `;
+                }
+
+                tableBody.appendChild(row);
             });
-            const headers = currentBranch === 'all'
-                ? ['Date', 'Tid', 'Description', 'Cash In (ZMW)', 'Cash Out (ZMW)', 'Balance (ZMW)', 'Branch']
-                : ['Date', 'Tid', 'Description', 'Cash In (ZMW)', 'Cash Out (ZMW)', 'Balance (ZMW)'];
-            const csv = [headers.join(','), ...rows.map(r => r.map(c => `"${c}"`).join(','))].join('\n');
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            const fileName = currentBranch === 'all'
-                ? `cashflow_all_branches_${new Date().toISOString().slice(0, 10)}.csv`
-                : `cashflow_${currentUserData.username}_${new Date().toISOString().slice(0, 10)}.csv`;
-            a.download = fileName;
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            URL.revokeObjectURL(url);
-        });
 
-        printBtn.addEventListener('click', () => {
-            dropdown.classList.remove('show');
-            window.print();
-        });
-
-        applyFilterBtn.addEventListener('click', () => {
-            dropdown.classList.remove('show');
-            renderTransactions();
-        });
-
-        clearFilterBtn.addEventListener('click', () => {
-            filterFrom.value = '';
-            filterTo.value = '';
-            dropdown.classList.remove('show');
-            renderTransactions();
-        });
-
-        addDemoBtn.addEventListener('click', async () => {
-            dropdown.classList.remove('show');
-            if (currentBranch === 'all') {
-                alert('Cannot add demo transactions in "View All" mode. Please select a specific branch.');
-                return;
+            if (isAdmin || isAdminAccessingOther || currentBranch === 'all') {
+                attachRowEvents();
             }
-            
-            if (isAdminAccessingOther || isAdmin || currentUserData.username !== 'guest') {
-                const confirmMessage = isAdminAccessingOther
-                    ? `Add demo transactions to ${currentUserData.username}'s account?`
-                    : 'Add 3 demo transactions to the database for this branch?';
-
-                if (!confirm(confirmMessage)) return;
-                try {
-                    addDemoBtn.classList.add('disabled');
-                    const now = new Date();
-                    const demo = [
-                        {
-                            date: firebase.firestore.Timestamp.fromDate(new Date(now.getFullYear(), now.getMonth(), 3)),
-                            tid: 'demo-001',
-                            description: 'Demo sale',
-                            cashIn: '150.00',
-                            cashOut: '0.00',
-                            branchId: branchIdInput.value || currentBranch,
-                            createdBy: isAdminAccessingOther ? currentUserData.username : originalLoggedInUser,
-                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                        },
-                        {
-                            date: firebase.firestore.Timestamp.fromDate(new Date(now.getFullYear(), now.getMonth(), 7)),
-                            tid: 'demo-002',
-                            description: 'Demo purchase',
-                            cashIn: '0.00',
-                            cashOut: '45.50',
-                            branchId: branchIdInput.value || currentBranch,
-                            createdBy: isAdminAccessingOther ? currentUserData.username : originalLoggedInUser,
-                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                        },
-                        {
-                            date: firebase.firestore.Timestamp.fromDate(new Date(now.getFullYear(), now.getMonth(), 12)),
-                            tid: 'demo-003',
-                            description: 'Demo income',
-                            cashIn: '75.25',
-                            cashOut: '0.00',
-                            branchId: branchIdInput.value || currentBranch,
-                            createdBy: isAdminAccessingOther ? currentUserData.username : originalLoggedInUser,
-                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                        },
-                    ];
-                    for (const d of demo) await db.collection('cashflow').add(d);
-                    alert('Demo transactions added.');
-                } catch (err) {
-                    console.error('demo add err', err);
-                    alert('Error adding demo transactions: ' + err.message);
-                } finally {
-                    addDemoBtn.classList.remove('disabled');
-                }
-            }
-        });
-
-        // Form submit
-        transactionForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if (isSaving) return;
-            const dateVal = dateInput.value;
-            if (!dateVal) {
-                alert('Select date');
-                return;
-            }
-
-            const cashInNum = parseFloat(cashInInput.value || 0) || 0;
-            const cashOutNum = parseFloat(cashOutInput.value || 0) || 0;
-            if (cashInNum <= 0 && cashOutNum <= 0) {
-                alert('Enter a value for Cash In or Cash Out (both cannot be zero).');
-                return;
-            }
-
-            if (cashInNum < 0 || cashOutNum < 0) {
-                alert('Cash values cannot be negative.');
-                return;
-            }
-
-            const id = editIdInput.value;
-            let payload = {
-                date: firebase.firestore.Timestamp.fromDate(new Date(dateVal)),
-                tid: tidInput.value.trim(),
-                description: descriptionInput.value.trim(),
-                cashIn: cashInNum.toFixed(2),
-                cashOut: cashOutNum.toFixed(2),
-                createdBy: isAdminAccessingOther ? currentUserData.username : originalLoggedInUser,
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-            };
-
-            if (id) {
-                const existing = allTransactions.find(t => t.id === id);
-                if (existing && existing.branchId) {
-                    payload.branchId = existing.branchId;
-                } else if (branchIdInput.value) {
-                    payload.branchId = branchIdInput.value;
-                } else {
-                    payload.branchId = currentBranch === 'all' ? 'branch1' : currentBranch;
-                }
-            } else {
-                payload.branchId = branchIdInput.value || currentBranch;
-                payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-            }
-
-            try {
-                isSaving = true;
-                saveBtn.disabled = true;
-                saveBtn.textContent = 'Saving...';
-
-                if (id) {
-                    await db.collection('cashflow').doc(id).update(payload);
-                } else {
-                    await db.collection('cashflow').add(payload);
-                }
-                hideForm();
-                showMessage('Transaction saved successfully!', 'success');
-            } catch (err) {
-                console.error('save err', err);
-                alert('Error saving: ' + err.message);
-            } finally {
-                isSaving = false;
-                saveBtn.disabled = false;
-                saveBtn.textContent = 'Save';
-            }
-        });
-
-        // Helper functions
-        function showForm() {
-            formPane.classList.remove('hidden');
-            formPane.setAttribute('aria-hidden', 'false');
-            dateInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
-
-        function hideForm() {
-            formPane.classList.add('hidden');
-            formPane.setAttribute('aria-hidden', 'true');
-            transactionForm.reset();
-            dateInput.valueAsDate = new Date();
-            editIdInput.value = '';
-            branchIdInput.value = '';
-            formBranchLabel.textContent = '';
-            formBranchLabel.setAttribute('aria-hidden', 'true');
-            saveBtn.disabled = false;
-            saveBtn.textContent = 'Save';
-            isSaving = false;
-        }
-    }
-
-    // Setup Firestore listener - FIXED VERSION
-    function setupListener() {
-        if (listenerUnsub) listenerUnsub();
-
-        console.log('Setting up listener for branch:', currentBranch);
-
-        try {
-            let q;
-            // Always get all transactions first
-            q = db.collection('cashflow').orderBy('date', 'desc');
-
-            listenerUnsub = q.onSnapshot(snapshot => {
-                console.log('Received', snapshot.docs.length, 'total transactions');
-                
-                // Convert all transactions
-                let transactions = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-                
-                // ONLY filter if NOT in "all" mode
-                if (currentBranch !== 'all') {
-                    transactions = transactions.filter(tx => tx.branchId === currentBranch);
-                    console.log('Filtered to', transactions.length, 'transactions for branch:', currentBranch);
-                } else {
-                    console.log('Showing ALL', transactions.length, 'transactions from all branches');
-                }
-                
-                allTransactions = transactions;
-                renderTransactions();
-            }, err => {
-                console.error('Firestore listener error:', err);
-                
-                // Check if it's an index error
-                if (err.code === 'failed-precondition' || err.message.includes('index')) {
-                    indexError = true;
-                    showMessage('⚠️ Database index required. Please create the composite index in Firebase Console. Data loaded without filtering.', 'error');
-                    
-                    // Fallback: Load all data
-                    db.collection('cashflow').get().then(snapshot => {
-                        let transactions = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-                        
-                        // ONLY filter if NOT in "all" mode
-                        if (currentBranch !== 'all') {
-                            transactions = transactions.filter(tx => tx.branchId === currentBranch);
-                        }
-                        
-                        allTransactions = transactions;
-                        renderTransactions();
-                        showMessage('Data loaded with client-side filtering.', 'info');
-                    });
-                } else {
-                    document.getElementById('tableBody').innerHTML = `<tr><td colspan="7" class="empty">
-                        <div>Error loading transactions</div>
-                        <div style="font-size:12px;margin-top:8px;color:#e53e3e;">${err.message}</div>
-                    </td></tr>`;
-                }
-            });
-        } catch (error) {
-            console.error('Error setting up listener:', error);
-        }
-    }
-
-    // Render transactions
-    function renderTransactions() {
-        const tableBody = document.getElementById('tableBody');
-        const tableHeader = document.getElementById('tableHeader');
-        const filterFrom = document.getElementById('filterFrom');
-        const filterTo = document.getElementById('filterTo');
-
-        let filtered = allTransactions.slice();
-
-        const from = filterFrom.value ? new Date(filterFrom.value) : null;
-        const to = filterTo.value ? new Date(filterTo.value + 'T23:59:59') : null;
-        if (from || to) {
-            filtered = filtered.filter(t => {
-                const d = t.date && t.date.toDate ? t.date.toDate() : new Date(t.date);
-                if (from && d < from) return false;
-                if (to && d > to) return false;
-                return true;
-            });
-        }
-
-        if (filtered.length === 0) {
-            tableBody.innerHTML = `<tr><td colspan="${(isAdmin || isAdminAccessingOther || currentBranch === 'all') ? '7' : '6'}" class="empty">
-                ${indexError ? 'No transactions found. Index may be building. Try creating composite index.' : 'No transactions found'}
-            </td></tr>`;
-            return;
-        }
-
-        // Sort by date ASCENDING (oldest first for running balance)
-        const sorted = filtered.slice().sort((a, b) => {
-            const dateA = a.date && a.date.toDate ? a.date.toDate() : new Date(a.date);
-            const dateB = b.date && b.date.toDate ? b.date.toDate() : new Date(b.date);
-            return dateA - dateB;
-        });
 
         // Update table header
-        updateTableHeader();
-
-        // Calculate running balance - reset for each branch in "all" mode
-        let runningBalance = 0;
-        let lastBranch = null;
-        tableBody.innerHTML = '';
-
-        sorted.forEach(tx => {
-            const inVal = Number(tx.cashIn || 0);
-            const outVal = Number(tx.cashOut || 0);
-            
-            // Reset running balance when branch changes in "all" mode
-            if (currentBranch === 'all' && tx.branchId !== lastBranch) {
-                runningBalance = 0;
-                lastBranch = tx.branchId;
-            }
-            
-            runningBalance += inVal - outVal;
-
-            const row = document.createElement('tr');
+        function updateTableHeader() {
+            const tableHeader = document.getElementById('tableHeader');
             const showActions = isAdmin || isAdminAccessingOther || currentBranch === 'all';
 
             if (showActions) {
-                row.innerHTML = `
-                    <td>${formatDate(tx.date)}</td>
-                    <td>${escapeHtml(tx.tid || '')}</td>
-                    <td>${escapeHtml(tx.description || '')} ${currentBranch === 'all' ? `<small style="color:#a0aec0">(${tx.branchId})</small>` : ''}</td>
-                    <td class="num">${inVal > 0 ? formatCurrency(inVal) : ''}</td>
-                    <td class="num">${outVal > 0 ? formatCurrency(outVal) : ''}</td>
-                    <td class="num">${formatCurrencyCell(runningBalance)}</td>
-                    <td>
-                        <button data-id="${tx.id}" class="editBtn" style="margin-right:6px">Edit</button>
-                        <button data-id="${tx.id}" class="delBtn">Del</button>
-                    </td>
+                tableHeader.innerHTML = `
+                    <th style="width:100px">Date</th>
+                    <th style="width:100px">Tid</th>
+                    <th>Description${currentBranch === 'all' ? ' (Branch)' : ''}</th>
+                    <th style="width:90px">Cash In</th>
+                    <th style="width:90px">Cash Out</th>
+                    <th style="width:100px">Balance</th>
+                    <th style="width:70px">Actions</th>
                 `;
             } else {
-                row.innerHTML = `
-                    <td>${formatDate(tx.date)}</td>
-                    <td>${escapeHtml(tx.tid || '')}</td>
-                    <td>${escapeHtml(tx.description || '')}</td>
-                    <td class="num">${inVal > 0 ? formatCurrency(inVal) : ''}</td>
-                    <td class="num">${outVal > 0 ? formatCurrency(outVal) : ''}</td>
-                    <td class="num">${formatCurrencyCell(runningBalance)}</td>
+                tableHeader.innerHTML = `
+                    <th style="width:100px">Date</th>
+                    <th style="width:100px">Tid</th>
+                    <th>Description</th>
+                    <th style="width:90px">Cash In</th>
+                    <th style="width:90px">Cash Out</th>
+                    <th style="width:100px">Balance</th>
                 `;
             }
-
-            tableBody.appendChild(row);
-        });
-
-        if (isAdmin || isAdminAccessingOther || currentBranch === 'all') {
-            attachRowEvents();
-        }
-    }
-
-    // Update table header
-    function updateTableHeader() {
-        const tableHeader = document.getElementById('tableHeader');
-        const showActions = isAdmin || isAdminAccessingOther || currentBranch === 'all';
-
-        if (showActions) {
-            tableHeader.innerHTML = `
-                <th style="width:120px">Date</th>
-                <th style="width:120px">Tid</th>
-                <th>Description${currentBranch === 'all' ? ' (Branch)' : ''}</th>
-                <th style="width:110px">Cash In</th>
-                <th style="width:110px">Cash Out</th>
-                <th style="width:120px">Balance</th>
-                <th style="width:90px">Actions</th>
-            `;
-        } else {
-            tableHeader.innerHTML = `
-                <th style="width:120px">Date</th>
-                <th style="width:120px">Tid</th>
-                <th>Description</th>
-                <th style="width:110px">Cash In</th>
-                <th style="width:110px">Cash Out</th>
-                <th style="width:120px">Balance</th>
-            `;
-        }
-    }
-
-    // Attach row events
-    function attachRowEvents() {
-        // Delete handlers
-        document.querySelectorAll('.delBtn').forEach(btn => {
-            btn.onclick = async () => {
-                const id = btn.getAttribute('data-id');
-                if (!confirm('Delete this transaction?')) return;
-                try {
-                    btn.classList.add('disabled');
-                    await db.collection('cashflow').doc(id).delete();
-                    showMessage('Transaction deleted successfully!', 'success');
-                } catch (err) {
-                    console.error('delete err', err);
-                    alert('Error deleting: ' + err.message);
-                } finally {
-                    btn.classList.remove('disabled');
-                }
-            };
-        });
-
-        // Edit handlers
-        document.querySelectorAll('.editBtn').forEach(btn => {
-            btn.onclick = () => {
-                const id = btn.getAttribute('data-id');
-                const tx = allTransactions.find(t => t.id === id);
-                if (!tx) return;
-                const txDate = tx.date && tx.date.toDate ? tx.date.toDate() : new Date(tx.date);
-                document.getElementById('date').value = txDate.toISOString().slice(0, 10);
-                document.getElementById('tid').value = tx.tid || '';
-                document.getElementById('description').value = tx.description || '';
-                document.getElementById('cashIn').value = Number(tx.cashIn || 0).toFixed(2);
-                document.getElementById('cashOut').value = Number(tx.cashOut || 0).toFixed(2);
-                document.getElementById('editId').value = tx.id;
-                document.getElementById('branchIdInput').value = tx.branchId || currentBranch || 'branch1';
-                document.getElementById('formBranch').textContent = `Branch: ${document.getElementById('branchIdInput').value}`;
-                document.getElementById('formBranch').setAttribute('aria-hidden', 'false');
-                showForm();
-            };
-        });
-    }
-
-    // Toggle sidebar
-    function toggleSidebar() {
-        const container = document.getElementById('dashboardContainer');
-        const isHidden = container.classList.contains('sidebar-hidden');
-        
-        if (isHidden) {
-            container.classList.remove('sidebar-hidden');
-            localStorage.setItem('sidebarState', 'visible');
-        } else {
-            container.classList.add('sidebar-hidden');
-            localStorage.setItem('sidebarState', 'hidden');
-        }
-    }
-
-    // Toggle mobile sidebar
-    function toggleMobileSidebar() {
-        const container = document.getElementById('dashboardContainer');
-        const sidebar = document.getElementById('sidebar');
-        
-        if (sidebar.style.display === 'block') {
-            sidebar.style.display = 'none';
-        } else {
-            sidebar.style.display = 'block';
-            sidebar.style.position = 'fixed';
-            sidebar.style.left = '0';
-            sidebar.style.top = '70px';
-            sidebar.style.width = '250px';
-            sidebar.style.height = 'calc(100vh - 70px)';
-            sidebar.style.zIndex = '999';
-        }
-    }
-
-    // Load sidebar state from localStorage
-    function loadSidebarState() {
-        const savedState = localStorage.getItem('sidebarState');
-        const container = document.getElementById('dashboardContainer');
-        
-        if (savedState === 'hidden') {
-            container.classList.add('sidebar-hidden');
-        } else {
-            container.classList.remove('sidebar-hidden');
-        }
-    }
-
-    // Show message
-    function showMessage(text, type) {
-        const messageDiv = document.getElementById('message');
-        messageDiv.textContent = text;
-        messageDiv.className = 'message ' + type;
-        messageDiv.style.display = 'block';
-
-        setTimeout(() => {
-            messageDiv.style.display = 'none';
-        }, 5000);
-    }
-
-    // Open admin panel
-    function openAdminPanel() {
-        window.location.href = 'admin-dashboard.html';
-    }
-
-    // Logout function
-    function logout() {
-        if (isAdminAccessingOther) {
-            const logoutLog = {
-                adminUser: originalLoggedInUser,
-                accessedAccount: currentUserData.username,
-                branch: currentBranch,
-                action: 'logout',
-                page: 'cashflow',
-                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                duration: Math.floor((Date.now() - window.dashboardStartTime) / 1000) + ' seconds'
-            };
-
-            db.collection('admin_access_logs').add(logoutLog)
-                .then(() => console.log('✅ Admin logout logged'))
-                .catch(err => console.error('❌ Error logging admin logout:', err));
         }
 
-        localStorage.removeItem('currentUser');
-        window.location.href = 'index.html';
-    }
+        // Attach row events
+        function attachRowEvents() {
+            // Delete handlers
+            document.querySelectorAll('.delBtn').forEach(btn => {
+                btn.onclick = async () => {
+                    const id = btn.getAttribute('data-id');
+                    if (!confirm('Delete this transaction?')) return;
+                    try {
+                        btn.classList.add('disabled');
+                        await db.collection('cashflow').doc(id).delete();
+                        showMessage('Transaction deleted successfully!', 'success');
+                    } catch (err) {
+                        console.error('delete err', err);
+                        alert('Error deleting: ' + err.message);
+                    } finally {
+                        btn.classList.remove('disabled');
+                    }
+                };
+            });
 
-    // Set dashboard start time
-    window.dashboardStartTime = Date.now();
-
-    // Auto-refresh data every 30 seconds
-    setInterval(() => {
-        if (listenerUnsub) {
-            setupListener();
+            // Edit handlers
+            document.querySelectorAll('.editBtn').forEach(btn => {
+                btn.onclick = () => {
+                    const id = btn.getAttribute('data-id');
+                    const tx = allTransactions.find(t => t.id === id);
+                    if (!tx) return;
+                    const txDate = tx.date && tx.date.toDate ? tx.date.toDate() : new Date(tx.date);
+                    document.getElementById('date').value = txDate.toISOString().slice(0, 10);
+                    document.getElementById('tid').value = tx.tid || '';
+                    document.getElementById('description').value = tx.description || '';
+                    document.getElementById('cashIn').value = Number(tx.cashIn || 0).toFixed(2);
+                    document.getElementById('cashOut').value = Number(tx.cashOut || 0).toFixed(2);
+                    document.getElementById('editId').value = tx.id;
+                    document.getElementById('branchIdInput').value = tx.branchId || currentBranch || 'branch1';
+                    document.getElementById('formBranch').textContent = `Branch: ${document.getElementById('branchIdInput').value}`;
+                    document.getElementById('formBranch').setAttribute('aria-hidden', 'false');
+                    showForm();
+                };
+            });
         }
-    }, 30000);
-</script>
+
+        // Show message
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = 'message ' + type;
+            messageDiv.style.display = 'block';
+
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        // Open admin panel
+        function openAdminPanel() {
+            window.location.href = 'admin-dashboard.html';
+        }
+
+        // Logout function
+        function logout() {
+            if (isAdminAccessingOther) {
+                const logoutLog = {
+                    adminUser: originalLoggedInUser,
+                    accessedAccount: currentUserData.username,
+                    branch: currentBranch,
+                    action: 'logout',
+                    page: 'cashflow',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    duration: Math.floor((Date.now() - window.dashboardStartTime) / 1000) + ' seconds'
+                };
+
+                db.collection('admin_access_logs').add(logoutLog)
+                    .then(() => console.log('✅ Admin logout logged'))
+                    .catch(err => console.error('❌ Error logging admin logout:', err));
+            }
+
+            localStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        }
+
+        // Set dashboard start time
+        window.dashboardStartTime = Date.now();
+
+        // Auto-refresh data every 30 seconds
+        setInterval(() => {
+            if (listenerUnsub) {
+                setupListener();
+            }
+        }, 30000);
+    </script>
 </body>
-
 </html>
