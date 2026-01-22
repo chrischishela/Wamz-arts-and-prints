@@ -19,7 +19,7 @@
     body {
         background: #f5f7fa;
         color: #2c3e50;
-        line-height: 1.6;
+        line-height: 1.5;
         min-height: 100vh;
         width: 100%;
     }
@@ -27,14 +27,14 @@
     /* AUTO FIT LAYOUT */
     .dashboard-container {
         display: grid;
-        grid-template-columns: minmax(220px, 250px) 1fr;
+        grid-template-columns: minmax(200px, 220px) 1fr;
         grid-template-rows: auto 1fr;
         min-height: 100vh;
         width: 100%;
     }
 
     .dashboard-container.sidebar-hidden {
-        grid-template-columns: 0px 1fr;
+        grid-template-columns: 0 1fr;
     }
 
     /* HEADER - AUTO FIT */
@@ -42,25 +42,25 @@
         grid-column: 1 / -1;
         background: #1a365d;
         color: white;
-        padding: clamp(0.8rem, 1.5vw, 1rem) clamp(1rem, 2vw, 2rem);
+        padding: 0.8rem 1rem;
         display: flex;
         flex-wrap: wrap;
         justify-content: space-between;
         align-items: center;
-        gap: clamp(0.5rem, 1vw, 1rem);
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        gap: 0.5rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         z-index: 100;
     }
 
     .header-left {
         display: flex;
         align-items: center;
-        gap: clamp(0.5rem, 1vw, 1rem);
+        gap: 0.8rem;
         flex-wrap: wrap;
     }
 
     .header h1 {
-        font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+        font-size: 1.2rem;
         font-weight: 600;
         white-space: nowrap;
     }
@@ -68,22 +68,22 @@
     .user-info {
         display: flex;
         align-items: center;
-        gap: clamp(0.5rem, 1vw, 1rem);
+        gap: 0.5rem;
         flex-wrap: wrap;
     }
 
     .user-name {
         font-weight: 500;
         color: #e2e8f0;
-        font-size: clamp(0.85rem, 1.5vw, 0.95rem);
+        font-size: 0.9rem;
     }
 
     .branch-badge {
         background: #4299e1;
         color: white;
-        padding: clamp(0.2rem, 0.5vw, 0.4rem) clamp(0.4rem, 1vw, 0.8rem);
+        padding: 0.3rem 0.6rem;
         border-radius: 4px;
-        font-size: clamp(0.75rem, 1.3vw, 0.85rem);
+        font-size: 0.8rem;
         font-weight: 500;
         white-space: nowrap;
     }
@@ -91,9 +91,9 @@
     .admin-badge {
         background: #e53e3e;
         color: white;
-        padding: clamp(0.2rem, 0.5vw, 0.4rem) clamp(0.4rem, 1vw, 0.8rem);
+        padding: 0.3rem 0.6rem;
         border-radius: 4px;
-        font-size: clamp(0.75rem, 1.3vw, 0.85rem);
+        font-size: 0.8rem;
         font-weight: 600;
         white-space: nowrap;
     }
@@ -103,14 +103,14 @@
         background: #4299e1;
         color: white;
         border: none;
-        width: clamp(32px, 3vw, 36px);
-        height: clamp(32px, 3vw, 36px);
+        width: 36px;
+        height: 36px;
         border-radius: 6px;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: clamp(1rem, 1.5vw, 1.2rem);
+        font-size: 1rem;
         transition: all 0.2s;
         flex-shrink: 0;
     }
@@ -123,10 +123,10 @@
         background: #2d3748;
         color: white;
         border: none;
-        padding: clamp(0.4rem, 0.8vw, 0.6rem) clamp(0.8rem, 1.5vw, 1.2rem);
+        padding: 0.5rem 1rem;
         border-radius: 6px;
         cursor: pointer;
-        font-size: clamp(0.8rem, 1.2vw, 0.9rem);
+        font-size: 0.85rem;
         transition: all 0.2s;
         white-space: nowrap;
     }
@@ -139,7 +139,7 @@
     .sidebar {
         background: #2d3748;
         color: white;
-        padding: clamp(1rem, 2vw, 2rem) clamp(0.5rem, 1vw, 1rem);
+        padding: 1.5rem 0.8rem;
         border-right: 1px solid #4a5568;
         overflow-y: auto;
         min-width: min-content;
@@ -151,10 +151,10 @@
     }
 
     .sidebar-title {
-        font-size: clamp(0.85rem, 1.5vw, 1rem);
+        font-size: 0.9rem;
         color: #cbd5e0;
-        margin-bottom: clamp(1rem, 2vw, 1.5rem);
-        padding: 0 clamp(0.5rem, 1vw, 1rem);
+        margin-bottom: 1.2rem;
+        padding: 0 0.8rem;
         text-transform: uppercase;
         letter-spacing: 0.5px;
         font-weight: 600;
@@ -163,21 +163,21 @@
     .nav-menu {
         display: flex;
         flex-direction: column;
-        gap: clamp(0.3rem, 0.5vw, 0.5rem);
+        gap: 0.4rem;
     }
 
     .nav-item {
         display: flex;
         align-items: center;
-        gap: clamp(0.5rem, 1vw, 0.8rem);
-        padding: clamp(0.7rem, 1vw, 0.9rem) clamp(0.8rem, 1.5vw, 1rem);
+        gap: 0.6rem;
+        padding: 0.8rem;
         background: none;
         border: none;
         text-align: left;
         color: #cbd5e0;
         cursor: pointer;
         border-radius: 8px;
-        font-size: clamp(0.85rem, 1.2vw, 0.95rem);
+        font-size: 0.9rem;
         transition: all 0.2s;
         text-decoration: none;
         white-space: nowrap;
@@ -196,7 +196,7 @@
     /* MAIN CONTENT - AUTO FIT */
     .main-content {
         background: #f5f7fa;
-        padding: clamp(1rem, 2vw, 2rem);
+        padding: 1rem;
         overflow-y: auto;
         height: 100%;
         min-width: 0;
@@ -206,49 +206,49 @@
     .welcome-banner {
         background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
         color: white;
-        padding: clamp(1rem, 1.5vw, 1.5rem);
-        border-radius: clamp(8px, 1.2vw, 12px);
-        margin-bottom: clamp(1rem, 1.5vw, 1.5rem);
-        box-shadow: 0 4px 12px rgba(66, 153, 225, 0.2);
+        padding: 1.2rem;
+        border-radius: 10px;
+        margin-bottom: 1.2rem;
+        box-shadow: 0 4px 10px rgba(66, 153, 225, 0.2);
     }
 
     .welcome-banner h2 {
-        font-size: clamp(1.1rem, 2.2vw, 1.4rem);
-        margin-bottom: clamp(0.3rem, 0.5vw, 0.5rem);
+        font-size: 1.2rem;
+        margin-bottom: 0.4rem;
         font-weight: 600;
     }
 
     .welcome-banner p {
         opacity: 0.9;
-        font-size: clamp(0.85rem, 1.3vw, 0.95rem);
+        font-size: 0.9rem;
     }
 
     /* ADMIN ACCESS ALERT - AUTO FIT */
     .admin-access-alert {
         background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
         color: white;
-        padding: clamp(0.8rem, 1.2vw, 1rem);
-        border-radius: clamp(6px, 1vw, 10px);
-        margin-bottom: clamp(0.8rem, 1.2vw, 1rem);
-        box-shadow: 0 4px 12px rgba(229, 62, 62, 0.2);
+        padding: 0.8rem;
+        border-radius: 8px;
+        margin-bottom: 0.8rem;
+        box-shadow: 0 4px 10px rgba(229, 62, 62, 0.2);
         display: none;
         border: 2px solid #fed7d7;
     }
 
     .admin-access-alert h3 {
-        font-size: clamp(0.95rem, 1.5vw, 1.1rem);
-        margin-bottom: clamp(0.3rem, 0.5vw, 0.5rem);
+        font-size: 1rem;
+        margin-bottom: 0.4rem;
         font-weight: 600;
     }
 
     /* MESSAGE DISPLAY - AUTO FIT */
     .message {
-        padding: clamp(0.8rem, 1vw, 1rem);
-        border-radius: clamp(6px, 0.8vw, 8px);
-        margin-bottom: clamp(0.8rem, 1.5vw, 1.5rem);
+        padding: 0.8rem;
+        border-radius: 8px;
+        margin-bottom: 1.2rem;
         display: none;
         border: 1px solid transparent;
-        font-size: clamp(0.85rem, 1.2vw, 0.9rem);
+        font-size: 0.85rem;
     }
 
     .message.success {
@@ -272,35 +272,35 @@
     /* STATS GRID - AUTO FIT */
     .stats-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
-        gap: clamp(0.8rem, 1.2vw, 1.2rem);
-        margin-bottom: clamp(1rem, 1.5vw, 1.5rem);
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.2rem;
     }
 
     .stat-card {
         background: white;
-        padding: clamp(1rem, 1.2vw, 1.2rem);
-        border-radius: clamp(6px, 1vw, 10px);
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        padding: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
         border: 1px solid #e2e8f0;
         transition: all 0.3s ease;
         text-align: center;
     }
 
     .stat-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
 
     .stat-value {
-        font-size: clamp(1.4rem, 2.5vw, 1.8rem);
+        font-size: 1.4rem;
         font-weight: 700;
         color: #2d3748;
-        margin-bottom: clamp(0.3rem, 0.5vw, 0.5rem);
+        margin-bottom: 0.4rem;
     }
 
     .stat-label {
-        font-size: clamp(0.75rem, 1.1vw, 0.85rem);
+        font-size: 0.8rem;
         color: #718096;
         font-weight: 500;
         text-transform: uppercase;
@@ -311,7 +311,7 @@
     .content-wrapper {
         display: grid;
         grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-        gap: clamp(1rem, 1.5vw, 1.5rem);
+        gap: 1.2rem;
         height: auto;
         min-height: 400px;
     }
@@ -319,8 +319,8 @@
     /* INVENTORY SECTION - AUTO FIT */
     .inventory-section {
         background: white;
-        border-radius: clamp(6px, 1vw, 10px);
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
         border: 1px solid #e2e8f0;
         overflow: hidden;
         display: flex;
@@ -333,22 +333,22 @@
         flex-wrap: wrap;
         justify-content: space-between;
         align-items: center;
-        padding: clamp(0.8rem, 1vw, 1rem) clamp(1rem, 1.5vw, 1.5rem);
+        padding: 1rem;
         border-bottom: 2px solid #f7fafc;
         background: #f8fafc;
-        gap: clamp(0.5rem, 1vw, 0.8rem);
+        gap: 0.8rem;
     }
 
     .section-header h3 {
-        font-size: clamp(0.95rem, 1.5vw, 1.1rem);
+        font-size: 1rem;
         color: #2d3748;
         font-weight: 600;
     }
 
     .search-controls {
         display: flex;
-        gap: clamp(0.5rem, 0.8vw, 0.8rem);
-        padding: clamp(0.8rem, 1vw, 1rem) clamp(1rem, 1.5vw, 1.5rem);
+        gap: 0.5rem;
+        padding: 1rem;
         border-bottom: 1px solid #e2e8f0;
         flex-wrap: wrap;
     }
@@ -356,20 +356,20 @@
     .search-input {
         flex: 1;
         min-width: 150px;
-        padding: clamp(0.6rem, 0.8vw, 0.8rem);
+        padding: 0.7rem;
         border: 1px solid #e2e8f0;
-        border-radius: clamp(6px, 0.8vw, 8px);
-        font-size: clamp(0.85rem, 1.2vw, 0.95rem);
+        border-radius: 6px;
+        font-size: 0.9rem;
     }
 
     .search-btn {
         background: #4299e1;
         color: white;
         border: none;
-        padding: clamp(0.6rem, 0.8vw, 0.8rem) clamp(1rem, 1.5vw, 1.5rem);
-        border-radius: clamp(6px, 0.8vw, 8px);
+        padding: 0.7rem 1.2rem;
+        border-radius: 6px;
         cursor: pointer;
-        font-size: clamp(0.85rem, 1.2vw, 0.95rem);
+        font-size: 0.9rem;
         font-weight: 600;
         transition: all 0.3s ease;
         white-space: nowrap;
@@ -388,16 +388,16 @@
     .inventory-table {
         width: 100%;
         border-collapse: collapse;
-        min-width: min(800px, 100%);
+        min-width: 800px;
     }
 
     .inventory-table th {
         background: #f8fafc;
-        padding: clamp(0.8rem, 1vw, 1rem);
+        padding: 0.8rem;
         text-align: left;
         color: #718096;
         font-weight: 600;
-        font-size: clamp(0.75rem, 1.1vw, 0.85rem);
+        font-size: 0.8rem;
         text-transform: uppercase;
         letter-spacing: 0.5px;
         border-bottom: 2px solid #e2e8f0;
@@ -407,10 +407,10 @@
     }
 
     .inventory-table td {
-        padding: clamp(0.8rem, 1vw, 1rem);
+        padding: 0.8rem;
         border-bottom: 1px solid #f7fafc;
         color: #4a5568;
-        font-size: clamp(0.8rem, 1.2vw, 0.9rem);
+        font-size: 0.85rem;
     }
 
     .inventory-table tr:hover {
@@ -420,31 +420,31 @@
     .code-badge {
         background: #4299e1;
         color: white;
-        padding: clamp(0.2rem, 0.3vw, 0.3rem) clamp(0.4rem, 0.6vw, 0.6rem);
+        padding: 0.2rem 0.4rem;
         border-radius: 4px;
-        font-size: clamp(0.7rem, 1vw, 0.8rem);
+        font-size: 0.75rem;
         font-weight: 600;
         font-family: monospace;
         display: inline-block;
     }
 
     .qty-input {
-        width: clamp(60px, 8vw, 70px);
-        padding: clamp(0.4rem, 0.5vw, 0.5rem);
+        width: 70px;
+        padding: 0.5rem;
         border: 1px solid #e2e8f0;
-        border-radius: clamp(4px, 0.6vw, 6px);
+        border-radius: 6px;
         text-align: center;
-        font-size: clamp(0.8rem, 1.1vw, 0.9rem);
+        font-size: 0.85rem;
     }
 
     .add-btn {
         background: #4299e1;
         color: white;
         border: none;
-        padding: clamp(0.4rem, 0.5vw, 0.5rem) clamp(0.8rem, 1vw, 1rem);
-        border-radius: clamp(4px, 0.6vw, 6px);
+        padding: 0.5rem 0.8rem;
+        border-radius: 6px;
         cursor: pointer;
-        font-size: clamp(0.75rem, 1.1vw, 0.85rem);
+        font-size: 0.8rem;
         font-weight: 600;
         transition: all 0.3s ease;
         white-space: nowrap;
@@ -457,8 +457,8 @@
     /* CART SECTION - AUTO FIT */
     .cart-section {
         background: white;
-        border-radius: clamp(6px, 1vw, 10px);
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
         border: 1px solid #e2e8f0;
         display: flex;
         flex-direction: column;
@@ -470,16 +470,16 @@
         flex-wrap: wrap;
         justify-content: space-between;
         align-items: center;
-        padding: clamp(0.8rem, 1vw, 1rem) clamp(1rem, 1.5vw, 1.5rem);
+        padding: 1rem;
         border-bottom: 2px solid #f7fafc;
         background: #f8fafc;
-        gap: clamp(0.5rem, 1vw, 0.8rem);
+        gap: 0.8rem;
     }
 
     .cart-items {
         flex: 1;
         overflow: auto;
-        padding: clamp(0.8rem, 1vw, 1rem);
+        padding: 1rem;
         min-height: 200px;
     }
 
@@ -487,10 +487,10 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: clamp(0.6rem, 0.8vw, 0.8rem);
+        padding: 0.7rem;
         border-bottom: 1px solid #f7fafc;
         flex-wrap: wrap;
-        gap: clamp(0.5rem, 1vw, 0.8rem);
+        gap: 0.8rem;
     }
 
     .cart-item:last-child {
@@ -504,7 +504,7 @@
 
     .cart-item-controls {
         display: flex;
-        gap: clamp(0.3rem, 0.5vw, 0.5rem);
+        gap: 0.4rem;
         align-items: center;
     }
 
@@ -512,11 +512,11 @@
         background: #e2e8f0;
         color: #4a5568;
         border: none;
-        width: clamp(24px, 3vw, 28px);
-        height: clamp(24px, 3vw, 28px);
+        width: 26px;
+        height: 26px;
         border-radius: 4px;
         cursor: pointer;
-        font-size: clamp(0.8rem, 1.1vw, 0.9rem);
+        font-size: 0.85rem;
         font-weight: 600;
         display: flex;
         align-items: center;
@@ -538,7 +538,7 @@
     }
 
     .cart-summary {
-        padding: clamp(0.8rem, 1vw, 1rem);
+        padding: 1rem;
         border-top: 2px solid #f7fafc;
         background: #f8fafc;
     }
@@ -546,23 +546,23 @@
     .summary-row {
         display: flex;
         justify-content: space-between;
-        margin-bottom: clamp(0.3rem, 0.5vw, 0.5rem);
-        font-size: clamp(0.8rem, 1.1vw, 0.9rem);
+        margin-bottom: 0.4rem;
+        font-size: 0.85rem;
     }
 
     .total-row {
-        font-size: clamp(0.95rem, 1.5vw, 1.1rem);
+        font-size: 1rem;
         font-weight: 600;
         color: #2d3748;
-        margin-top: clamp(0.3rem, 0.5vw, 0.5rem);
-        padding-top: clamp(0.3rem, 0.5vw, 0.5rem);
+        margin-top: 0.4rem;
+        padding-top: 0.4rem;
         border-top: 1px solid #e2e8f0;
     }
 
     .discount-controls {
         display: flex;
-        gap: clamp(0.3rem, 0.5vw, 0.5rem);
-        margin: clamp(0.8rem, 1vw, 1rem) 0;
+        gap: 0.4rem;
+        margin: 0.8rem 0;
         align-items: center;
         flex-wrap: wrap;
     }
@@ -570,36 +570,36 @@
     .discount-select {
         flex: 1;
         min-width: 120px;
-        padding: clamp(0.4rem, 0.5vw, 0.5rem);
+        padding: 0.5rem;
         border: 1px solid #e2e8f0;
-        border-radius: clamp(4px, 0.6vw, 6px);
-        font-size: clamp(0.8rem, 1.1vw, 0.9rem);
+        border-radius: 6px;
+        font-size: 0.85rem;
     }
 
     .discount-input {
         flex: 1;
         min-width: 120px;
-        padding: clamp(0.4rem, 0.5vw, 0.5rem);
+        padding: 0.5rem;
         border: 1px solid #e2e8f0;
-        border-radius: clamp(4px, 0.6vw, 6px);
-        font-size: clamp(0.8rem, 1.1vw, 0.9rem);
+        border-radius: 6px;
+        font-size: 0.85rem;
     }
 
     .cart-actions {
         display: flex;
-        gap: clamp(0.5rem, 0.8vw, 0.8rem);
-        margin-top: clamp(0.8rem, 1vw, 1rem);
+        gap: 0.5rem;
+        margin-top: 0.8rem;
         flex-wrap: wrap;
     }
 
     .cart-action-btn {
         flex: 1;
         min-width: 120px;
-        padding: clamp(0.6rem, 0.8vw, 0.8rem);
-        border-radius: clamp(6px, 0.8vw, 8px);
+        padding: 0.7rem;
+        border-radius: 6px;
         border: none;
         cursor: pointer;
-        font-size: clamp(0.8rem, 1.2vw, 0.9rem);
+        font-size: 0.85rem;
         font-weight: 600;
         transition: all 0.3s ease;
     }
@@ -631,7 +631,7 @@
         background: #4299e1;
         color: white;
         width: 100%;
-        margin-top: clamp(0.3rem, 0.5vw, 0.5rem);
+        margin-top: 0.5rem;
     }
 
     .view-sales-btn:hover {
@@ -648,7 +648,7 @@
         align-items: center;
         justify-content: center;
         z-index: 1000;
-        padding: clamp(0.8rem, 1vw, 1rem);
+        padding: 1rem;
     }
 
     .sales-overlay.show {
@@ -658,10 +658,10 @@
     .sales-panel {
         width: 100%;
         height: 100%;
-        max-width: min(1000px, 100%);
-        max-height: min(90vh, 100%);
+        max-width: 900px;
+        max-height: 90vh;
         background: white;
-        border-radius: clamp(8px, 1.2vw, 12px);
+        border-radius: 10px;
         overflow: hidden;
         display: flex;
         flex-direction: column;
@@ -669,35 +669,35 @@
     }
 
     .sales-panel-header {
-        padding: clamp(0.8rem, 1vw, 1rem) clamp(1rem, 1.5vw, 1.5rem);
+        padding: 1rem;
         border-bottom: 1px solid #e2e8f0;
         display: flex;
         justify-content: space-between;
         align-items: center;
         background: #f8fafc;
         flex-wrap: wrap;
-        gap: clamp(0.5rem, 1vw, 0.8rem);
+        gap: 0.8rem;
     }
 
     .sales-panel-body {
         flex: 1;
         overflow: auto;
-        padding: clamp(0.8rem, 1vw, 1rem);
+        padding: 1rem;
     }
 
     .sales-table {
         width: 100%;
         border-collapse: collapse;
-        min-width: min(800px, 100%);
+        min-width: 700px;
     }
 
     .sales-table th {
         background: #f8fafc;
-        padding: clamp(0.8rem, 1vw, 1rem);
+        padding: 0.8rem;
         text-align: left;
         color: #718096;
         font-weight: 600;
-        font-size: clamp(0.75rem, 1.1vw, 0.85rem);
+        font-size: 0.8rem;
         text-transform: uppercase;
         letter-spacing: 0.5px;
         border-bottom: 2px solid #e2e8f0;
@@ -707,10 +707,10 @@
     }
 
     .sales-table td {
-        padding: clamp(0.8rem, 1vw, 1rem);
+        padding: 0.8rem;
         border-bottom: 1px solid #f7fafc;
         color: #4a5568;
-        font-size: clamp(0.8rem, 1.2vw, 0.9rem);
+        font-size: 0.85rem;
     }
 
     .sales-table tr:hover {
@@ -719,34 +719,34 @@
 
     .date-filter {
         display: flex;
-        gap: clamp(0.3rem, 0.5vw, 0.5rem);
+        gap: 0.4rem;
         align-items: center;
-        margin-bottom: clamp(0.8rem, 1vw, 1rem);
+        margin-bottom: 0.8rem;
         flex-wrap: wrap;
     }
 
     .date-filter input[type="date"] {
-        padding: clamp(0.4rem, 0.5vw, 0.5rem);
+        padding: 0.5rem;
         border: 1px solid #e2e8f0;
-        border-radius: clamp(4px, 0.6vw, 6px);
-        font-size: clamp(0.8rem, 1.1vw, 0.9rem);
+        border-radius: 6px;
+        font-size: 0.85rem;
     }
 
     .preset-buttons {
         display: flex;
-        gap: clamp(0.3rem, 0.5vw, 0.5rem);
+        gap: 0.4rem;
         margin-left: auto;
         flex-wrap: wrap;
     }
 
     .preset-btn {
-        padding: clamp(0.4rem, 0.5vw, 0.5rem) clamp(0.8rem, 1vw, 1rem);
+        padding: 0.5rem 0.8rem;
         background: #e2e8f0;
         color: #4a5568;
         border: none;
-        border-radius: clamp(4px, 0.6vw, 6px);
+        border-radius: 6px;
         cursor: pointer;
-        font-size: clamp(0.75rem, 1.1vw, 0.85rem);
+        font-size: 0.8rem;
         font-weight: 600;
         white-space: nowrap;
     }
@@ -760,7 +760,7 @@
         color: #a0aec0;
         font-style: italic;
         animation: pulse 1.5s infinite;
-        font-size: clamp(0.85rem, 1.2vw, 0.9rem);
+        font-size: 0.85rem;
     }
 
     @keyframes pulse {
@@ -771,20 +771,20 @@
     /* MOBILE SIDEBAR TOGGLE - AUTO FIT */
     .sidebar-mobile-toggle {
         position: fixed;
-        bottom: clamp(15px, 3vw, 20px);
-        right: clamp(15px, 3vw, 20px);
-        width: clamp(50px, 8vw, 60px);
-        height: clamp(50px, 8vw, 60px);
+        bottom: 20px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
         border-radius: 50%;
         background: #4299e1;
         color: white;
         border: none;
         cursor: pointer;
         z-index: 1000;
-        box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3);
+        box-shadow: 0 4px 10px rgba(66, 153, 225, 0.3);
         align-items: center;
         justify-content: center;
-        font-size: clamp(18px, 3vw, 24px);
+        font-size: 20px;
         display: none;
     }
 
@@ -792,7 +792,7 @@
     .table-container::-webkit-scrollbar,
     .cart-items::-webkit-scrollbar,
     .sales-panel-body::-webkit-scrollbar {
-        width: clamp(4px, 0.8vw, 6px);
+        width: 6px;
     }
 
     .table-container::-webkit-scrollbar-track,
@@ -816,47 +816,126 @@
     }
 
     /* AUTO SCALING FOR SMALL SCREENS */
+    @media (max-width: 1024px) {
+        .content-wrapper {
+            grid-template-columns: 1fr;
+        }
+    }
+
     @media (max-width: 768px) {
         .dashboard-container {
             grid-template-columns: 1fr;
-            grid-template-rows: auto auto 1fr;
+            grid-template-rows: auto 1fr;
         }
         
         .sidebar {
-            grid-row: 2;
-            border-right: none;
-            border-bottom: 1px solid #4a5568;
+            position: fixed;
+            top: 0;
+            left: -250px;
+            height: 100vh;
+            z-index: 1001;
+            transition: left 0.3s ease;
+            padding-top: 4rem;
+        }
+        
+        .sidebar.open {
+            left: 0;
         }
         
         .main-content {
-            grid-row: 3;
+            grid-column: 1;
+            grid-row: 2;
         }
         
-        .content-wrapper {
-            grid-template-columns: 1fr;
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
         }
         
         .sidebar-mobile-toggle {
             display: flex;
         }
+        
+        .header {
+            padding: 0.8rem;
+        }
+        
+        .header h1 {
+            font-size: 1.1rem;
+        }
+        
+        .user-info {
+            gap: 0.3rem;
+        }
     }
 
     @media (max-width: 480px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+        
         .header {
             flex-direction: column;
             text-align: center;
-            gap: 0.8rem;
+            gap: 0.5rem;
         }
         
-        .header-left,
+        .header-left {
+            justify-content: center;
+            width: 100%;
+        }
+        
         .user-info {
             justify-content: center;
             width: 100%;
         }
         
-        .stats-grid,
-        .data-cards {
-            grid-template-columns: 1fr;
+        .search-controls {
+            flex-direction: column;
+        }
+        
+        .search-input {
+            width: 100%;
+        }
+        
+        .search-btn {
+            width: 100%;
+        }
+        
+        .qty-input {
+            width: 60px;
+        }
+        
+        .cart-action-btn {
+            min-width: 100%;
+        }
+        
+        .cart-item-controls {
+            justify-content: center;
+        }
+    }
+
+    /* Small phones */
+    @media (max-width: 360px) {
+        .header h1 {
+            font-size: 1rem;
+        }
+        
+        .stat-card {
+            padding: 0.8rem;
+        }
+        
+        .stat-value {
+            font-size: 1.2rem;
+        }
+        
+        .qty-input {
+            width: 50px;
+            font-size: 0.8rem;
+        }
+        
+        .add-btn {
+            padding: 0.4rem 0.6rem;
+            font-size: 0.75rem;
         }
     }
 </style>
@@ -865,7 +944,7 @@
     <div class="dashboard-container" id="dashboardContainer">
         <!-- Header -->
         <div class="header">
-            <div style="display: flex; align-items: center; gap: 1rem;">
+            <div style="display: flex; align-items: center; gap: 0.8rem;">
                 <button class="sidebar-toggle" onclick="toggleSidebar()" id="sidebarToggle">☰</button>
                 <h1>Wamz Arts & Prints - Sales</h1>
             </div>
@@ -972,8 +1051,8 @@
                                     <th>Code</th>
                                     <th>Item</th>
                                     <th>Category</th>
-                                    <th>Quantity</th>
-                                    <th>Price</th>
+                                    <th>Stock</th>
+                                    <th>Sale Price</th>
                                     <th>Total Value</th>
                                     <th>Location</th>
                                     <th>Action</th>
@@ -994,7 +1073,7 @@
                 <div class="cart-section">
                     <div class="cart-header">
                         <h3>Cart</h3>
-                        <span id="cartIndicator" style="color: #718096; font-size: 0.9rem;">0 items</span>
+                        <span id="cartIndicator" style="color: #718096; font-size: 0.85rem;">0 items</span>
                     </div>
                     
                     <div class="cart-items" id="cartList">
@@ -1029,7 +1108,7 @@
                         
                         <input type="text" id="customerInput" 
                                placeholder="Customer name (optional)" 
-                               style="width: 100%; padding: 0.8rem; margin-top: 1rem; border: 1px solid #e2e8f0; border-radius: 6px;">
+                               style="width: 100%; padding: 0.7rem; margin-top: 0.8rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.85rem;">
                         
                         <div class="cart-actions">
                             <button class="cart-action-btn checkout-btn" id="checkoutBtn" disabled>
@@ -1103,6 +1182,7 @@
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        const FieldValue = firebase.firestore.FieldValue;
         
         let currentUserData = null;
         let currentBranch = '';
@@ -1330,7 +1410,7 @@
             }
         }
 
-        // Setup real-time inventory listener
+        // Setup real-time inventory listener - MODIFIED TO GET salePrice
         function setupInventoryListener() {
             console.log(`🔍 Setting up Firestore listener for branch: ${currentBranch}`);
             
@@ -1371,8 +1451,10 @@
                     const item = doc.data();
                     item.id = doc.id;
                     
-                    // Ensure numeric values
-                    item.price = parseFloat(item.price) || 0;
+                    // MODIFIED: Get salePrice instead of price
+                    // First check for salePrice, then fall back to price for backward compatibility
+                    item.price = parseFloat(item.salePrice || item.price) || 0;
+                    item.orderPrice = parseFloat(item.orderPrice) || 0;
                     item.stock = parseInt(item.stock) || 0;
                     item.totalValue = item.price * item.stock;
                     
@@ -1410,7 +1492,7 @@
             });
         }
 
-        // Display inventory in table
+        // Display inventory in table - MODIFIED to show sale price
         function displayInventory(items) {
             const inventoryBody = document.getElementById('inventoryBody');
             inventoryBody.innerHTML = '';
@@ -1437,7 +1519,7 @@
                     <td><strong>${escapeHtml(item.name || '')}</strong></td>
                     <td>${getCategoryName(item.category)}</td>
                     <td>${item.stock}</td>
-                    <td>${formatCurrency(item.price)}</td>
+                    <td><strong>${formatCurrency(item.price)}</strong></td>
                     <td><strong>${formatCurrency(item.totalValue || 0)}</strong></td>
                     <td>${escapeHtml(item.location || '')}</td>
                     <td>
@@ -1467,6 +1549,9 @@
         // Get category display name
         function getCategoryName(categoryCode) {
             const categories = {
+                'phone accessories': 'Phone Accessories',
+                'stationary': 'Stationary',
+                'other suppliers': 'Other Suppliers',
                 'paper': 'Paper',
                 'ink': 'Ink & Toner',
                 'frames': 'Frames',
@@ -1512,7 +1597,7 @@
             displayInventory(allItems);
         }
 
-        // Add to cart
+        // Add to cart - MODIFIED to use sale price
         function addToCart(itemId, quantity) {
             const item = allItems.find(i => i.id === itemId);
             if (!item) {
@@ -1548,7 +1633,8 @@
                     id: itemId,
                     code: item.code,
                     name: item.name,
-                    price: item.price,
+                    price: item.price, // This is the sale price from the GRV system
+                    orderPrice: item.orderPrice, // Keep track of order price too
                     quantity: quantity,
                     subtotal: quantity * item.price
                 });
@@ -1684,7 +1770,7 @@
             }
         }
 
-        // Checkout
+        // Checkout - MODIFIED to track profit margin
         async function checkout() {
             if (cart.length === 0) {
                 showMessage('Cart is empty', 'error');
@@ -1711,7 +1797,15 @@
                 const total = Math.max(0, subtotal - discountAmount);
                 const customerName = document.getElementById('customerInput').value.trim() || 'Walk-in';
                 
-                // Create sale record
+                // Calculate total cost and profit
+                const totalCost = cart.reduce((sum, item) => {
+                    return sum + (item.quantity * item.orderPrice);
+                }, 0);
+                
+                const profit = total - totalCost;
+                const profitMargin = total > 0 ? (profit / total) * 100 : 0;
+                
+                // Create sale record with profit data
                 const sale = {
                     customerName: customerName,
                     items: cart.map(item => ({
@@ -1719,8 +1813,10 @@
                         code: item.code,
                         name: item.name,
                         price: item.price,
+                        cost: item.orderPrice,
                         quantity: item.quantity,
-                        subtotal: item.subtotal
+                        subtotal: item.subtotal,
+                        costTotal: item.quantity * item.orderPrice
                     })),
                     subtotal: subtotal,
                     discount: {
@@ -1729,6 +1825,9 @@
                         amount: discountAmount
                     },
                     total: total,
+                    totalCost: totalCost,
+                    profit: profit,
+                    profitMargin: profitMargin,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp(),
                     processedBy: isAdminAccessingOther ? currentUserData.username : originalLoggedInUser,
                     branchId: currentBranch
@@ -1741,8 +1840,8 @@
                 for (const item of cart) {
                     const itemRef = db.collection('inventory').doc(item.id);
                     await itemRef.update({
-                        stock: firebase.firestore.FieldValue.increment(-item.quantity),
-                        sold: firebase.firestore.FieldValue.increment(item.quantity)
+                        stock: FieldValue.increment(-item.quantity),
+                        sold: FieldValue.increment(item.quantity)
                     });
                 }
                 
@@ -1754,7 +1853,7 @@
                 document.getElementById('discountValue').disabled = true;
                 
                 renderCart();
-                showMessage(`Sale processed successfully! Receipt ID: ${saleRef.id.substring(0, 8)}`, 'success');
+                showMessage(`Sale processed successfully! Receipt ID: ${saleRef.id.substring(0, 8)} Profit: ${formatCurrency(profit)}`, 'success');
                 
             } catch (error) {
                 console.error('Checkout error:', error);
@@ -1862,6 +1961,7 @@
                             <th>Customer</th>
                             <th>Items</th>
                             <th>Total</th>
+                            <th>Profit</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1872,6 +1972,7 @@
                 const customer = sale.customerName || 'Walk-in';
                 const itemCount = sale.items ? sale.items.length : 0;
                 const total = formatCurrency(sale.total || 0);
+                const profit = formatCurrency(sale.profit || 0);
                 
                 html += `
                     <tr>
@@ -1879,6 +1980,9 @@
                         <td>${escapeHtml(customer)}</td>
                         <td>${itemCount} item${itemCount !== 1 ? 's' : ''}</td>
                         <td><strong>${total}</strong></td>
+                        <td style="color: ${(sale.profit || 0) >= 0 ? '#38a169' : '#c53030'}">
+                            <strong>${profit}</strong>
+                        </td>
                     </tr>
                 `;
             });
@@ -1938,7 +2042,7 @@
             }
             
             // Create CSV content
-            let csv = 'Date,Customer,Items,Total,Subtotal,Discount,Discount Type\n';
+            let csv = 'Date,Customer,Items,Total,Subtotal,Discount,Discount Type,Total Cost,Profit,Profit Margin\n';
             
             lastRenderedSales.forEach(sale => {
                 const date = formatDate(sale.timestamp);
@@ -1948,8 +2052,11 @@
                 const subtotal = sale.subtotal || 0;
                 const discount = sale.discount ? sale.discount.amount || 0 : 0;
                 const discountType = sale.discount ? sale.discount.type || 'none' : 'none';
+                const totalCost = sale.totalCost || 0;
+                const profit = sale.profit || 0;
+                const profitMargin = sale.profitMargin ? sale.profitMargin.toFixed(2) + '%' : '0%';
                 
-                csv += `"${date}","${customer}",${itemCount},${total},${subtotal},${discount},"${discountType}"\n`;
+                csv += `"${date}","${customer}",${itemCount},${total},${subtotal},${discount},"${discountType}",${totalCost},${profit},"${profitMargin}"\n`;
             });
             
             // Create download link
@@ -2004,20 +2111,8 @@
 
         // Toggle mobile sidebar
         function toggleMobileSidebar() {
-            const container = document.getElementById('dashboardContainer');
             const sidebar = document.getElementById('sidebar');
-            
-            if (sidebar.style.display === 'block') {
-                sidebar.style.display = 'none';
-            } else {
-                sidebar.style.display = 'block';
-                sidebar.style.position = 'fixed';
-                sidebar.style.left = '0';
-                sidebar.style.top = '70px';
-                sidebar.style.width = '250px';
-                sidebar.style.height = 'calc(100vh - 70px)';
-                sidebar.style.zIndex = '999';
-            }
+            sidebar.classList.toggle('open');
         }
 
         // Load sidebar state from localStorage
@@ -2075,5 +2170,4 @@
         }, 30000);
     </script>
 </body>
-
 </html>
