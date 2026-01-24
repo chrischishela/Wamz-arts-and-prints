@@ -616,7 +616,8 @@
 
         input[type="text"],
         input[type="date"],
-        input[type="number"] {
+        input[type="number"],
+        select {
             padding: 0.5rem 0.6rem;
             border-radius: 6px;
             border: 1px solid #e2e8f0;
@@ -628,7 +629,8 @@
 
         input[type="text"]:focus,
         input[type="date"]:focus,
-        input[type="number"]:focus {
+        input[type="number"]:focus,
+        select:focus {
             outline: none;
             border-color: #4299e1;
             box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
@@ -940,7 +942,7 @@
             <!-- Welcome Banner -->
             <div class="welcome-banner">
                 <h2>Admin Cash Flow Dashboard</h2>
-                <p>View all cash transactions from all branches</p>
+                <p>View and manage all cash transactions from all branches</p>
                 <div class="date-display" id="currentDate"></div>
             </div>
 
@@ -953,14 +955,14 @@
                     <div class="stat-value zmw" id="totalIncome">
                         <span class="zmw-symbol">ZMW</span> 0.00
                     </div>
-                    <div class="stat-title">Total Income (All Branches)</div>
+                    <div class="stat-title">Total Income (All)</div>
                 </div>
 
                 <div class="stat-card">
                     <div class="stat-value zmw" id="totalExpenses">
                         <span class="zmw-symbol">ZMW</span> 0.00
                     </div>
-                    <div class="stat-title">Total Expenses (All Branches)</div>
+                    <div class="stat-title">Total Expenses (All)</div>
                 </div>
 
                 <div class="stat-card">
@@ -981,7 +983,7 @@
                 <div class="topbar">
                     <div class="title">All Cash Flow Transactions (Admin View)</div>
                     <div class="controls">
-                        <button class="btn" id="addBtn" style="display: none;">
+                        <button class="btn" id="addBtn">
                             <i class="fas fa-plus"></i> Add Transaction
                         </button>
                         <div style="position:relative;">
@@ -989,11 +991,11 @@
                                 <i class="fas fa-ellipsis-v"></i>
                             </button>
                             <div id="dropdown" class="dropdown" role="menu" aria-hidden="true">
-                                <button id="toggleFormFromMenu" class="item" style="display: none;">
+                                <button id="toggleFormFromMenu" class="item">
                                     <i class="fas fa-eye"></i> Toggle Form
                                 </button>
                                 <button id="exportCsvBtn" class="item">
-                                    <i class="fas fa-file-export"></i> Export All to CSV
+                                    <i class="fas fa-file-export"></i> Export to CSV
                                 </button>
                                 <button id="printBtn" class="item">
                                     <i class="fas fa-print"></i> Print Report
@@ -1007,16 +1009,6 @@
                                 <div style="display: flex; gap: 0.3rem; padding: 0 0.4rem;">
                                     <button id="applyFilterBtn" class="btn" style="flex:1; padding: 0.3rem; font-size: 0.7rem;">Apply</button>
                                     <button id="clearFilterBtn" class="btn ghost" style="flex:1; padding: 0.3rem; font-size: 0.7rem;">Clear</button>
-                                </div>
-                                <div class="sep" style="margin-top: 0.6rem"></div>
-                                <div style="font-size: 11px; color: #718096; font-weight: 600; margin-bottom: 6px; padding: 0 0.4rem;">Filter by branch</div>
-                                <div style="margin-bottom: 0.6rem; padding: 0 0.4rem;">
-                                    <select id="branchFilter" style="width:100%; padding: 0.4rem; border-radius: 4px; border: 1px solid #e2e8f0; font-size: 0.7rem;">
-                                        <option value="all">All Branches</option>
-                                        <option value="branch1">Branch 1 (Wamz)</option>
-                                        <option value="branch2">Branch 2 (Samz)</option>
-                                        <option value="branch3">Branch 3 (Namz)</option>
-                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -1033,7 +1025,6 @@
                                         <th style="width:100px">Tid</th>
                                         <th>Description</th>
                                         <th style="width:80px">Branch</th>
-                                        <th style="width:90px">User</th>
                                         <th style="width:90px">Cash In</th>
                                         <th style="width:90px">Cash Out</th>
                                         <th style="width:100px">Balance</th>
@@ -1042,7 +1033,7 @@
                                 </thead>
                                 <tbody id="tableBody">
                                     <tr>
-                                        <td colspan="9" class="empty">Loading all transactions...</td>
+                                        <td colspan="8" class="empty">Loading all transactions...</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -1052,7 +1043,7 @@
                     <aside id="formPane" class="form-pane hidden" aria-hidden="true">
                         <header>
                             <div style="display:flex;align-items:center">
-                                <div class="label">Admin Edit</div>
+                                <div class="label" id="formTitle">Add Transaction</div>
                                 <div id="formBranch" class="form-branch" aria-hidden="true"></div>
                             </div>
                             <div>
@@ -1079,20 +1070,12 @@
                             </div>
 
                             <div>
-                                <label for="branchSelect">Branch</label>
-                                <select id="branchSelect" class="filter-select" style="width:100%; padding: 0.5rem 0.6rem;">
+                                <label for="branchSelect">Branch *</label>
+                                <select id="branchSelect" required>
+                                    <option value="">Select Branch</option>
                                     <option value="branch1">Branch 1 (Wamz)</option>
                                     <option value="branch2">Branch 2 (Samz)</option>
                                     <option value="branch3">Branch 3 (Namz)</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label for="userSelect">Created By</label>
-                                <select id="userSelect" class="filter-select" style="width:100%; padding: 0.5rem 0.6rem;">
-                                    <option value="Wamz">Wamz (Admin)</option>
-                                    <option value="Samz">Samz</option>
-                                    <option value="Namz">Namz</option>
                                 </select>
                             </div>
 
@@ -1145,7 +1128,6 @@
         let filteredTransactions = [];
         let listenerUnsub = null;
         let isSaving = false;
-        let indexError = false;
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
@@ -1260,35 +1242,26 @@
         // Get branch display name
         function getBranchDisplayName(branchId) {
             const branchMap = {
-                'branch1': 'Branch 1',
-                'branch2': 'Branch 2',
-                'branch3': 'Branch 3'
+                'branch1': 'B1',
+                'branch2': 'B2',
+                'branch3': 'B3'
             };
             return branchMap[branchId] || branchId;
-        }
-
-        // Get user display name
-        function getUserDisplayName(userId) {
-            const userMap = {
-                'Wamz': 'Wamz',
-                'Samz': 'Samz',
-                'Namz': 'Namz'
-            };
-            return userMap[userId] || userId;
         }
 
         // Initialize cash flow app
         function initCashFlowApp() {
             // Setup DOM elements
+            const addBtn = document.getElementById('addBtn');
             const menuBtn = document.getElementById('menuBtn');
             const dropdown = document.getElementById('dropdown');
+            const toggleFormFromMenu = document.getElementById('toggleFormFromMenu');
             const exportCsvBtn = document.getElementById('exportCsvBtn');
             const printBtn = document.getElementById('printBtn');
             const filterFrom = document.getElementById('filterFrom');
             const filterTo = document.getElementById('filterTo');
             const applyFilterBtn = document.getElementById('applyFilterBtn');
             const clearFilterBtn = document.getElementById('clearFilterBtn');
-            const branchFilter = document.getElementById('branchFilter');
             const formPane = document.getElementById('formPane');
             const hideFormBtn = document.getElementById('hideFormBtn');
             const transactionForm = document.getElementById('transactionForm');
@@ -1299,10 +1272,10 @@
             const cashOutInput = document.getElementById('cashOut');
             const editIdInput = document.getElementById('editId');
             const branchSelect = document.getElementById('branchSelect');
-            const userSelect = document.getElementById('userSelect');
             const saveBtn = document.getElementById('saveBtn');
             const cancelEditBtn = document.getElementById('cancelEdit');
             const tableBody = document.getElementById('tableBody');
+            const formTitle = document.getElementById('formTitle');
 
             // Set default date
             dateInput.valueAsDate = new Date();
@@ -1311,6 +1284,19 @@
             setupListener();
 
             // Event Listeners
+            addBtn.addEventListener('click', () => {
+                editIdInput.value = '';
+                formTitle.textContent = 'Add Transaction';
+                branchSelect.value = 'branch1';
+                dateInput.valueAsDate = new Date();
+                tidInput.value = '';
+                descriptionInput.value = '';
+                cashInInput.value = '0';
+                cashOutInput.value = '0';
+                showForm();
+                dropdown.classList.remove('show');
+            });
+
             menuBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 dropdown.classList.toggle('show');
@@ -1325,6 +1311,29 @@
                     dropdown.setAttribute('aria-hidden', 'true');
                 }
             });
+
+            toggleFormFromMenu.addEventListener('click', () => {
+                dropdown.classList.remove('show');
+                if (formPane.classList.contains('hidden')) {
+                    if (!editIdInput.value) {
+                        // If not editing, reset form for new transaction
+                        editIdInput.value = '';
+                        formTitle.textContent = 'Add Transaction';
+                        branchSelect.value = 'branch1';
+                        dateInput.valueAsDate = new Date();
+                        tidInput.value = '';
+                        descriptionInput.value = '';
+                        cashInInput.value = '0';
+                        cashOutInput.value = '0';
+                    }
+                    showForm();
+                } else {
+                    hideForm();
+                }
+            });
+
+            hideFormBtn.addEventListener('click', hideForm);
+            cancelEditBtn.addEventListener('click', () => { hideForm(); });
 
             // Export CSV
             exportCsvBtn.addEventListener('click', () => {
@@ -1343,6 +1352,7 @@
                     return dateA - dateB;
                 });
                 
+                // Calculate running balance
                 let running = 0;
                 const rows = asc.map(t => {
                     const inVal = Number(t.cashIn || 0);
@@ -1352,21 +1362,21 @@
                         formatDate(t.date),
                         t.tid || '',
                         getBranchDisplayName(t.branchId || ''),
-                        t.createdBy || '',
                         (t.description || '').replace(/"/g, '""'),
                         inVal.toFixed(2),
                         outVal.toFixed(2),
-                        running.toFixed(2)
+                        running.toFixed(2),
+                        t.createdBy || 'Unknown'
                     ];
                 });
                 
-                const headers = ['Date', 'Tid', 'Branch', 'User', 'Description', 'Cash In (ZMW)', 'Cash Out (ZMW)', 'Balance (ZMW)'];
+                const headers = ['Date', 'Tid', 'Branch', 'Description', 'Cash In (ZMW)', 'Cash Out (ZMW)', 'Balance (ZMW)', 'Created By'];
                 const csv = [headers.join(','), ...rows.map(r => r.map(c => `"${c}"`).join(','))].join('\n');
                 const blob = new Blob([csv], { type: 'text/csv' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                const fileName = `cashflow_admin_all_branches_${new Date().toISOString().slice(0, 10)}.csv`;
+                const fileName = `cashflow_admin_all_${new Date().toISOString().slice(0, 10)}.csv`;
                 a.download = fileName;
                 document.body.appendChild(a);
                 a.click();
@@ -1387,27 +1397,31 @@
             clearFilterBtn.addEventListener('click', () => {
                 filterFrom.value = '';
                 filterTo.value = '';
-                branchFilter.value = 'all';
                 dropdown.classList.remove('show');
                 applyFilters();
                 showMessage("Filters cleared.", "info");
             });
 
-            hideFormBtn.addEventListener('click', hideForm);
-            cancelEditBtn.addEventListener('click', () => { hideForm(); });
-
-            // Form submit (admin can edit any transaction)
+            // Form submit
             transactionForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 if (isSaving) return;
+                
                 const dateVal = dateInput.value;
                 if (!dateVal) {
                     alert('Select date');
                     return;
                 }
 
+                const branchVal = branchSelect.value;
+                if (!branchVal) {
+                    alert('Select branch');
+                    return;
+                }
+
                 const cashInNum = parseFloat(cashInInput.value || 0) || 0;
                 const cashOutNum = parseFloat(cashOutInput.value || 0) || 0;
+                
                 if (cashInNum <= 0 && cashOutNum <= 0) {
                     alert('Enter a value for Cash In or Cash Out (both cannot be zero).');
                     return;
@@ -1425,10 +1439,9 @@
                     description: descriptionInput.value.trim(),
                     cashIn: cashInNum.toFixed(2),
                     cashOut: cashOutNum.toFixed(2),
-                    branchId: branchSelect.value,
-                    createdBy: userSelect.value,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    updatedBy: 'Wamz (Admin)'
+                    branchId: branchVal,
+                    createdBy: currentUserData.username,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                 };
 
                 try {
@@ -1437,9 +1450,11 @@
                     saveBtn.textContent = 'Saving...';
 
                     if (id) {
+                        // Update existing transaction
                         await db.collection('cashflow').doc(id).update(payload);
                         showMessage('Transaction updated successfully!', 'success');
                     } else {
+                        // Add new transaction
                         payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
                         await db.collection('cashflow').add(payload);
                         showMessage('Transaction added successfully!', 'success');
@@ -1470,7 +1485,7 @@
                 dateInput.valueAsDate = new Date();
                 editIdInput.value = '';
                 branchSelect.value = 'branch1';
-                userSelect.value = 'Wamz';
+                formTitle.textContent = 'Add Transaction';
                 saveBtn.disabled = false;
                 saveBtn.textContent = 'Save';
                 isSaving = false;
@@ -1505,7 +1520,6 @@
                     console.error('Firestore listener error:', err);
                     
                     if (err.code === 'failed-precondition' || err.message.includes('index')) {
-                        indexError = true;
                         showMessage('⚠️ Database index required. Please create the composite index in Firebase Console.', 'error');
                         
                         // Fallback: Load all data without ordering
@@ -1525,7 +1539,7 @@
                             showMessage('Data loaded with client-side sorting.', 'info');
                         });
                     } else {
-                        document.getElementById('tableBody').innerHTML = `<tr><td colspan="9" class="empty">
+                        document.getElementById('tableBody').innerHTML = `<tr><td colspan="8" class="empty">
                             <div>Error loading transactions</div>
                             <div style="font-size:11px; margin-top: 5px; color:#e53e3e;">${err.message}</div>
                         </td></tr>`;
@@ -1538,16 +1552,10 @@
 
         // Apply filters
         function applyFilters() {
-            const branchFilter = document.getElementById('branchFilter').value;
             const filterFrom = document.getElementById('filterFrom').value;
             const filterTo = document.getElementById('filterTo').value;
 
             filteredTransactions = allTransactions.filter(t => {
-                // Branch filter
-                if (branchFilter !== 'all' && t.branchId !== branchFilter) {
-                    return false;
-                }
-
                 // Date filter
                 if (filterFrom || filterTo) {
                     const d = t.date && t.date.toDate ? t.date.toDate() : new Date(t.date);
@@ -1571,49 +1579,33 @@
             const tableBody = document.getElementById('tableBody');
 
             if (filteredTransactions.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="9" class="empty">
-                    ${indexError ? 'No transactions found. Index may be building.' : 'No transactions found for the selected filters'}
+                tableBody.innerHTML = `<tr><td colspan="8" class="empty">
+                    No transactions found for the selected filters
                 </td></tr>`;
                 return;
             }
 
-            // Calculate running balance per branch
-            const branchBalances = {};
-            const transactionsByBranch = {};
-            
-            // Group transactions by branch and sort by date ascending
-            filteredTransactions.forEach(tx => {
-                const branchId = tx.branchId || 'unknown';
-                if (!transactionsByBranch[branchId]) {
-                    transactionsByBranch[branchId] = [];
-                    branchBalances[branchId] = 0;
-                }
-                transactionsByBranch[branchId].push(tx);
+            // Sort by date ascending for running balance calculation
+            const sortedForBalance = filteredTransactions.slice().sort((a, b) => {
+                const dateA = a.date && a.date.toDate ? a.date.toDate() : new Date(a.date);
+                const dateB = b.date && b.date.toDate ? b.date.toDate() : new Date(b.date);
+                return dateA - dateB; // Ascending
             });
-            
-            // Sort each branch's transactions by date ascending
-            for (const branchId in transactionsByBranch) {
-                transactionsByBranch[branchId].sort((a, b) => {
-                    const dateA = a.date && a.date.toDate ? a.date.toDate() : new Date(a.date);
-                    const dateB = b.date && b.date.toDate ? b.date.toDate() : new Date(b.date);
-                    return dateA - dateB;
-                });
-            }
-            
-            // Flatten all transactions in correct order
-            const allSorted = [];
-            while (Object.keys(transactionsByBranch).length > 0) {
-                for (const branchId in transactionsByBranch) {
-                    if (transactionsByBranch[branchId].length > 0) {
-                        allSorted.push(transactionsByBranch[branchId].shift());
-                    } else {
-                        delete transactionsByBranch[branchId];
-                    }
-                }
-            }
-            
-            // Now sort by date descending for display
-            allSorted.sort((a, b) => {
+
+            // Calculate running balance for ALL transactions combined
+            let runningBalance = 0;
+            const transactionsWithBalance = sortedForBalance.map(tx => {
+                const inVal = Number(tx.cashIn || 0);
+                const outVal = Number(tx.cashOut || 0);
+                runningBalance += inVal - outVal;
+                return {
+                    ...tx,
+                    balance: runningBalance
+                };
+            });
+
+            // Sort by date descending for display
+            const sortedForDisplay = transactionsWithBalance.slice().sort((a, b) => {
                 const dateA = a.date && a.date.toDate ? a.date.toDate() : new Date(a.date);
                 const dateB = b.date && b.date.toDate ? b.date.toDate() : new Date(b.date);
                 return dateB - dateA; // Descending
@@ -1621,25 +1613,19 @@
 
             tableBody.innerHTML = '';
 
-            allSorted.forEach(tx => {
+            sortedForDisplay.forEach(tx => {
                 const inVal = Number(tx.cashIn || 0);
                 const outVal = Number(tx.cashOut || 0);
-                const branchId = tx.branchId || 'unknown';
                 
-                // Update running balance for this branch
-                if (!branchBalances[branchId]) branchBalances[branchId] = 0;
-                branchBalances[branchId] += inVal - outVal;
-
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${formatDate(tx.date)}</td>
                     <td>${escapeHtml(tx.tid || '')}</td>
                     <td>${escapeHtml(tx.description || '')}</td>
                     <td><span class="branch-badge">${getBranchDisplayName(tx.branchId)}</span></td>
-                    <td>${escapeHtml(tx.createdBy || '')}</td>
                     <td class="num">${inVal > 0 ? formatCurrency(inVal) : ''}</td>
                     <td class="num">${outVal > 0 ? formatCurrency(outVal) : ''}</td>
-                    <td class="num">${formatCurrencyCell(branchBalances[branchId])}</td>
+                    <td class="num">${formatCurrencyCell(tx.balance)}</td>
                     <td>
                         <button data-id="${tx.id}" class="editBtn" style="margin-right:0.3rem">
                             <i class="fas fa-edit" style="font-size:0.7rem"></i>
@@ -1676,7 +1662,7 @@
                 };
             });
 
-            // Edit handlers
+            // Edit handlers - FIXED
             document.querySelectorAll('.editBtn').forEach(btn => {
                 btn.onclick = () => {
                     const id = btn.getAttribute('data-id');
@@ -1689,9 +1675,9 @@
                     document.getElementById('description').value = tx.description || '';
                     document.getElementById('cashIn').value = Number(tx.cashIn || 0).toFixed(2);
                     document.getElementById('cashOut').value = Number(tx.cashOut || 0).toFixed(2);
-                    document.getElementById('editId').value = tx.id;
                     document.getElementById('branchSelect').value = tx.branchId || 'branch1';
-                    document.getElementById('userSelect').value = tx.createdBy || 'Wamz';
+                    document.getElementById('editId').value = tx.id;
+                    document.getElementById('formTitle').textContent = 'Edit Transaction';
                     
                     showForm();
                 };
