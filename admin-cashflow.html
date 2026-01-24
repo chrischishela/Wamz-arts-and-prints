@@ -344,293 +344,353 @@
             font-weight: 600;
         }
 
-        /* Loading State */
-        .stat-value.loading {
-            color: #cbd5e0;
-            font-style: italic;
+        /* CASH FLOW APP - RESPONSIVE */
+        .app {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            min-width: 0;
         }
 
-        /* Filter Controls */
-        .filter-controls {
+        /* TOP BAR - COMPACT */
+        .topbar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.6rem;
             background: white;
             padding: 0.8rem;
             border-radius: 8px;
-            margin-bottom: 1rem;
             box-shadow: 0 2px 6px rgba(0,0,0,0.05);
             border: 1px solid #e2e8f0;
         }
 
-        .filter-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.8rem;
-            align-items: center;
+        .title {
+            color: #4299e1;
+            font-weight: 700;
+            font-size: 0.9rem;
+            white-space: nowrap;
         }
 
-        .filter-group {
+        .controls {
+            display: flex;
+            gap: 0.4rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            background: #4299e1;
+            color: #fff;
+            transition: all 0.2s;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .btn:hover {
+            background: #3182ce;
+        }
+
+        .btn.ghost {
+            background: transparent;
+            color: #4299e1;
+            border: 1px solid #4299e1;
+        }
+
+        .btn.ghost:hover {
+            background: rgba(66, 153, 225, 0.1);
+        }
+
+        /* THREE DOT MENU */
+        .menu-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            border: none;
+            background: white;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4299e1;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            border: 1px solid #e2e8f0;
+        }
+
+        .menu-btn:hover {
+            background: #f7fafc;
+        }
+
+        .dropdown {
+            position: absolute;
+            right: 0.5rem;
+            top: 2.5rem;
+            min-width: 180px;
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+            padding: 0.6rem;
+            display: none;
+            z-index: 999;
+        }
+
+        .dropdown.show {
+            display: block;
+        }
+
+        .dropdown .item {
+            width: 100%;
+            padding: 0.5rem 0.6rem;
+            text-align: left;
+            border-radius: 4px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: #4a5568;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            transition: all 0.2s;
+            font-size: 0.75rem;
+        }
+
+        .dropdown .item:hover {
+            background: #f7fafc;
+        }
+
+        .dropdown .sep {
+            height: 1px;
+            background: #e2e8f0;
+            margin: 0.4rem 0;
+            border-radius: 2px;
+        }
+
+        /* MAIN AREA - RESPONSIVE */
+        .main {
+            display: flex;
+            gap: 0.8rem;
+            flex: 1 1 auto;
+            min-height: 0;
+            width: 100%;
+        }
+
+        .table-area {
+            flex: 1 1 65%;
+            background: white;
+            border-radius: 8px;
+            padding: 0.6rem;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
             display: flex;
             flex-direction: column;
-            min-width: 120px;
+            min-width: 0;
+            min-height: 300px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
         }
 
-        .filter-label {
-            font-size: 0.7rem;
+        .table-scroll {
+            overflow: auto;
+            flex: 1 1 auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 0.4rem;
+            width: 100%;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: min(800px, 100%);
+            font-size: 0.75rem;
+        }
+
+        thead th {
+            text-align: left;
+            padding: 0.6rem 0.5rem;
+            background: #f8fafc;
             color: #718096;
-            margin-bottom: 0.3rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            border-bottom: 2px solid #e2e8f0;
+            white-space: nowrap;
+        }
+
+        tbody td {
+            padding: 0.6rem 0.5rem;
+            border-bottom: 1px solid #f7fafc;
+            vertical-align: middle;
+        }
+
+        td.num {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 1.5rem;
+            color: #a0aec0;
+            font-size: 0.8rem;
+            font-style: italic;
+        }
+
+        /* HIGHLIGHT POSITIVE/NEGATIVE */
+        .positive {
+            color: #38a169;
             font-weight: 600;
         }
 
-        .filter-select,
-        .filter-input {
-            padding: 0.5rem;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            background: white;
-            color: #2d3748;
+        .negative {
+            color: #e53e3e;
+            font-weight: 600;
         }
 
-        .filter-select:focus,
-        .filter-input:focus {
+        /* FORM PANE - RESPONSIVE */
+        .form-pane {
+            flex: 0 0 300px;
+            max-width: 300px;
+            min-width: 280px;
+            background: white;
+            border-radius: 8px;
+            padding: 0.8rem;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            min-height: 300px;
+        }
+
+        .form-pane.hidden {
+            display: none;
+        }
+
+        .form-pane header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .form-pane header .label {
+            font-weight: 700;
+            color: #4299e1;
+            font-size: 0.9rem;
+        }
+
+        .form-branch {
+            font-size: 0.7rem;
+            color: #718096;
+            font-weight: 600;
+            margin-left: 0.4rem;
+        }
+
+        form.simple-form {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        label {
+            font-size: 0.75rem;
+            color: #718096;
+            margin-bottom: 0.2rem;
+            display: block;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        input[type="number"] {
+            padding: 0.5rem 0.6rem;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            font-size: 0.8rem;
+            background: #fff;
+            width: 100%;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        input[type="number"]:focus {
             outline: none;
             border-color: #4299e1;
             box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
         }
 
-        .filter-buttons {
+        .form-row {
             display: flex;
-            gap: 0.4rem;
-            margin-left: auto;
+            gap: 0.5rem;
+            flex-wrap: wrap;
         }
 
-        .filter-btn {
-            padding: 0.5rem 1rem;
-            background: #4299e1;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            font-weight: 600;
-            transition: all 0.2s;
+        .form-row>div {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .form-actions {
             display: flex;
-            align-items: center;
-            gap: 0.4rem;
+            gap: 0.5rem;
+            justify-content: flex-end;
+            margin-top: 0.4rem;
+            flex-wrap: wrap;
         }
 
-        .filter-btn:hover {
-            background: #3182ce;
-        }
-
-        .filter-btn.secondary {
-            background: #e2e8f0;
-            color: #2d3748;
-        }
-
-        .filter-btn.secondary:hover {
-            background: #cbd5e0;
-        }
-
-        /* Branch Summary Cards */
-        .branch-summary-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 0.8rem;
-            margin-bottom: 1rem;
-        }
-
-        .branch-summary-card {
-            background: white;
-            padding: 1rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-            border: 1px solid #e2e8f0;
-            transition: all 0.3s ease;
-        }
-
-        .branch-summary-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        .branch-summary-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.8rem;
-        }
-
-        .branch-summary-title {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: #2d3748;
-        }
-
-        .branch-summary-badge {
-            background: #4299e1;
-            color: white;
-            padding: 0.2rem 0.5rem;
+        /* EDIT/DELETE BUTTONS */
+        .editBtn,
+        .delBtn {
+            padding: 0.2rem 0.4rem;
             border-radius: 4px;
-            font-size: 0.7rem;
-            font-weight: 600;
-        }
-
-        .branch-summary-stats {
-            display: flex;
-            flex-direction: column;
-            gap: 0.4rem;
-        }
-
-        .branch-summary-stat {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .branch-summary-label {
-            font-size: 0.75rem;
-            color: #718096;
-        }
-
-        .branch-summary-value {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #2d3748;
-        }
-
-        .branch-summary-value.positive {
-            color: #38a169;
-        }
-
-        .branch-summary-value.negative {
-            color: #e53e3e;
-        }
-
-        /* Transactions Table */
-        .transactions-section {
-            background: white;
-            border-radius: 8px;
-            padding: 1rem;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-            border: 1px solid #e2e8f0;
-            margin-bottom: 1rem;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-            flex-wrap: wrap;
-            gap: 0.8rem;
-        }
-
-        .section-title {
-            font-size: 0.9rem;
-            color: #2d3748;
-            font-weight: 600;
-        }
-
-        .section-actions {
-            display: flex;
-            gap: 0.4rem;
-            flex-wrap: wrap;
-        }
-
-        .action-btn {
-            padding: 0.5rem 0.8rem;
-            background: #4299e1;
-            color: white;
             border: none;
-            border-radius: 6px;
+            font-size: 0.7rem;
             cursor: pointer;
-            font-size: 0.8rem;
             font-weight: 600;
             transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-        }
-
-        .action-btn:hover {
-            background: #3182ce;
-        }
-
-        .action-btn.secondary {
-            background: #e2e8f0;
-            color: #2d3748;
-        }
-
-        .action-btn.secondary:hover {
-            background: #cbd5e0;
-        }
-
-        .table-container {
-            overflow-x: auto;
-            border-radius: 6px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .transactions-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.8rem;
-            min-width: 800px;
-        }
-
-        .transactions-table thead {
-            background: #f8fafc;
-        }
-
-        .transactions-table th {
-            padding: 0.8rem 0.6rem;
-            text-align: left;
-            font-weight: 600;
-            color: #718096;
-            border-bottom: 2px solid #e2e8f0;
             white-space: nowrap;
         }
 
-        .transactions-table td {
-            padding: 0.8rem 0.6rem;
-            border-bottom: 1px solid #f7fafc;
-            vertical-align: middle;
+        .editBtn {
+            background: #4299e1;
+            color: white;
+            margin-right: 0.3rem;
         }
 
-        .transactions-table tbody tr:hover {
-            background: #f8fafc;
+        .editBtn:hover {
+            background: #3182ce;
         }
 
-        .transaction-type {
-            padding: 0.2rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            font-weight: 600;
+        .delBtn {
+            background: #e53e3e;
+            color: white;
         }
 
-        .transaction-type.income {
-            background: #c6f6d5;
-            color: #276749;
+        .delBtn:hover {
+            background: #c53030;
         }
 
-        .transaction-type.expense {
-            background: #fed7d7;
-            color: #c53030;
+        .disabled {
+            opacity: 0.6;
+            pointer-events: none;
         }
 
-        .transaction-amount {
-            font-weight: 600;
-            font-variant-numeric: tabular-nums;
-        }
-
-        .transaction-amount.positive {
-            color: #38a169;
-        }
-
-        .transaction-amount.negative {
-            color: #e53e3e;
-        }
-
+        /* BRANCH BADGE IN TABLE */
         .branch-badge {
             background: #e2e8f0;
             color: #2d3748;
@@ -638,56 +698,8 @@
             border-radius: 4px;
             font-size: 0.7rem;
             font-weight: 600;
-        }
-
-        .user-badge {
-            background: #bee3f8;
-            color: #2c5282;
-            padding: 0.2rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            font-weight: 600;
-        }
-
-        .empty-state {
-            padding: 2rem;
-            text-align: center;
-            color: #a0aec0;
-            font-style: italic;
-        }
-
-        /* Pagination */
-        .pagination {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 0.4rem;
-            margin-top: 1rem;
-        }
-
-        .pagination-btn {
-            padding: 0.4rem 0.8rem;
-            background: #e2e8f0;
-            color: #2d3748;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            transition: all 0.2s;
-        }
-
-        .pagination-btn:hover:not(:disabled) {
-            background: #cbd5e0;
-        }
-
-        .pagination-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .pagination-info {
-            font-size: 0.8rem;
-            color: #718096;
+            display: inline-block;
+            margin-left: 0.3rem;
         }
 
         /* Responsive Design */
@@ -737,36 +749,39 @@
                 gap: 0.5rem;
             }
 
-            .filter-row {
+            .main {
+                flex-direction: column;
+            }
+
+            .table-area,
+            .form-pane {
+                width: 100%;
+                max-width: none;
+                min-width: 0;
+                flex: 1 1 auto;
+            }
+
+            .form-pane {
+                order: -1; /* Show form on top on mobile */
+            }
+
+            table {
+                min-width: 700px;
+            }
+
+            .topbar {
                 flex-direction: column;
                 align-items: stretch;
+                gap: 0.8rem;
             }
 
-            .filter-buttons {
-                margin-left: 0;
+            .controls {
                 justify-content: flex-end;
+                width: 100%;
             }
 
-            .branch-summary-grid {
+            .stats-grid {
                 grid-template-columns: 1fr;
-            }
-
-            .section-header {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .section-actions {
-                justify-content: flex-end;
-            }
-
-            .table-container {
-                font-size: 0.7rem;
-            }
-
-            .transactions-table th,
-            .transactions-table td {
-                padding: 0.6rem 0.4rem;
             }
         }
 
@@ -787,26 +802,30 @@
                 justify-content: space-between;
             }
 
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .filter-buttons {
+            .form-row {
                 flex-direction: column;
             }
 
-            .filter-btn {
+            .form-row>div {
+                min-width: 100%;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .form-actions .btn {
                 width: 100%;
                 justify-content: center;
             }
 
-            .section-actions {
-                flex-direction: column;
+            .dropdown {
+                min-width: 160px;
+                right: 0.3rem;
             }
 
-            .action-btn {
-                width: 100%;
-                justify-content: center;
+            table {
+                min-width: 600px;
             }
         }
 
@@ -833,20 +852,24 @@
             display: block;
         }
 
-        /* Loading Spinner */
-        .loading-spinner {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid #f3f3f3;
-            border-top: 2px solid #4299e1;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        /* SCROLLBAR STYLING */
+        .table-scroll::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .table-scroll::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .table-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e0;
+            border-radius: 4px;
+        }
+
+        .table-scroll::-webkit-scrollbar-thumb:hover {
+            background: #a0aec0;
         }
     </style>
 </head>
@@ -917,7 +940,7 @@
             <!-- Welcome Banner -->
             <div class="welcome-banner">
                 <h2>Admin Cash Flow Dashboard</h2>
-                <p>Monitor all cash transactions across all branches</p>
+                <p>View all cash transactions from all branches</p>
                 <div class="date-display" id="currentDate"></div>
             </div>
 
@@ -927,148 +950,175 @@
             <!-- Stats Grid -->
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-value zmw loading" id="totalIncome">
-                        <span class="zmw-symbol">ZMW</span> Loading...
+                    <div class="stat-value zmw" id="totalIncome">
+                        <span class="zmw-symbol">ZMW</span> 0.00
                     </div>
                     <div class="stat-title">Total Income (All Branches)</div>
                 </div>
 
                 <div class="stat-card">
-                    <div class="stat-value zmw loading" id="totalExpenses">
-                        <span class="zmw-symbol">ZMW</span> Loading...
+                    <div class="stat-value zmw" id="totalExpenses">
+                        <span class="zmw-symbol">ZMW</span> 0.00
                     </div>
                     <div class="stat-title">Total Expenses (All Branches)</div>
                 </div>
 
                 <div class="stat-card">
-                    <div class="stat-value zmw loading" id="netCashFlow">
-                        <span class="zmw-symbol">ZMW</span> Loading...
+                    <div class="stat-value zmw" id="netCashFlow">
+                        <span class="zmw-symbol">ZMW</span> 0.00
                     </div>
                     <div class="stat-title">Net Cash Flow</div>
                 </div>
 
                 <div class="stat-card">
-                    <div class="stat-value loading" id="totalTransactions">Loading...</div>
+                    <div class="stat-value" id="totalTransactions">0</div>
                     <div class="stat-title">Total Transactions</div>
                 </div>
             </div>
 
-            <!-- Filter Controls -->
-            <div class="filter-controls">
-                <div class="filter-row">
-                    <div class="filter-group">
-                        <label class="filter-label">Date Range</label>
-                        <div style="display: flex; gap: 0.4rem;">
-                            <input type="date" id="dateFrom" class="filter-input" style="flex: 1;">
-                            <input type="date" id="dateTo" class="filter-input" style="flex: 1;">
-                        </div>
-                    </div>
-
-                    <div class="filter-group">
-                        <label class="filter-label">Branch</label>
-                        <select id="branchFilter" class="filter-select">
-                            <option value="all">All Branches</option>
-                            <option value="branch1">Branch 1 (Wamz)</option>
-                            <option value="branch2">Branch 2 (Samz)</option>
-                            <option value="branch3">Branch 3 (Namz)</option>
-                        </select>
-                    </div>
-
-                    <div class="filter-group">
-                        <label class="filter-label">Transaction Type</label>
-                        <select id="typeFilter" class="filter-select">
-                            <option value="all">All Types</option>
-                            <option value="income">Income Only</option>
-                            <option value="expense">Expense Only</option>
-                        </select>
-                    </div>
-
-                    <div class="filter-buttons">
-                        <button class="filter-btn secondary" id="clearFiltersBtn">
-                            <i class="fas fa-times"></i> Clear
+            <!-- Cash Flow App -->
+            <div class="app" id="appRoot">
+                <div class="topbar">
+                    <div class="title">All Cash Flow Transactions (Admin View)</div>
+                    <div class="controls">
+                        <button class="btn" id="addBtn" style="display: none;">
+                            <i class="fas fa-plus"></i> Add Transaction
                         </button>
-                        <button class="filter-btn" id="applyFiltersBtn">
-                            <i class="fas fa-filter"></i> Apply Filters
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Branch Summary Cards -->
-            <div class="branch-summary-grid" id="branchSummary">
-                <!-- Branch summary cards will be loaded here -->
-                <div class="branch-summary-card loading">
-                    <div class="branch-summary-header">
-                        <div class="branch-summary-title">Loading...</div>
-                        <div class="branch-summary-badge">...</div>
-                    </div>
-                    <div class="branch-summary-stats">
-                        <div class="branch-summary-stat">
-                            <span class="branch-summary-label">Income:</span>
-                            <span class="branch-summary-value">Loading...</span>
-                        </div>
-                        <div class="branch-summary-stat">
-                            <span class="branch-summary-label">Expenses:</span>
-                            <span class="branch-summary-value">Loading...</span>
-                        </div>
-                        <div class="branch-summary-stat">
-                            <span class="branch-summary-label">Net Flow:</span>
-                            <span class="branch-summary-value">Loading...</span>
+                        <div style="position:relative;">
+                            <button id="menuBtn" class="menu-btn" aria-label="more">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div id="dropdown" class="dropdown" role="menu" aria-hidden="true">
+                                <button id="toggleFormFromMenu" class="item" style="display: none;">
+                                    <i class="fas fa-eye"></i> Toggle Form
+                                </button>
+                                <button id="exportCsvBtn" class="item">
+                                    <i class="fas fa-file-export"></i> Export All to CSV
+                                </button>
+                                <button id="printBtn" class="item">
+                                    <i class="fas fa-print"></i> Print Report
+                                </button>
+                                <div class="sep"></div>
+                                <div style="font-size: 11px; color: #718096; font-weight: 600; margin-bottom: 6px; padding: 0 0.4rem;">Filter period</div>
+                                <div style="display: flex; gap: 0.3rem; margin-bottom: 0.6rem; padding: 0 0.4rem;">
+                                    <input id="filterFrom" type="date" style="flex:1; padding: 0.4rem; border-radius: 4px; border: 1px solid #e2e8f0; font-size: 0.7rem;" />
+                                    <input id="filterTo" type="date" style="flex:1; padding: 0.4rem; border-radius: 4px; border: 1px solid #e2e8f0; font-size: 0.7rem;" />
+                                </div>
+                                <div style="display: flex; gap: 0.3rem; padding: 0 0.4rem;">
+                                    <button id="applyFilterBtn" class="btn" style="flex:1; padding: 0.3rem; font-size: 0.7rem;">Apply</button>
+                                    <button id="clearFilterBtn" class="btn ghost" style="flex:1; padding: 0.3rem; font-size: 0.7rem;">Clear</button>
+                                </div>
+                                <div class="sep" style="margin-top: 0.6rem"></div>
+                                <div style="font-size: 11px; color: #718096; font-weight: 600; margin-bottom: 6px; padding: 0 0.4rem;">Filter by branch</div>
+                                <div style="margin-bottom: 0.6rem; padding: 0 0.4rem;">
+                                    <select id="branchFilter" style="width:100%; padding: 0.4rem; border-radius: 4px; border: 1px solid #e2e8f0; font-size: 0.7rem;">
+                                        <option value="all">All Branches</option>
+                                        <option value="branch1">Branch 1 (Wamz)</option>
+                                        <option value="branch2">Branch 2 (Samz)</option>
+                                        <option value="branch3">Branch 3 (Namz)</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Transactions Section -->
-            <div class="transactions-section">
-                <div class="section-header">
-                    <div class="section-title">All Cash Transactions</div>
-                    <div class="section-actions">
-                        <button class="action-btn secondary" id="exportBtn">
-                            <i class="fas fa-file-export"></i> Export CSV
-                        </button>
-                        <button class="action-btn secondary" id="printBtn">
-                            <i class="fas fa-print"></i> Print Report
-                        </button>
-                        <button class="action-btn" id="refreshBtn">
-                            <i class="fas fa-sync-alt"></i> Refresh
-                        </button>
+                <div class="main">
+                    <div class="table-area">
+                        <div class="table-scroll">
+                            <table aria-label="transactions">
+                                <thead>
+                                    <tr id="tableHeader">
+                                        <th style="width:100px">Date</th>
+                                        <th style="width:100px">Tid</th>
+                                        <th>Description</th>
+                                        <th style="width:80px">Branch</th>
+                                        <th style="width:90px">User</th>
+                                        <th style="width:90px">Cash In</th>
+                                        <th style="width:90px">Cash Out</th>
+                                        <th style="width:100px">Balance</th>
+                                        <th style="width:70px">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableBody">
+                                    <tr>
+                                        <td colspan="9" class="empty">Loading all transactions...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
 
-                <div class="table-container">
-                    <table class="transactions-table">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Transaction ID</th>
-                                <th>Branch</th>
-                                <th>User</th>
-                                <th>Description</th>
-                                <th>Type</th>
-                                <th>Amount (ZMW)</th>
-                                <th>Created At</th>
-                            </tr>
-                        </thead>
-                        <tbody id="transactionsTableBody">
-                            <tr>
-                                <td colspan="8" class="empty-state">
-                                    <div>Loading transactions...</div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                    <aside id="formPane" class="form-pane hidden" aria-hidden="true">
+                        <header>
+                            <div style="display:flex;align-items:center">
+                                <div class="label">Admin Edit</div>
+                                <div id="formBranch" class="form-branch" aria-hidden="true"></div>
+                            </div>
+                            <div>
+                                <button id="hideFormBtn" class="btn ghost">
+                                    <i class="fas fa-times"></i> Hide
+                                </button>
+                            </div>
+                        </header>
 
-                <!-- Pagination -->
-                <div class="pagination">
-                    <button class="pagination-btn" id="prevPageBtn" disabled>
-                        <i class="fas fa-chevron-left"></i> Previous
-                    </button>
-                    <span class="pagination-info" id="pageInfo">Page 1 of 1</span>
-                    <button class="pagination-btn" id="nextPageBtn" disabled>
-                        Next <i class="fas fa-chevron-right"></i>
-                    </button>
+                        <form id="transactionForm" class="simple-form" autocomplete="off">
+                            <div>
+                                <label for="date">Date *</label>
+                                <input id="date" type="date" required />
+                            </div>
+
+                            <div>
+                                <label for="tid">Tid (reference)</label>
+                                <input id="tid" type="text" placeholder="reference / tid" />
+                            </div>
+
+                            <div>
+                                <label for="description">Description</label>
+                                <input id="description" type="text" placeholder="Short description" />
+                            </div>
+
+                            <div>
+                                <label for="branchSelect">Branch</label>
+                                <select id="branchSelect" class="filter-select" style="width:100%; padding: 0.5rem 0.6rem;">
+                                    <option value="branch1">Branch 1 (Wamz)</option>
+                                    <option value="branch2">Branch 2 (Samz)</option>
+                                    <option value="branch3">Branch 3 (Namz)</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="userSelect">Created By</label>
+                                <select id="userSelect" class="filter-select" style="width:100%; padding: 0.5rem 0.6rem;">
+                                    <option value="Wamz">Wamz (Admin)</option>
+                                    <option value="Samz">Samz</option>
+                                    <option value="Namz">Namz</option>
+                                </select>
+                            </div>
+
+                            <div class="form-row">
+                                <div>
+                                    <label for="cashIn">Cash In (ZMW)</label>
+                                    <input id="cashIn" type="number" step="0.01" min="0" value="0" />
+                                </div>
+                                <div>
+                                    <label for="cashOut">Cash Out (ZMW)</label>
+                                    <input id="cashOut" type="number" step="0.01" min="0" value="0" />
+                                </div>
+                            </div>
+
+                            <input type="hidden" id="editId" />
+
+                            <div class="form-actions">
+                                <button type="button" id="cancelEdit" class="btn ghost">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
+                                <button type="submit" id="saveBtn" class="btn">
+                                    <i class="fas fa-save"></i> Save
+                                </button>
+                            </div>
+                        </form>
+                    </aside>
                 </div>
             </div>
         </div>
@@ -1093,32 +1143,15 @@
         let currentUserData = null;
         let allTransactions = [];
         let filteredTransactions = [];
-        let currentPage = 1;
-        const itemsPerPage = 15;
         let listenerUnsub = null;
+        let isSaving = false;
+        let indexError = false;
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
             console.log("💰 Admin Cash Flow Dashboard loaded");
             initializeSidebar();
             checkLogin();
-            
-            // Set current date
-            const now = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', options);
-            
-            // Set default date range (current month)
-            const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-            const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-            document.getElementById('dateFrom').value = firstDay.toISOString().split('T')[0];
-            document.getElementById('dateTo').value = lastDay.toISOString().split('T')[0];
-            
-            // Initialize event listeners
-            initializeEventListeners();
-            
-            // Load data
-            loadDashboardData();
         });
 
         // Initialize sidebar toggle for both desktop and mobile
@@ -1163,29 +1196,6 @@
             });
         }
 
-        // Initialize event listeners
-        function initializeEventListeners() {
-            // Filter buttons
-            document.getElementById('applyFiltersBtn').addEventListener('click', applyFilters);
-            document.getElementById('clearFiltersBtn').addEventListener('click', clearFilters);
-            
-            // Action buttons
-            document.getElementById('refreshBtn').addEventListener('click', refreshData);
-            document.getElementById('exportBtn').addEventListener('click', exportToCSV);
-            document.getElementById('printBtn').addEventListener('click', printReport);
-            
-            // Pagination buttons
-            document.getElementById('prevPageBtn').addEventListener('click', () => changePage(-1));
-            document.getElementById('nextPageBtn').addEventListener('click', () => changePage(1));
-            
-            // Enter key on filters
-            document.querySelectorAll('.filter-input, .filter-select').forEach(input => {
-                input.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') applyFilters();
-                });
-            });
-        }
-
         // Check login
         function checkLogin() {
             const currentUser = localStorage.getItem('currentUser');
@@ -1204,257 +1214,492 @@
 
             document.getElementById('currentUser').textContent = currentUserData.username;
             console.log("👤 Logged in as:", currentUserData.username);
+            
+            // Set current date
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', options);
+            
+            // Set default date for filter
+            const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+            const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            document.getElementById('filterFrom').value = firstDay.toISOString().slice(0, 10);
+            document.getElementById('filterTo').value = lastDay.toISOString().slice(0, 10);
+            document.getElementById('date').valueAsDate = new Date();
+            
+            // Initialize cash flow app
+            initCashFlowApp();
         }
 
-        // Format currency
-        function formatCurrency(amount) {
-            return 'ZMW ' + parseFloat(amount).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        // Format ZMW currency
+        function formatCurrency(v) {
+            const n = Number(v) || 0;
+            return 'ZMW ' + n.toFixed(2);
         }
 
-        // Format date
-        function formatDate(date) {
-            if (!date) return 'N/A';
-            
-            let dateObj;
-            if (date.toDate) {
-                dateObj = date.toDate();
-            } else if (date instanceof Date) {
-                dateObj = date;
-            } else {
-                dateObj = new Date(date);
-            }
-            
-            return dateObj.toLocaleDateString('en-GB', {
+        function formatCurrencyCell(v) {
+            const n = Number(v) || 0;
+            const formatted = 'ZMW ' + Math.abs(n).toFixed(2);
+            if (n >= 0) return `<span class="positive">${formatted}</span>`;
+            return `<span class="negative">${formatted}</span>`;
+        }
+
+        function formatDate(ts) {
+            const d = ts && ts.toDate ? ts.toDate() : new Date(ts);
+            return d.toLocaleDateString('en-GB', {
                 day: '2-digit',
                 month: 'short',
                 year: 'numeric'
             });
         }
 
-        // Format date and time
-        function formatDateTime(date) {
-            if (!date) return 'N/A';
-            
-            let dateObj;
-            if (date.toDate) {
-                dateObj = date.toDate();
-            } else if (date instanceof Date) {
-                dateObj = date;
-            } else {
-                dateObj = new Date(date);
-            }
-            
-            return dateObj.toLocaleString('en-GB', {
-                day: '2-digit',
-                month: 'short',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
+        function escapeHtml(s) {
+            return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
         }
 
-        // Load dashboard data
-        async function loadDashboardData() {
-            try {
-                console.log("📊 Loading admin cash flow data...");
-                showLoading(true);
+        // Get branch display name
+        function getBranchDisplayName(branchId) {
+            const branchMap = {
+                'branch1': 'Branch 1',
+                'branch2': 'Branch 2',
+                'branch3': 'Branch 3'
+            };
+            return branchMap[branchId] || branchId;
+        }
+
+        // Get user display name
+        function getUserDisplayName(userId) {
+            const userMap = {
+                'Wamz': 'Wamz',
+                'Samz': 'Samz',
+                'Namz': 'Namz'
+            };
+            return userMap[userId] || userId;
+        }
+
+        // Initialize cash flow app
+        function initCashFlowApp() {
+            // Setup DOM elements
+            const menuBtn = document.getElementById('menuBtn');
+            const dropdown = document.getElementById('dropdown');
+            const exportCsvBtn = document.getElementById('exportCsvBtn');
+            const printBtn = document.getElementById('printBtn');
+            const filterFrom = document.getElementById('filterFrom');
+            const filterTo = document.getElementById('filterTo');
+            const applyFilterBtn = document.getElementById('applyFilterBtn');
+            const clearFilterBtn = document.getElementById('clearFilterBtn');
+            const branchFilter = document.getElementById('branchFilter');
+            const formPane = document.getElementById('formPane');
+            const hideFormBtn = document.getElementById('hideFormBtn');
+            const transactionForm = document.getElementById('transactionForm');
+            const dateInput = document.getElementById('date');
+            const tidInput = document.getElementById('tid');
+            const descriptionInput = document.getElementById('description');
+            const cashInInput = document.getElementById('cashIn');
+            const cashOutInput = document.getElementById('cashOut');
+            const editIdInput = document.getElementById('editId');
+            const branchSelect = document.getElementById('branchSelect');
+            const userSelect = document.getElementById('userSelect');
+            const saveBtn = document.getElementById('saveBtn');
+            const cancelEditBtn = document.getElementById('cancelEdit');
+            const tableBody = document.getElementById('tableBody');
+
+            // Set default date
+            dateInput.valueAsDate = new Date();
+
+            // Setup Firestore listener for ALL transactions
+            setupListener();
+
+            // Event Listeners
+            menuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dropdown.classList.toggle('show');
+                dropdown.setAttribute('aria-hidden', dropdown.classList.contains('show') ? 'false' : 'true');
+            });
+
+            dropdown.addEventListener('click', (e) => e.stopPropagation());
+
+            document.addEventListener('click', () => {
+                if (dropdown.classList.contains('show')) {
+                    dropdown.classList.remove('show');
+                    dropdown.setAttribute('aria-hidden', 'true');
+                }
+            });
+
+            // Export CSV
+            exportCsvBtn.addEventListener('click', () => {
+                dropdown.classList.remove('show');
+                let filtered = filteredTransactions.slice();
                 
-                // Fetch all cash flow transactions
-                const cashflowRef = db.collection('cashflow');
-                
-                if (listenerUnsub) {
-                    listenerUnsub();
+                if (filtered.length === 0) {
+                    alert('No transactions to export');
+                    return;
                 }
                 
-                // Set up real-time listener
-                listenerUnsub = cashflowRef.orderBy('date', 'desc').onSnapshot(async (snapshot) => {
-                    console.log("📈 Received cash flow data");
+                // Sort by date ascending (oldest first for running balance)
+                const asc = filtered.slice().sort((a, b) => {
+                    const dateA = a.date && a.date.toDate ? a.date.toDate() : new Date(a.date);
+                    const dateB = b.date && b.date.toDate ? b.date.toDate() : new Date(b.date);
+                    return dateA - dateB;
+                });
+                
+                let running = 0;
+                const rows = asc.map(t => {
+                    const inVal = Number(t.cashIn || 0);
+                    const outVal = Number(t.cashOut || 0);
+                    running += inVal - outVal;
+                    return [
+                        formatDate(t.date),
+                        t.tid || '',
+                        getBranchDisplayName(t.branchId || ''),
+                        t.createdBy || '',
+                        (t.description || '').replace(/"/g, '""'),
+                        inVal.toFixed(2),
+                        outVal.toFixed(2),
+                        running.toFixed(2)
+                    ];
+                });
+                
+                const headers = ['Date', 'Tid', 'Branch', 'User', 'Description', 'Cash In (ZMW)', 'Cash Out (ZMW)', 'Balance (ZMW)'];
+                const csv = [headers.join(','), ...rows.map(r => r.map(c => `"${c}"`).join(','))].join('\n');
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                const fileName = `cashflow_admin_all_branches_${new Date().toISOString().slice(0, 10)}.csv`;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                URL.revokeObjectURL(url);
+            });
+
+            printBtn.addEventListener('click', () => {
+                dropdown.classList.remove('show');
+                window.print();
+            });
+
+            applyFilterBtn.addEventListener('click', () => {
+                dropdown.classList.remove('show');
+                applyFilters();
+            });
+
+            clearFilterBtn.addEventListener('click', () => {
+                filterFrom.value = '';
+                filterTo.value = '';
+                branchFilter.value = 'all';
+                dropdown.classList.remove('show');
+                applyFilters();
+                showMessage("Filters cleared.", "info");
+            });
+
+            hideFormBtn.addEventListener('click', hideForm);
+            cancelEditBtn.addEventListener('click', () => { hideForm(); });
+
+            // Form submit (admin can edit any transaction)
+            transactionForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                if (isSaving) return;
+                const dateVal = dateInput.value;
+                if (!dateVal) {
+                    alert('Select date');
+                    return;
+                }
+
+                const cashInNum = parseFloat(cashInInput.value || 0) || 0;
+                const cashOutNum = parseFloat(cashOutInput.value || 0) || 0;
+                if (cashInNum <= 0 && cashOutNum <= 0) {
+                    alert('Enter a value for Cash In or Cash Out (both cannot be zero).');
+                    return;
+                }
+
+                if (cashInNum < 0 || cashOutNum < 0) {
+                    alert('Cash values cannot be negative.');
+                    return;
+                }
+
+                const id = editIdInput.value;
+                let payload = {
+                    date: firebase.firestore.Timestamp.fromDate(new Date(dateVal)),
+                    tid: tidInput.value.trim(),
+                    description: descriptionInput.value.trim(),
+                    cashIn: cashInNum.toFixed(2),
+                    cashOut: cashOutNum.toFixed(2),
+                    branchId: branchSelect.value,
+                    createdBy: userSelect.value,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedBy: 'Wamz (Admin)'
+                };
+
+                try {
+                    isSaving = true;
+                    saveBtn.disabled = true;
+                    saveBtn.textContent = 'Saving...';
+
+                    if (id) {
+                        await db.collection('cashflow').doc(id).update(payload);
+                        showMessage('Transaction updated successfully!', 'success');
+                    } else {
+                        payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                        await db.collection('cashflow').add(payload);
+                        showMessage('Transaction added successfully!', 'success');
+                    }
                     
-                    // Process transactions
-                    allTransactions = [];
-                    snapshot.forEach(doc => {
-                        const data = doc.data();
-                        allTransactions.push({
-                            id: doc.id,
-                            ...data,
-                            amount: parseFloat(data.cashIn || 0) > 0 ? parseFloat(data.cashIn) : -parseFloat(data.cashOut || 0),
-                            type: parseFloat(data.cashIn || 0) > 0 ? 'income' : 'expense'
-                        });
-                    });
+                    hideForm();
+                } catch (err) {
+                    console.error('save err', err);
+                    alert('Error saving: ' + err.message);
+                } finally {
+                    isSaving = false;
+                    saveBtn.disabled = false;
+                    saveBtn.textContent = 'Save';
+                }
+            });
+
+            // Helper functions
+            function showForm() {
+                formPane.classList.remove('hidden');
+                formPane.setAttribute('aria-hidden', 'false');
+                dateInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+
+            function hideForm() {
+                formPane.classList.add('hidden');
+                formPane.setAttribute('aria-hidden', 'true');
+                transactionForm.reset();
+                dateInput.valueAsDate = new Date();
+                editIdInput.value = '';
+                branchSelect.value = 'branch1';
+                userSelect.value = 'Wamz';
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Save';
+                isSaving = false;
+            }
+        }
+
+        // Setup Firestore listener for ALL transactions
+        function setupListener() {
+            if (listenerUnsub) listenerUnsub();
+
+            console.log('Setting up listener for ALL branches');
+
+            try {
+                // Get ALL transactions, ordered by date
+                const q = db.collection('cashflow').orderBy('date', 'desc');
+
+                listenerUnsub = q.onSnapshot(snapshot => {
+                    console.log('Received', snapshot.docs.length, 'transactions from ALL branches');
                     
-                    console.log(`📊 Total transactions: ${allTransactions.length}`);
+                    // Convert all transactions
+                    allTransactions = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                    
+                    console.log('Total transactions:', allTransactions.length);
                     
                     // Apply filters
                     applyFilters();
                     
-                    // Calculate branch summaries
-                    calculateBranchSummaries();
+                    // Update stats
+                    updateStats();
                     
-                    // Calculate overall stats
-                    calculateOverallStats();
+                }, err => {
+                    console.error('Firestore listener error:', err);
                     
-                    showLoading(false);
-                    
-                }, (error) => {
-                    console.error("❌ Error loading cash flow data:", error);
-                    showMessage("Error loading cash flow data. Please try again.", "error");
-                    showLoading(false);
+                    if (err.code === 'failed-precondition' || err.message.includes('index')) {
+                        indexError = true;
+                        showMessage('⚠️ Database index required. Please create the composite index in Firebase Console.', 'error');
+                        
+                        // Fallback: Load all data without ordering
+                        db.collection('cashflow').get().then(snapshot => {
+                            let transactions = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                            
+                            // Sort by date client-side
+                            transactions.sort((a, b) => {
+                                const dateA = a.date && a.date.toDate ? a.date.toDate() : new Date(a.date);
+                                const dateB = b.date && b.date.toDate ? b.date.toDate() : new Date(b.date);
+                                return dateB - dateA; // Descending
+                            });
+                            
+                            allTransactions = transactions;
+                            applyFilters();
+                            updateStats();
+                            showMessage('Data loaded with client-side sorting.', 'info');
+                        });
+                    } else {
+                        document.getElementById('tableBody').innerHTML = `<tr><td colspan="9" class="empty">
+                            <div>Error loading transactions</div>
+                            <div style="font-size:11px; margin-top: 5px; color:#e53e3e;">${err.message}</div>
+                        </td></tr>`;
+                    }
                 });
-                
             } catch (error) {
-                console.error("❌ Error in loadDashboardData:", error);
-                showMessage("Error loading dashboard data.", "error");
-                showLoading(false);
+                console.error('Error setting up listener:', error);
             }
         }
 
         // Apply filters
         function applyFilters() {
-            try {
-                const branchFilter = document.getElementById('branchFilter').value;
-                const typeFilter = document.getElementById('typeFilter').value;
-                const dateFrom = document.getElementById('dateFrom').value;
-                const dateTo = document.getElementById('dateTo').value;
-                
-                filteredTransactions = allTransactions.filter(transaction => {
-                    // Branch filter
-                    if (branchFilter !== 'all' && transaction.branchId !== branchFilter) {
-                        return false;
-                    }
-                    
-                    // Type filter
-                    if (typeFilter !== 'all') {
-                        const transactionType = parseFloat(transaction.cashIn || 0) > 0 ? 'income' : 'expense';
-                        if (transactionType !== typeFilter) {
-                            return false;
-                        }
-                    }
-                    
-                    // Date filter
-                    if (dateFrom || dateTo) {
-                        const transactionDate = transaction.date ? 
-                            (transaction.date.toDate ? transaction.date.toDate() : new Date(transaction.date)) : 
-                            new Date();
-                        
-                        if (dateFrom) {
-                            const fromDate = new Date(dateFrom);
-                            fromDate.setHours(0, 0, 0, 0);
-                            if (transactionDate < fromDate) {
-                                return false;
-                            }
-                        }
-                        
-                        if (dateTo) {
-                            const toDate = new Date(dateTo);
-                            toDate.setHours(23, 59, 59, 999);
-                            if (transactionDate > toDate) {
-                                return false;
-                            }
-                        }
-                    }
-                    
-                    return true;
-                });
-                
-                console.log(`🔍 Filtered transactions: ${filteredTransactions.length}`);
-                
-                // Reset to first page
-                currentPage = 1;
-                
-                // Render transactions
-                renderTransactions();
-                
-                // Update branch summaries with filtered data
-                calculateBranchSummaries();
-                
-                // Update overall stats with filtered data
-                calculateOverallStats();
-                
-            } catch (error) {
-                console.error("❌ Error applying filters:", error);
-                showMessage("Error applying filters.", "error");
-            }
-        }
+            const branchFilter = document.getElementById('branchFilter').value;
+            const filterFrom = document.getElementById('filterFrom').value;
+            const filterTo = document.getElementById('filterTo').value;
 
-        // Clear filters
-        function clearFilters() {
-            document.getElementById('branchFilter').value = 'all';
-            document.getElementById('typeFilter').value = 'all';
-            
-            // Reset date range to current month
-            const now = new Date();
-            const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-            const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-            document.getElementById('dateFrom').value = firstDay.toISOString().split('T')[0];
-            document.getElementById('dateTo').value = lastDay.toISOString().split('T')[0];
-            
-            applyFilters();
-            showMessage("Filters cleared.", "info");
-        }
-
-        // Calculate branch summaries
-        function calculateBranchSummaries() {
-            const branches = {
-                branch1: { name: "Branch 1", user: "Wamz", income: 0, expenses: 0, transactions: 0 },
-                branch2: { name: "Branch 2", user: "Samz", income: 0, expenses: 0, transactions: 0 },
-                branch3: { name: "Branch 3", user: "Namz", income: 0, expenses: 0, transactions: 0 }
-            };
-            
-            // Calculate for filtered transactions
-            filteredTransactions.forEach(transaction => {
-                const branchId = transaction.branchId || 'unknown';
-                if (branches[branchId]) {
-                    const cashIn = parseFloat(transaction.cashIn || 0);
-                    const cashOut = parseFloat(transaction.cashOut || 0);
-                    
-                    branches[branchId].income += cashIn;
-                    branches[branchId].expenses += cashOut;
-                    branches[branchId].transactions++;
+            filteredTransactions = allTransactions.filter(t => {
+                // Branch filter
+                if (branchFilter !== 'all' && t.branchId !== branchFilter) {
+                    return false;
                 }
+
+                // Date filter
+                if (filterFrom || filterTo) {
+                    const d = t.date && t.date.toDate ? t.date.toDate() : new Date(t.date);
+                    const from = filterFrom ? new Date(filterFrom) : null;
+                    const to = filterTo ? new Date(filterTo + 'T23:59:59') : null;
+                    
+                    if (from && d < from) return false;
+                    if (to && d > to) return false;
+                }
+
+                return true;
+            });
+
+            console.log(`🔍 Filtered to ${filteredTransactions.length} transactions`);
+            renderTransactions();
+            updateStats();
+        }
+
+        // Render transactions
+        function renderTransactions() {
+            const tableBody = document.getElementById('tableBody');
+
+            if (filteredTransactions.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="9" class="empty">
+                    ${indexError ? 'No transactions found. Index may be building.' : 'No transactions found for the selected filters'}
+                </td></tr>`;
+                return;
+            }
+
+            // Calculate running balance per branch
+            const branchBalances = {};
+            const transactionsByBranch = {};
+            
+            // Group transactions by branch and sort by date ascending
+            filteredTransactions.forEach(tx => {
+                const branchId = tx.branchId || 'unknown';
+                if (!transactionsByBranch[branchId]) {
+                    transactionsByBranch[branchId] = [];
+                    branchBalances[branchId] = 0;
+                }
+                transactionsByBranch[branchId].push(tx);
             });
             
-            // Render branch summary cards
-            const branchSummaryContainer = document.getElementById('branchSummary');
-            let html = '';
-            
-            for (const [branchId, data] of Object.entries(branches)) {
-                const netFlow = data.income - data.expenses;
-                
-                html += `
-                    <div class="branch-summary-card">
-                        <div class="branch-summary-header">
-                            <div class="branch-summary-title">${data.name}</div>
-                            <div class="branch-summary-badge">${data.user}</div>
-                        </div>
-                        <div class="branch-summary-stats">
-                            <div class="branch-summary-stat">
-                                <span class="branch-summary-label">Income:</span>
-                                <span class="branch-summary-value positive">${formatCurrency(data.income)}</span>
-                            </div>
-                            <div class="branch-summary-stat">
-                                <span class="branch-summary-label">Expenses:</span>
-                                <span class="branch-summary-value negative">${formatCurrency(data.expenses)}</span>
-                            </div>
-                            <div class="branch-summary-stat">
-                                <span class="branch-summary-label">Net Flow:</span>
-                                <span class="branch-summary-value ${netFlow >= 0 ? 'positive' : 'negative'}">
-                                    ${formatCurrency(netFlow)}
-                                </span>
-                            </div>
-                            <div class="branch-summary-stat">
-                                <span class="branch-summary-label">Transactions:</span>
-                                <span class="branch-summary-value">${data.transactions}</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
+            // Sort each branch's transactions by date ascending
+            for (const branchId in transactionsByBranch) {
+                transactionsByBranch[branchId].sort((a, b) => {
+                    const dateA = a.date && a.date.toDate ? a.date.toDate() : new Date(a.date);
+                    const dateB = b.date && b.date.toDate ? b.date.toDate() : new Date(b.date);
+                    return dateA - dateB;
+                });
             }
             
-            branchSummaryContainer.innerHTML = html;
+            // Flatten all transactions in correct order
+            const allSorted = [];
+            while (Object.keys(transactionsByBranch).length > 0) {
+                for (const branchId in transactionsByBranch) {
+                    if (transactionsByBranch[branchId].length > 0) {
+                        allSorted.push(transactionsByBranch[branchId].shift());
+                    } else {
+                        delete transactionsByBranch[branchId];
+                    }
+                }
+            }
+            
+            // Now sort by date descending for display
+            allSorted.sort((a, b) => {
+                const dateA = a.date && a.date.toDate ? a.date.toDate() : new Date(a.date);
+                const dateB = b.date && b.date.toDate ? b.date.toDate() : new Date(b.date);
+                return dateB - dateA; // Descending
+            });
+
+            tableBody.innerHTML = '';
+
+            allSorted.forEach(tx => {
+                const inVal = Number(tx.cashIn || 0);
+                const outVal = Number(tx.cashOut || 0);
+                const branchId = tx.branchId || 'unknown';
+                
+                // Update running balance for this branch
+                if (!branchBalances[branchId]) branchBalances[branchId] = 0;
+                branchBalances[branchId] += inVal - outVal;
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${formatDate(tx.date)}</td>
+                    <td>${escapeHtml(tx.tid || '')}</td>
+                    <td>${escapeHtml(tx.description || '')}</td>
+                    <td><span class="branch-badge">${getBranchDisplayName(tx.branchId)}</span></td>
+                    <td>${escapeHtml(tx.createdBy || '')}</td>
+                    <td class="num">${inVal > 0 ? formatCurrency(inVal) : ''}</td>
+                    <td class="num">${outVal > 0 ? formatCurrency(outVal) : ''}</td>
+                    <td class="num">${formatCurrencyCell(branchBalances[branchId])}</td>
+                    <td>
+                        <button data-id="${tx.id}" class="editBtn" style="margin-right:0.3rem">
+                            <i class="fas fa-edit" style="font-size:0.7rem"></i>
+                        </button>
+                        <button data-id="${tx.id}" class="delBtn">
+                            <i class="fas fa-trash" style="font-size:0.7rem"></i>
+                        </button>
+                    </td>
+                `;
+
+                tableBody.appendChild(row);
+            });
+
+            attachRowEvents();
         }
 
-        // Calculate overall stats
-        function calculateOverallStats() {
+        // Attach row events
+        function attachRowEvents() {
+            // Delete handlers
+            document.querySelectorAll('.delBtn').forEach(btn => {
+                btn.onclick = async () => {
+                    const id = btn.getAttribute('data-id');
+                    if (!confirm('Delete this transaction? This action cannot be undone.')) return;
+                    try {
+                        btn.classList.add('disabled');
+                        await db.collection('cashflow').doc(id).delete();
+                        showMessage('Transaction deleted successfully!', 'success');
+                    } catch (err) {
+                        console.error('delete err', err);
+                        alert('Error deleting: ' + err.message);
+                    } finally {
+                        btn.classList.remove('disabled');
+                    }
+                };
+            });
+
+            // Edit handlers
+            document.querySelectorAll('.editBtn').forEach(btn => {
+                btn.onclick = () => {
+                    const id = btn.getAttribute('data-id');
+                    const tx = allTransactions.find(t => t.id === id);
+                    if (!tx) return;
+                    
+                    const txDate = tx.date && tx.date.toDate ? tx.date.toDate() : new Date(tx.date);
+                    document.getElementById('date').value = txDate.toISOString().slice(0, 10);
+                    document.getElementById('tid').value = tx.tid || '';
+                    document.getElementById('description').value = tx.description || '';
+                    document.getElementById('cashIn').value = Number(tx.cashIn || 0).toFixed(2);
+                    document.getElementById('cashOut').value = Number(tx.cashOut || 0).toFixed(2);
+                    document.getElementById('editId').value = tx.id;
+                    document.getElementById('branchSelect').value = tx.branchId || 'branch1';
+                    document.getElementById('userSelect').value = tx.createdBy || 'Wamz';
+                    
+                    showForm();
+                };
+            });
+        }
+
+        // Update stats
+        function updateStats() {
             let totalIncome = 0;
             let totalExpenses = 0;
             let netCashFlow = 0;
@@ -1468,192 +1713,18 @@
             
             // Update stats cards
             document.getElementById('totalIncome').innerHTML = `
-                <span class="zmw-symbol">ZMW</span> ${totalIncome.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                <span class="zmw-symbol">ZMW</span> ${totalIncome.toFixed(2)}
             `;
-            document.getElementById('totalIncome').classList.remove('loading');
             
             document.getElementById('totalExpenses').innerHTML = `
-                <span class="zmw-symbol">ZMW</span> ${totalExpenses.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                <span class="zmw-symbol">ZMW</span> ${totalExpenses.toFixed(2)}
             `;
-            document.getElementById('totalExpenses').classList.remove('loading');
             
             document.getElementById('netCashFlow').innerHTML = `
-                <span class="zmw-symbol">ZMW</span> ${netCashFlow.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                <span class="zmw-symbol">ZMW</span> ${netCashFlow.toFixed(2)}
             `;
-            document.getElementById('netCashFlow').classList.remove('loading');
             
             document.getElementById('totalTransactions').textContent = filteredTransactions.length;
-            document.getElementById('totalTransactions').classList.remove('loading');
-        }
-
-        // Render transactions table
-        function renderTransactions() {
-            const tableBody = document.getElementById('transactionsTableBody');
-            
-            if (filteredTransactions.length === 0) {
-                tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="8" class="empty-state">
-                            <div>No transactions found for the selected filters</div>
-                        </td>
-                    </tr>
-                `;
-                updatePagination();
-                return;
-            }
-            
-            // Calculate pagination
-            const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
-            const startIndex = (currentPage - 1) * itemsPerPage;
-            const endIndex = Math.min(startIndex + itemsPerPage, filteredTransactions.length);
-            const pageTransactions = filteredTransactions.slice(startIndex, endIndex);
-            
-            // Render table rows
-            let html = '';
-            
-            pageTransactions.forEach((transaction, index) => {
-                const isIncome = parseFloat(transaction.cashIn || 0) > 0;
-                const amount = isIncome ? parseFloat(transaction.cashIn) : -parseFloat(transaction.cashOut || 0);
-                const branchName = getBranchName(transaction.branchId);
-                const userName = transaction.createdBy || 'Unknown';
-                const description = transaction.description || 'No description';
-                
-                html += `
-                    <tr>
-                        <td>${formatDate(transaction.date)}</td>
-                        <td><code>${transaction.tid || 'N/A'}</code></td>
-                        <td><span class="branch-badge">${branchName}</span></td>
-                        <td><span class="user-badge">${userName}</span></td>
-                        <td>${description}</td>
-                        <td>
-                            <span class="transaction-type ${isIncome ? 'income' : 'expense'}">
-                                ${isIncome ? 'Income' : 'Expense'}
-                            </span>
-                        </td>
-                        <td class="transaction-amount ${isIncome ? 'positive' : 'negative'}">
-                            ${formatCurrency(amount)}
-                        </td>
-                        <td>${formatDateTime(transaction.createdAt || transaction.date)}</td>
-                    </tr>
-                `;
-            });
-            
-            tableBody.innerHTML = html;
-            updatePagination();
-        }
-
-        // Get branch name from ID
-        function getBranchName(branchId) {
-            const branchMap = {
-                'branch1': 'Branch 1 (Wamz)',
-                'branch2': 'Branch 2 (Samz)',
-                'branch3': 'Branch 3 (Namz)'
-            };
-            return branchMap[branchId] || branchId || 'Unknown';
-        }
-
-        // Update pagination controls
-        function updatePagination() {
-            const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
-            const prevBtn = document.getElementById('prevPageBtn');
-            const nextBtn = document.getElementById('nextPageBtn');
-            const pageInfo = document.getElementById('pageInfo');
-            
-            prevBtn.disabled = currentPage === 1;
-            nextBtn.disabled = currentPage === totalPages || totalPages === 0;
-            
-            if (totalPages === 0) {
-                pageInfo.textContent = 'No results';
-            } else {
-                const startIndex = (currentPage - 1) * itemsPerPage + 1;
-                const endIndex = Math.min(startIndex + itemsPerPage - 1, filteredTransactions.length);
-                pageInfo.textContent = `Page ${currentPage} of ${totalPages} (${startIndex}-${endIndex} of ${filteredTransactions.length})`;
-            }
-        }
-
-        // Change page
-        function changePage(delta) {
-            const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
-            const newPage = currentPage + delta;
-            
-            if (newPage >= 1 && newPage <= totalPages) {
-                currentPage = newPage;
-                renderTransactions();
-            }
-        }
-
-        // Export to CSV
-        function exportToCSV() {
-            if (filteredTransactions.length === 0) {
-                showMessage("No transactions to export.", "info");
-                return;
-            }
-            
-            const headers = ['Date', 'Transaction ID', 'Branch', 'User', 'Description', 'Type', 'Amount (ZMW)', 'Created At'];
-            const rows = filteredTransactions.map(transaction => {
-                const isIncome = parseFloat(transaction.cashIn || 0) > 0;
-                const amount = isIncome ? parseFloat(transaction.cashIn) : -parseFloat(transaction.cashOut || 0);
-                const branchName = getBranchName(transaction.branchId);
-                const userName = transaction.createdBy || 'Unknown';
-                const description = transaction.description || 'No description';
-                const type = isIncome ? 'Income' : 'Expense';
-                const date = formatDate(transaction.date);
-                const createdAt = formatDateTime(transaction.createdAt || transaction.date);
-                
-                return [
-                    date,
-                    transaction.tid || 'N/A',
-                    branchName,
-                    userName,
-                    description.replace(/"/g, '""'),
-                    type,
-                    amount.toFixed(2),
-                    createdAt
-                ];
-            });
-            
-            const csvContent = [
-                headers.join(','),
-                ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
-            ].join('\n');
-            
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            const fileName = `cashflow_admin_${new Date().toISOString().slice(0, 10)}.csv`;
-            
-            link.href = url;
-            link.setAttribute('download', fileName);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            
-            showMessage("CSV export started.", "success");
-        }
-
-        // Print report
-        function printReport() {
-            window.print();
-        }
-
-        // Refresh data
-        function refreshData() {
-            showLoading(true);
-            loadDashboardData();
-            showMessage("Refreshing data...", "info");
-        }
-
-        // Show loading state
-        function showLoading(isLoading) {
-            const refreshBtn = document.getElementById('refreshBtn');
-            
-            if (isLoading) {
-                refreshBtn.innerHTML = '<div class="loading-spinner"></div> Loading...';
-                refreshBtn.disabled = true;
-            } else {
-                refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh';
-                refreshBtn.disabled = false;
-            }
         }
 
         // Show message
@@ -1677,11 +1748,13 @@
         // Set dashboard start time
         window.dashboardStartTime = Date.now();
 
-        // Auto-refresh data every 60 seconds
+        // Auto-refresh data every 30 seconds
         setInterval(() => {
-            refreshData();
-            console.log("🔄 Auto-refreshing admin cash flow data");
-        }, 60000);
+            if (listenerUnsub) {
+                setupListener();
+                console.log("🔄 Auto-refreshing admin cash flow data");
+            }
+        }, 30000);
     </script>
 </body>
 </html>
