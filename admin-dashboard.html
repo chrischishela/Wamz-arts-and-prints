@@ -354,6 +354,12 @@
             font-weight: 600;
         }
 
+        /* Loading State */
+        .stat-value.loading {
+            color: #cbd5e0;
+            font-style: italic;
+        }
+
         /* Section Titles */
         .section-title {
             font-size: 0.9rem;
@@ -735,26 +741,26 @@
             <!-- Stats Grid -->
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-value zmw">
-                        <span class="zmw-symbol">ZMW</span> 245,800.00
+                    <div class="stat-value zmw loading" id="totalSales">
+                        <span class="zmw-symbol">ZMW</span> Loading...
                     </div>
                     <div class="stat-title">Total Sales</div>
                 </div>
 
                 <div class="stat-card">
-                    <div class="stat-value zmw">
-                        <span class="zmw-symbol">ZMW</span> 187,500.00
+                    <div class="stat-value zmw loading" id="warehouseValue">
+                        <span class="zmw-symbol">ZMW</span> Loading...
                     </div>
                     <div class="stat-title">Warehouse Value</div>
                 </div>
 
                 <div class="stat-card">
-                    <div class="stat-value">3</div>
+                    <div class="stat-value loading" id="activeBranches">Loading...</div>
                     <div class="stat-title">Active Branches</div>
                 </div>
 
                 <div class="stat-card">
-                    <div class="stat-value">3</div>
+                    <div class="stat-value loading" id="activeUsers">Loading...</div>
                     <div class="stat-title">Active Users</div>
                 </div>
             </div>
@@ -861,6 +867,9 @@
             const now = new Date();
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', options);
+            
+            // Load real data
+            loadDashboardData();
         });
 
         // Initialize sidebar toggle for both desktop and mobile
@@ -925,6 +934,149 @@
             console.log("👤 Logged in as:", currentUserData.username);
         }
 
+        // Format number with commas
+        function formatNumber(num) {
+            return num.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        // Load dashboard data from Firebase
+        async function loadDashboardData() {
+            try {
+                console.log("📊 Loading dashboard data...");
+                
+                // Calculate date range for this month
+                const now = new Date();
+                const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+                const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+                
+                // Fetch total sales from sales collection
+                const salesQuery = db.collection('sales')
+                    .where('timestamp', '>=', firstDayOfMonth)
+                    .where('timestamp', '<=', lastDayOfMonth);
+                
+                const salesSnapshot = await salesQuery.get();
+                
+                let totalSales = 0;
+                salesSnapshot.forEach(doc => {
+                    const saleData = doc.data();
+                    totalSales += parseFloat(saleData.totalAmount || 0);
+                });
+                
+                // Update total sales card
+                document.getElementById('totalSales').innerHTML = 
+                    `<span class="zmw-symbol">ZMW</span> ${formatNumber(totalSales)}`;
+                document.getElementById('totalSales').classList.remove('loading');
+                
+                // Fetch warehouse stock value
+                const stockQuery = db.collection('stock');
+                const stockSnapshot = await stockQuery.get();
+                
+                let warehouseValue = 0;
+                stockSnapshot.forEach(doc => {
+                    const stockData = doc.data();
+                    warehouseValue += parseFloat(stockData.currentValue || 0);
+                });
+                
+                // Update warehouse value card
+                document.getElementById('warehouseValue').innerHTML = 
+                    `<span class="zmw-symbol">ZMW</span> ${formatNumber(warehouseValue)}`;
+                document.getElementById('warehouseValue').classList.remove('loading');
+                
+                // Count active branches (assuming all 3 are active)
+                const activeBranches = 3;
+                document.getElementById('activeBranches').textContent = activeBranches;
+                document.getElementById('activeBranches').classList.remove('loading');
+                
+                // Fetch active users from users collection
+                const usersQuery = db.collection('users').where('active', '==', true);
+                const usersSnapshot = await usersQuery.get();
+                
+                const activeUsers = usersSnapshot.size;
+                document.getElementById('activeUsers').textContent = activeUsers;
+                document.getElementById('activeUsers').classList.remove('loading');
+                
+                console.log("✅ Dashboard data loaded successfully");
+                console.log(`💰 Total Sales: ZMW ${totalSales}`);
+                console.log(`📦 Warehouse Value: ZMW ${warehouseValue}`);
+                console.log(`🏢 Active Branches: ${activeBranches}`);
+                console.log(`👥 Active Users: ${activeUsers}`);
+                
+                // Also fetch branch-specific data if available
+                await fetchBranchSpecificData();
+                
+            } catch (error) {
+                console.error("❌ Error loading dashboard data:", error);
+                showMessage("Failed to load dashboard data. Please check your connection.", "error");
+                
+                // Set default values
+                document.getElementById('totalSales').innerHTML = 
+                    '<span class="zmw-symbol">ZMW</span> 0.00';
+                document.getElementById('warehouseValue').innerHTML = 
+                    '<span class="zmw-symbol">ZMW</span> 0.00';
+                document.getElementById('activeBranches').textContent = '3';
+                document.getElementById('activeUsers').textContent = '3';
+                
+                // Remove loading class even on error
+                document.querySelectorAll('.stat-value').forEach(el => {
+                    el.classList.remove('loading');
+                });
+            }
+        }
+
+        // Fetch branch-specific sales data
+        async function fetchBranchSpecificData() {
+            try {
+                const now = new Date();
+                const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+                
+                // Fetch branch 1 sales (Wamz)
+                const branch1Query = db.collection('sales')
+                    .where('timestamp', '>=', firstDayOfMonth)
+                    .where('user', '==', 'Wamz');
+                
+                // Fetch branch 2 sales (Samz)
+                const branch2Query = db.collection('sales')
+                    .where('timestamp', '>=', firstDayOfMonth)
+                    .where('user', '==', 'Samz');
+                
+                // Fetch branch 3 sales (Namz)
+                const branch3Query = db.collection('sales')
+                    .where('timestamp', '>=', firstDayOfMonth)
+                    .where('user', '==', 'Namz');
+                
+                const [branch1Snapshot, branch2Snapshot, branch3Snapshot] = await Promise.all([
+                    branch1Query.get(),
+                    branch2Query.get(),
+                    branch3Query.get()
+                ]);
+                
+                // Calculate totals for each branch
+                let branch1Total = 0;
+                let branch2Total = 0;
+                let branch3Total = 0;
+                
+                branch1Snapshot.forEach(doc => {
+                    branch1Total += parseFloat(doc.data().totalAmount || 0);
+                });
+                
+                branch2Snapshot.forEach(doc => {
+                    branch2Total += parseFloat(doc.data().totalAmount || 0);
+                });
+                
+                branch3Snapshot.forEach(doc => {
+                    branch3Total += parseFloat(doc.data().totalAmount || 0);
+                });
+                
+                console.log(`🏪 Branch Sales - Wamz: ZMW ${branch1Total}, Samz: ZMW ${branch2Total}, Namz: ZMW ${branch3Total}`);
+                
+            } catch (error) {
+                console.error("❌ Error fetching branch data:", error);
+            }
+        }
+
         // Show message
         function showMessage(text, type) {
             const messageDiv = document.getElementById('message');
@@ -979,8 +1131,8 @@
 
         // Auto-refresh data every 30 seconds
         setInterval(() => {
-            // Refresh logic can be added here
-            console.log("🔄 Dashboard auto-refresh");
+            loadDashboardData();
+            console.log("🔄 Dashboard data refreshed");
         }, 30000);
     </script>
 </body>
