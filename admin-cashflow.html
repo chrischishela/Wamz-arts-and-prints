@@ -1107,640 +1107,678 @@
         </div>
     </div>
 
-    <script>
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyDTslfW2YQOw1XqiTn4RgTNKusi4w6NcHI",
-            authDomain: "wamz-arts-and-prints.firebaseapp.com",
-            projectId: "wamz-arts-and-prints",
-            storageBucket: "wamz-arts-and-prints.firebasestorage.app",
-            messagingSenderId: "495100135771",
-            appId: "1:495100135771:web:d63ab48db021b4b02c327e",
-            measurementId: "G-1HL55EC1D1"
-        };
+   <script>
+    // Firebase Configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyDTslfW2YQOw1XqiTn4RgTNKusi4w6NcHI",
+        authDomain: "wamz-arts-and-prints.firebaseapp.com",
+        projectId: "wamz-arts-and-prints",
+        storageBucket: "wamz-arts-and-prints.firebasestorage.app",
+        messagingSenderId: "495100135771",
+        appId: "1:495100135771:web:d63ab48db021b4b02c327e",
+        measurementId: "G-1HL55EC1D1"
+    };
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    
+    let currentUserData = null;
+    let allTransactions = [];
+    let filteredTransactions = [];
+    let listenerUnsub = null;
+    let isSaving = false;
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("💰 Admin Cash Flow Dashboard loaded");
+        initializeSidebar();
+        checkLogin();
+    });
+
+    // Initialize sidebar toggle for both desktop and mobile
+    function initializeSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const overlay = document.getElementById('sidebarOverlay');
         
-        let currentUserData = null;
-        let allTransactions = [];
-        let filteredTransactions = [];
-        let listenerUnsub = null;
-        let isSaving = false;
-
-        // Initialize page
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log("💰 Admin Cash Flow Dashboard loaded");
-            initializeSidebar();
-            checkLogin();
+        // Load saved sidebar state
+        const savedState = localStorage.getItem('sidebarCollapsed');
+        if (savedState === 'true') {
+            sidebar.classList.add('collapsed');
+        }
+        
+        // Desktop sidebar toggle
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+            localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
         });
-
-        // Initialize sidebar toggle for both desktop and mobile
-        function initializeSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const sidebarToggle = document.getElementById('sidebarToggle');
-            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-            const overlay = document.getElementById('sidebarOverlay');
-            
-            // Load saved sidebar state
-            const savedState = localStorage.getItem('sidebarCollapsed');
-            if (savedState === 'true') {
-                sidebar.classList.add('collapsed');
-            }
-            
-            // Desktop sidebar toggle
-            sidebarToggle.addEventListener('click', () => {
-                sidebar.classList.toggle('collapsed');
-                localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+        
+        // Mobile menu toggle
+        mobileMenuToggle.addEventListener('click', () => {
+            sidebar.classList.add('open');
+            overlay.classList.add('active');
+        });
+        
+        // Close sidebar on overlay click (mobile)
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+        });
+        
+        // Close sidebar when clicking on links (mobile)
+        document.querySelectorAll('.nav-item').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.remove('open');
+                    overlay.classList.remove('active');
+                }
             });
-            
-            // Mobile menu toggle
-            mobileMenuToggle.addEventListener('click', () => {
-                sidebar.classList.add('open');
-                overlay.classList.add('active');
-            });
-            
-            // Close sidebar on overlay click (mobile)
-            overlay.addEventListener('click', () => {
-                sidebar.classList.remove('open');
-                overlay.classList.remove('active');
-            });
-            
-            // Close sidebar when clicking on links (mobile)
-            document.querySelectorAll('.nav-item').forEach(link => {
-                link.addEventListener('click', () => {
-                    if (window.innerWidth <= 768) {
-                        sidebar.classList.remove('open');
-                        overlay.classList.remove('active');
-                    }
-                });
-            });
+        });
+    }
+
+    // Check login
+    function checkLogin() {
+        const currentUser = localStorage.getItem('currentUser');
+        
+        if (!currentUser) {
+            window.location.href = 'index.html';
+            return;
         }
 
-        // Check login
-        function checkLogin() {
-            const currentUser = localStorage.getItem('currentUser');
-            
-            if (!currentUser) {
-                window.location.href = 'index.html';
-                return;
-            }
-
-            currentUserData = JSON.parse(currentUser);
-            
-            if (currentUserData.username !== 'Wamz') {
-                window.location.href = 'user-dashboard.html';
-                return;
-            }
-
-            document.getElementById('currentUser').textContent = currentUserData.username;
-            console.log("👤 Logged in as:", currentUserData.username);
-            
-            // Set current date
-            const now = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', options);
-            
-            // Set default date for filter
-            const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-            const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-            document.getElementById('filterFrom').value = firstDay.toISOString().slice(0, 10);
-            document.getElementById('filterTo').value = lastDay.toISOString().slice(0, 10);
-            document.getElementById('date').valueAsDate = new Date();
-            
-            // Initialize cash flow app
-            initCashFlowApp();
+        currentUserData = JSON.parse(currentUser);
+        
+        if (currentUserData.username !== 'Wamz') {
+            window.location.href = 'user-dashboard.html';
+            return;
         }
 
-        // Format ZMW currency
-        function formatCurrency(v) {
-            const n = Number(v) || 0;
-            return 'ZMW ' + n.toFixed(2);
-        }
-
-        function formatCurrencyCell(v) {
-            const n = Number(v) || 0;
-            const formatted = 'ZMW ' + Math.abs(n).toFixed(2);
-            if (n >= 0) return `<span class="positive">${formatted}</span>`;
-            return `<span class="negative">${formatted}</span>`;
-        }
-
-        function formatDate(ts) {
-            const d = ts && ts.toDate ? ts.toDate() : new Date(ts);
-            return d.toLocaleDateString('en-GB', {
-                day: '2-digit',
-                month: 'short',
-                year: 'numeric'
-            });
-        }
-
-        function escapeHtml(s) {
-            return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        }
-
-        // Get branch display name
-        function getBranchDisplayName(branchId) {
-            const branchMap = {
-                'branch1': 'B1',
-                'branch2': 'B2',
-                'branch3': 'B3'
-            };
-            return branchMap[branchId] || branchId;
-        }
-
+        document.getElementById('currentUser').textContent = currentUserData.username;
+        console.log("👤 Logged in as:", currentUserData.username);
+        
+        // Set current date
+        const now = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', options);
+        
+        // Set default date for filter
+        const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+        const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        document.getElementById('filterFrom').value = firstDay.toISOString().slice(0, 10);
+        document.getElementById('filterTo').value = lastDay.toISOString().slice(0, 10);
+        document.getElementById('date').valueAsDate = new Date();
+        
         // Initialize cash flow app
-        function initCashFlowApp() {
-            // Setup DOM elements
-            const addBtn = document.getElementById('addBtn');
-            const menuBtn = document.getElementById('menuBtn');
-            const dropdown = document.getElementById('dropdown');
-            const toggleFormFromMenu = document.getElementById('toggleFormFromMenu');
-            const exportCsvBtn = document.getElementById('exportCsvBtn');
-            const printBtn = document.getElementById('printBtn');
-            const filterFrom = document.getElementById('filterFrom');
-            const filterTo = document.getElementById('filterTo');
-            const applyFilterBtn = document.getElementById('applyFilterBtn');
-            const clearFilterBtn = document.getElementById('clearFilterBtn');
-            const formPane = document.getElementById('formPane');
-            const hideFormBtn = document.getElementById('hideFormBtn');
-            const transactionForm = document.getElementById('transactionForm');
-            const dateInput = document.getElementById('date');
-            const tidInput = document.getElementById('tid');
-            const descriptionInput = document.getElementById('description');
-            const cashInInput = document.getElementById('cashIn');
-            const cashOutInput = document.getElementById('cashOut');
-            const editIdInput = document.getElementById('editId');
-            const branchSelect = document.getElementById('branchSelect');
-            const saveBtn = document.getElementById('saveBtn');
-            const cancelEditBtn = document.getElementById('cancelEdit');
-            const tableBody = document.getElementById('tableBody');
-            const formTitle = document.getElementById('formTitle');
+        initCashFlowApp();
+    }
 
-            // Set default date
-            dateInput.valueAsDate = new Date();
+    // Format ZMW currency
+    function formatCurrency(v) {
+        const n = Number(v) || 0;
+        return 'ZMW ' + n.toFixed(2);
+    }
 
-            // Setup Firestore listener for ALL transactions
-            setupListener();
+    function formatCurrencyCell(v) {
+        const n = Number(v) || 0;
+        const formatted = 'ZMW ' + Math.abs(n).toFixed(2);
+        if (n >= 0) return `<span class="positive">${formatted}</span>`;
+        return `<span class="negative">${formatted}</span>`;
+    }
 
-            // Event Listeners
-            addBtn.addEventListener('click', () => {
-                editIdInput.value = '';
-                formTitle.textContent = 'Add Transaction';
-                branchSelect.value = 'branch1';
-                dateInput.valueAsDate = new Date();
-                tidInput.value = '';
-                descriptionInput.value = '';
-                cashInInput.value = '0';
-                cashOutInput.value = '0';
-                showForm();
-                dropdown.classList.remove('show');
-            });
+    function formatDate(ts) {
+        const d = ts && ts.toDate ? ts.toDate() : new Date(ts);
+        return d.toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+        });
+    }
 
-            menuBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                dropdown.classList.toggle('show');
-                dropdown.setAttribute('aria-hidden', dropdown.classList.contains('show') ? 'false' : 'true');
-            });
+    function escapeHtml(s) {
+        return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
 
-            dropdown.addEventListener('click', (e) => e.stopPropagation());
+    // Get branch display name
+    function getBranchDisplayName(branchId) {
+        const branchMap = {
+            'branch1': 'B1',
+            'branch2': 'B2',
+            'branch3': 'B3'
+        };
+        return branchMap[branchId] || branchId;
+    }
 
-            document.addEventListener('click', () => {
-                if (dropdown.classList.contains('show')) {
-                    dropdown.classList.remove('show');
-                    dropdown.setAttribute('aria-hidden', 'true');
-                }
-            });
+    // Initialize cash flow app
+    function initCashFlowApp() {
+        // Setup DOM elements
+        const addBtn = document.getElementById('addBtn');
+        const menuBtn = document.getElementById('menuBtn');
+        const dropdown = document.getElementById('dropdown');
+        const toggleFormFromMenu = document.getElementById('toggleFormFromMenu');
+        const exportCsvBtn = document.getElementById('exportCsvBtn');
+        const printBtn = document.getElementById('printBtn');
+        const filterFrom = document.getElementById('filterFrom');
+        const filterTo = document.getElementById('filterTo');
+        const applyFilterBtn = document.getElementById('applyFilterBtn');
+        const clearFilterBtn = document.getElementById('clearFilterBtn');
+        const formPane = document.getElementById('formPane');
+        const hideFormBtn = document.getElementById('hideFormBtn');
+        const transactionForm = document.getElementById('transactionForm');
+        const dateInput = document.getElementById('date');
+        const tidInput = document.getElementById('tid');
+        const descriptionInput = document.getElementById('description');
+        const cashInInput = document.getElementById('cashIn');
+        const cashOutInput = document.getElementById('cashOut');
+        const editIdInput = document.getElementById('editId');
+        const branchSelect = document.getElementById('branchSelect');
+        const saveBtn = document.getElementById('saveBtn');
+        const cancelEditBtn = document.getElementById('cancelEdit');
+        const tableBody = document.getElementById('tableBody');
+        const formTitle = document.getElementById('formTitle');
 
-            toggleFormFromMenu.addEventListener('click', () => {
-                dropdown.classList.remove('show');
-                if (formPane.classList.contains('hidden')) {
-                    if (!editIdInput.value) {
-                        // If not editing, reset form for new transaction
-                        editIdInput.value = '';
-                        formTitle.textContent = 'Add Transaction';
-                        branchSelect.value = 'branch1';
-                        dateInput.valueAsDate = new Date();
-                        tidInput.value = '';
-                        descriptionInput.value = '';
-                        cashInInput.value = '0';
-                        cashOutInput.value = '0';
-                    }
-                    showForm();
-                } else {
-                    hideForm();
-                }
-            });
-
-            hideFormBtn.addEventListener('click', hideForm);
-            cancelEditBtn.addEventListener('click', () => { hideForm(); });
-
-            // Export CSV
-            exportCsvBtn.addEventListener('click', () => {
-                dropdown.classList.remove('show');
-                let filtered = filteredTransactions.slice();
-                
-                if (filtered.length === 0) {
-                    alert('No transactions to export');
-                    return;
-                }
-                
-                // Sort by date ascending (oldest first for running balance)
-                const asc = filtered.slice().sort((a, b) => {
-                    const dateA = a.date && a.date.toDate ? a.date.toDate() : new Date(a.date);
-                    const dateB = b.date && b.date.toDate ? b.date.toDate() : new Date(b.date);
-                    return dateA - dateB;
-                });
-                
-                // Calculate running balance
-                let running = 0;
-                const rows = asc.map(t => {
-                    const inVal = Number(t.cashIn || 0);
-                    const outVal = Number(t.cashOut || 0);
-                    running += inVal - outVal;
-                    return [
-                        formatDate(t.date),
-                        t.tid || '',
-                        getBranchDisplayName(t.branchId || ''),
-                        (t.description || '').replace(/"/g, '""'),
-                        inVal.toFixed(2),
-                        outVal.toFixed(2),
-                        running.toFixed(2),
-                        t.createdBy || 'Unknown'
-                    ];
-                });
-                
-                const headers = ['Date', 'Tid', 'Branch', 'Description', 'Cash In (ZMW)', 'Cash Out (ZMW)', 'Balance (ZMW)', 'Created By'];
-                const csv = [headers.join(','), ...rows.map(r => r.map(c => `"${c}"`).join(','))].join('\n');
-                const blob = new Blob([csv], { type: 'text/csv' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                const fileName = `cashflow_admin_all_${new Date().toISOString().slice(0, 10)}.csv`;
-                a.download = fileName;
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-                URL.revokeObjectURL(url);
-            });
-
-            printBtn.addEventListener('click', () => {
-                dropdown.classList.remove('show');
-                window.print();
-            });
-
-            applyFilterBtn.addEventListener('click', () => {
-                dropdown.classList.remove('show');
-                applyFilters();
-            });
-
-            clearFilterBtn.addEventListener('click', () => {
-                filterFrom.value = '';
-                filterTo.value = '';
-                dropdown.classList.remove('show');
-                applyFilters();
-                showMessage("Filters cleared.", "info");
-            });
-
-            // Form submit
-            transactionForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                if (isSaving) return;
-                
-                const dateVal = dateInput.value;
-                if (!dateVal) {
-                    alert('Select date');
-                    return;
-                }
-
-                const branchVal = branchSelect.value;
-                if (!branchVal) {
-                    alert('Select branch');
-                    return;
-                }
-
-                const cashInNum = parseFloat(cashInInput.value || 0) || 0;
-                const cashOutNum = parseFloat(cashOutInput.value || 0) || 0;
-                
-                if (cashInNum <= 0 && cashOutNum <= 0) {
-                    alert('Enter a value for Cash In or Cash Out (both cannot be zero).');
-                    return;
-                }
-
-                if (cashInNum < 0 || cashOutNum < 0) {
-                    alert('Cash values cannot be negative.');
-                    return;
-                }
-
-                const id = editIdInput.value;
-                let payload = {
-                    date: firebase.firestore.Timestamp.fromDate(new Date(dateVal)),
-                    tid: tidInput.value.trim(),
-                    description: descriptionInput.value.trim(),
-                    cashIn: cashInNum.toFixed(2),
-                    cashOut: cashOutNum.toFixed(2),
-                    branchId: branchVal,
-                    createdBy: currentUserData.username,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                };
-
-                try {
-                    isSaving = true;
-                    saveBtn.disabled = true;
-                    saveBtn.textContent = 'Saving...';
-
-                    if (id) {
-                        // Update existing transaction
-                        await db.collection('cashflow').doc(id).update(payload);
-                        showMessage('Transaction updated successfully!', 'success');
-                    } else {
-                        // Add new transaction
-                        payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-                        await db.collection('cashflow').add(payload);
-                        showMessage('Transaction added successfully!', 'success');
-                    }
-                    
-                    hideForm();
-                } catch (err) {
-                    console.error('save err', err);
-                    alert('Error saving: ' + err.message);
-                } finally {
-                    isSaving = false;
-                    saveBtn.disabled = false;
-                    saveBtn.textContent = 'Save';
-                }
-            });
-
-            // Helper functions
-            function showForm() {
-                formPane.classList.remove('hidden');
-                formPane.setAttribute('aria-hidden', 'false');
-                dateInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-
-            function hideForm() {
-                formPane.classList.add('hidden');
-                formPane.setAttribute('aria-hidden', 'true');
-                transactionForm.reset();
-                dateInput.valueAsDate = new Date();
-                editIdInput.value = '';
-                branchSelect.value = 'branch1';
-                formTitle.textContent = 'Add Transaction';
-                saveBtn.disabled = false;
-                saveBtn.textContent = 'Save';
-                isSaving = false;
-            }
-        }
+        // Set default date
+        dateInput.valueAsDate = new Date();
 
         // Setup Firestore listener for ALL transactions
-        function setupListener() {
-            if (listenerUnsub) listenerUnsub();
+        setupListener();
 
-            console.log('Setting up listener for ALL branches');
+        // Event Listeners
+        addBtn.addEventListener('click', () => {
+            editIdInput.value = '';
+            formTitle.textContent = 'Add Transaction';
+            branchSelect.value = 'branch1';
+            dateInput.valueAsDate = new Date();
+            tidInput.value = '';
+            descriptionInput.value = '';
+            cashInInput.value = '0';
+            cashOutInput.value = '0';
+            showForm();
+            dropdown.classList.remove('show');
+        });
 
-            try {
-                // Get ALL transactions, ordered by date
-                const q = db.collection('cashflow').orderBy('date', 'desc');
+        menuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdown.classList.toggle('show');
+            dropdown.setAttribute('aria-hidden', dropdown.classList.contains('show') ? 'false' : 'true');
+        });
 
-                listenerUnsub = q.onSnapshot(snapshot => {
-                    console.log('Received', snapshot.docs.length, 'transactions from ALL branches');
-                    
-                    // Convert all transactions
-                    allTransactions = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-                    
-                    console.log('Total transactions:', allTransactions.length);
-                    
-                    // Apply filters
-                    applyFilters();
-                    
-                    // Update stats
-                    updateStats();
-                    
-                }, err => {
-                    console.error('Firestore listener error:', err);
-                    
-                    if (err.code === 'failed-precondition' || err.message.includes('index')) {
-                        showMessage('⚠️ Database index required. Please create the composite index in Firebase Console.', 'error');
-                        
-                        // Fallback: Load all data without ordering
-                        db.collection('cashflow').get().then(snapshot => {
-                            let transactions = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-                            
-                            // Sort by date client-side
-                            transactions.sort((a, b) => {
-                                const dateA = a.date && a.date.toDate ? a.date.toDate() : new Date(a.date);
-                                const dateB = b.date && b.date.toDate ? b.date.toDate() : new Date(b.date);
-                                return dateB - dateA; // Descending
-                            });
-                            
-                            allTransactions = transactions;
-                            applyFilters();
-                            updateStats();
-                            showMessage('Data loaded with client-side sorting.', 'info');
-                        });
-                    } else {
-                        document.getElementById('tableBody').innerHTML = `<tr><td colspan="8" class="empty">
-                            <div>Error loading transactions</div>
-                            <div style="font-size:11px; margin-top: 5px; color:#e53e3e;">${err.message}</div>
-                        </td></tr>`;
-                    }
-                });
-            } catch (error) {
-                console.error('Error setting up listener:', error);
+        dropdown.addEventListener('click', (e) => e.stopPropagation());
+
+        document.addEventListener('click', () => {
+            if (dropdown.classList.contains('show')) {
+                dropdown.classList.remove('show');
+                dropdown.setAttribute('aria-hidden', 'true');
             }
-        }
+        });
 
-        // Apply filters
-        function applyFilters() {
-            const filterFrom = document.getElementById('filterFrom').value;
-            const filterTo = document.getElementById('filterTo').value;
-
-            filteredTransactions = allTransactions.filter(t => {
-                // Date filter
-                if (filterFrom || filterTo) {
-                    const d = t.date && t.date.toDate ? t.date.toDate() : new Date(t.date);
-                    const from = filterFrom ? new Date(filterFrom) : null;
-                    const to = filterTo ? new Date(filterTo + 'T23:59:59') : null;
-                    
-                    if (from && d < from) return false;
-                    if (to && d > to) return false;
+        toggleFormFromMenu.addEventListener('click', () => {
+            dropdown.classList.remove('show');
+            if (formPane.classList.contains('hidden')) {
+                if (!editIdInput.value) {
+                    // If not editing, reset form for new transaction
+                    editIdInput.value = '';
+                    formTitle.textContent = 'Add Transaction';
+                    branchSelect.value = 'branch1';
+                    dateInput.valueAsDate = new Date();
+                    tidInput.value = '';
+                    descriptionInput.value = '';
+                    cashInInput.value = '0';
+                    cashOutInput.value = '0';
                 }
+                showForm();
+            } else {
+                hideForm();
+            }
+        });
 
-                return true;
+        hideFormBtn.addEventListener('click', hideForm);
+        cancelEditBtn.addEventListener('click', () => { hideForm(); });
+
+        // Export CSV
+        exportCsvBtn.addEventListener('click', () => {
+            dropdown.classList.remove('show');
+            let filtered = filteredTransactions.slice();
+            
+            if (filtered.length === 0) {
+                alert('No transactions to export');
+                return;
+            }
+            
+            // Sort by date ascending (oldest first for running balance)
+            const asc = filtered.slice().sort((a, b) => {
+                const dateA = a.date && a.date.toDate ? a.date.toDate() : new Date(a.date);
+                const dateB = b.date && b.date.toDate ? b.date.toDate() : new Date(b.date);
+                return dateA - dateB;
             });
+            
+            // Calculate running balance
+            let running = 0;
+            const rows = asc.map(t => {
+                const inVal = Number(t.cashIn || 0);
+                const outVal = Number(t.cashOut || 0);
+                running += inVal - outVal;
+                return [
+                    formatDate(t.date),
+                    t.tid || '',
+                    getBranchDisplayName(t.branchId || ''),
+                    (t.description || '').replace(/"/g, '""'),
+                    inVal.toFixed(2),
+                    outVal.toFixed(2),
+                    running.toFixed(2),
+                    t.createdBy || 'Unknown'
+                ];
+            });
+            
+            const headers = ['Date', 'Tid', 'Branch', 'Description', 'Cash In (ZMW)', 'Cash Out (ZMW)', 'Balance (ZMW)', 'Created By'];
+            const csv = [headers.join(','), ...rows.map(r => r.map(c => `"${c}"`).join(','))].join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const fileName = `cashflow_admin_all_${new Date().toISOString().slice(0, 10)}.csv`;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+        });
 
-            console.log(`🔍 Filtered to ${filteredTransactions.length} transactions`);
-            renderTransactions();
-            updateStats();
-        }
+        printBtn.addEventListener('click', () => {
+            dropdown.classList.remove('show');
+            window.print();
+        });
 
-        // Render transactions
-        function renderTransactions() {
-            const tableBody = document.getElementById('tableBody');
+        applyFilterBtn.addEventListener('click', () => {
+            dropdown.classList.remove('show');
+            applyFilters();
+        });
 
-            if (filteredTransactions.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="8" class="empty">
-                    No transactions found for the selected filters
-                </td></tr>`;
+        clearFilterBtn.addEventListener('click', () => {
+            filterFrom.value = '';
+            filterTo.value = '';
+            dropdown.classList.remove('show');
+            applyFilters();
+            showMessage("Filters cleared.", "info");
+        });
+
+        // Form submit
+        transactionForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (isSaving) return;
+            
+            const dateVal = dateInput.value;
+            if (!dateVal) {
+                alert('Select date');
                 return;
             }
 
-            // Sort by date ascending for running balance calculation
-            const sortedForBalance = filteredTransactions.slice().sort((a, b) => {
-                const dateA = a.date && a.date.toDate ? a.date.toDate() : new Date(a.date);
-                const dateB = b.date && b.date.toDate ? b.date.toDate() : new Date(b.date);
-                return dateA - dateB; // Ascending
-            });
-
-            // Calculate running balance for ALL transactions combined
-            let runningBalance = 0;
-            const transactionsWithBalance = sortedForBalance.map(tx => {
-                const inVal = Number(tx.cashIn || 0);
-                const outVal = Number(tx.cashOut || 0);
-                runningBalance += inVal - outVal;
-                return {
-                    ...tx,
-                    balance: runningBalance
-                };
-            });
-
-            // Sort by date descending for display
-            const sortedForDisplay = transactionsWithBalance.slice().sort((a, b) => {
-                const dateA = a.date && a.date.toDate ? a.date.toDate() : new Date(a.date);
-                const dateB = b.date && b.date.toDate ? b.date.toDate() : new Date(b.date);
-                return dateB - dateA; // Descending
-            });
-
-            tableBody.innerHTML = '';
-
-            sortedForDisplay.forEach(tx => {
-                const inVal = Number(tx.cashIn || 0);
-                const outVal = Number(tx.cashOut || 0);
-                
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${formatDate(tx.date)}</td>
-                    <td>${escapeHtml(tx.tid || '')}</td>
-                    <td>${escapeHtml(tx.description || '')}</td>
-                    <td><span class="branch-badge">${getBranchDisplayName(tx.branchId)}</span></td>
-                    <td class="num">${inVal > 0 ? formatCurrency(inVal) : ''}</td>
-                    <td class="num">${outVal > 0 ? formatCurrency(outVal) : ''}</td>
-                    <td class="num">${formatCurrencyCell(tx.balance)}</td>
-                    <td>
-                        <button data-id="${tx.id}" class="editBtn" style="margin-right:0.3rem">
-                            <i class="fas fa-edit" style="font-size:0.7rem"></i>
-                        </button>
-                        <button data-id="${tx.id}" class="delBtn">
-                            <i class="fas fa-trash" style="font-size:0.7rem"></i>
-                        </button>
-                    </td>
-                `;
-
-                tableBody.appendChild(row);
-            });
-
-            attachRowEvents();
-        }
-
-        // Attach row events
-        function attachRowEvents() {
-            // Delete handlers
-            document.querySelectorAll('.delBtn').forEach(btn => {
-                btn.onclick = async () => {
-                    const id = btn.getAttribute('data-id');
-                    if (!confirm('Delete this transaction? This action cannot be undone.')) return;
-                    try {
-                        btn.classList.add('disabled');
-                        await db.collection('cashflow').doc(id).delete();
-                        showMessage('Transaction deleted successfully!', 'success');
-                    } catch (err) {
-                        console.error('delete err', err);
-                        alert('Error deleting: ' + err.message);
-                    } finally {
-                        btn.classList.remove('disabled');
-                    }
-                };
-            });
-
-            // Edit handlers - FIXED
-            document.querySelectorAll('.editBtn').forEach(btn => {
-                btn.onclick = () => {
-                    const id = btn.getAttribute('data-id');
-                    const tx = allTransactions.find(t => t.id === id);
-                    if (!tx) return;
-                    
-                    const txDate = tx.date && tx.date.toDate ? tx.date.toDate() : new Date(tx.date);
-                    document.getElementById('date').value = txDate.toISOString().slice(0, 10);
-                    document.getElementById('tid').value = tx.tid || '';
-                    document.getElementById('description').value = tx.description || '';
-                    document.getElementById('cashIn').value = Number(tx.cashIn || 0).toFixed(2);
-                    document.getElementById('cashOut').value = Number(tx.cashOut || 0).toFixed(2);
-                    document.getElementById('branchSelect').value = tx.branchId || 'branch1';
-                    document.getElementById('editId').value = tx.id;
-                    document.getElementById('formTitle').textContent = 'Edit Transaction';
-                    
-                    showForm();
-                };
-            });
-        }
-
-        // Update stats
-        function updateStats() {
-            let totalIncome = 0;
-            let totalExpenses = 0;
-            let netCashFlow = 0;
-            
-            filteredTransactions.forEach(transaction => {
-                totalIncome += parseFloat(transaction.cashIn || 0);
-                totalExpenses += parseFloat(transaction.cashOut || 0);
-            });
-            
-            netCashFlow = totalIncome - totalExpenses;
-            
-            // Update stats cards
-            document.getElementById('totalIncome').innerHTML = `
-                <span class="zmw-symbol">ZMW</span> ${totalIncome.toFixed(2)}
-            `;
-            
-            document.getElementById('totalExpenses').innerHTML = `
-                <span class="zmw-symbol">ZMW</span> ${totalExpenses.toFixed(2)}
-            `;
-            
-            document.getElementById('netCashFlow').innerHTML = `
-                <span class="zmw-symbol">ZMW</span> ${netCashFlow.toFixed(2)}
-            `;
-            
-            document.getElementById('totalTransactions').textContent = filteredTransactions.length;
-        }
-
-        // Show message
-        function showMessage(text, type) {
-            const messageDiv = document.getElementById('message');
-            messageDiv.textContent = text;
-            messageDiv.className = 'message ' + type;
-            messageDiv.style.display = 'block';
-
-            setTimeout(() => {
-                messageDiv.style.display = 'none';
-            }, 5000);
-        }
-
-        // Logout function
-        function logout() {
-            localStorage.removeItem('currentUser');
-            window.location.href = 'index.html';
-        }
-
-        // Set dashboard start time
-        window.dashboardStartTime = Date.now();
-
-        // Auto-refresh data every 30 seconds
-        setInterval(() => {
-            if (listenerUnsub) {
-                setupListener();
-                console.log("🔄 Auto-refreshing admin cash flow data");
+            const branchVal = branchSelect.value;
+            if (!branchVal) {
+                alert('Select branch');
+                return;
             }
-        }, 30000);
-    </script>
+
+            const cashInNum = parseFloat(cashInInput.value || 0) || 0;
+            const cashOutNum = parseFloat(cashOutInput.value || 0) || 0;
+            
+            if (cashInNum <= 0 && cashOutNum <= 0) {
+                alert('Enter a value for Cash In or Cash Out (both cannot be zero).');
+                return;
+            }
+
+            if (cashInNum < 0 || cashOutNum < 0) {
+                alert('Cash values cannot be negative.');
+                return;
+            }
+
+            const id = editIdInput.value;
+            let payload = {
+                date: firebase.firestore.Timestamp.fromDate(new Date(dateVal)),
+                tid: tidInput.value.trim(),
+                description: descriptionInput.value.trim(),
+                cashIn: cashInNum.toFixed(2),
+                cashOut: cashOutNum.toFixed(2),
+                branchId: branchVal,
+                createdBy: currentUserData.username,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            try {
+                isSaving = true;
+                saveBtn.disabled = true;
+                saveBtn.textContent = 'Saving...';
+
+                if (id) {
+                    // Update existing transaction
+                    await db.collection('cashflow').doc(id).update(payload);
+                    showMessage('Transaction updated successfully!', 'success');
+                } else {
+                    // Add new transaction
+                    payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                    await db.collection('cashflow').add(payload);
+                    showMessage('Transaction added successfully!', 'success');
+                }
+                
+                hideForm();
+            } catch (err) {
+                console.error('save err', err);
+                alert('Error saving: ' + err.message);
+            } finally {
+                isSaving = false;
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Save';
+            }
+        });
+
+        // Helper functions
+        function showForm() {
+            formPane.classList.remove('hidden');
+            formPane.setAttribute('aria-hidden', 'false');
+            dateInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function hideForm() {
+            formPane.classList.add('hidden');
+            formPane.setAttribute('aria-hidden', 'true');
+            transactionForm.reset();
+            dateInput.valueAsDate = new Date();
+            editIdInput.value = '';
+            branchSelect.value = 'branch1';
+            formTitle.textContent = 'Add Transaction';
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'Save';
+            isSaving = false;
+        }
+    }
+
+    // Setup Firestore listener for ALL transactions
+    function setupListener() {
+        if (listenerUnsub) listenerUnsub();
+
+        console.log('Setting up listener for ALL branches');
+
+        try {
+            // Get ALL transactions, ordered by date
+            const q = db.collection('cashflow').orderBy('date', 'desc');
+
+            listenerUnsub = q.onSnapshot(snapshot => {
+                console.log('Received', snapshot.docs.length, 'transactions from ALL branches');
+                
+                // Convert all transactions
+                allTransactions = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                
+                console.log('Total transactions:', allTransactions.length);
+                
+                // Apply filters
+                applyFilters();
+                
+                // Update stats
+                updateStats();
+                
+            }, err => {
+                console.error('Firestore listener error:', err);
+                
+                if (err.code === 'failed-precondition' || err.message.includes('index')) {
+                    showMessage('⚠️ Database index required. Please create the composite index in Firebase Console.', 'error');
+                    
+                    // Fallback: Load all data without ordering
+                    db.collection('cashflow').get().then(snapshot => {
+                        let transactions = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                        
+                        // Sort by date client-side
+                        transactions.sort((a, b) => {
+                            const dateA = a.date && a.date.toDate ? a.date.toDate() : new Date(a.date);
+                            const dateB = b.date && b.date.toDate ? b.date.toDate() : new Date(b.date);
+                            return dateB - dateA; // Descending
+                        });
+                        
+                        allTransactions = transactions;
+                        applyFilters();
+                        updateStats();
+                        showMessage('Data loaded with client-side sorting.', 'info');
+                    });
+                } else {
+                    document.getElementById('tableBody').innerHTML = `<tr><td colspan="8" class="empty">
+                        <div>Error loading transactions</div>
+                        <div style="font-size:11px; margin-top: 5px; color:#e53e3e;">${err.message}</div>
+                    </td></tr>`;
+                }
+            });
+        } catch (error) {
+            console.error('Error setting up listener:', error);
+        }
+    }
+
+    // Apply filters
+    function applyFilters() {
+        const filterFrom = document.getElementById('filterFrom').value;
+        const filterTo = document.getElementById('filterTo').value;
+
+        filteredTransactions = allTransactions.filter(t => {
+            // Date filter
+            if (filterFrom || filterTo) {
+                const d = t.date && t.date.toDate ? t.date.toDate() : new Date(t.date);
+                const from = filterFrom ? new Date(filterFrom) : null;
+                const to = filterTo ? new Date(filterTo + 'T23:59:59') : null;
+                
+                if (from && d < from) return false;
+                if (to && d > to) return false;
+            }
+
+            return true;
+        });
+
+        console.log(`🔍 Filtered to ${filteredTransactions.length} transactions`);
+        renderTransactions();
+        updateStats();
+    }
+
+    // Render transactions
+    function renderTransactions() {
+        const tableBody = document.getElementById('tableBody');
+
+        if (filteredTransactions.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="8" class="empty">
+                No transactions found for the selected filters
+            </td></tr>`;
+            return;
+        }
+
+        // Sort by date ascending for running balance calculation
+        const sortedForBalance = filteredTransactions.slice().sort((a, b) => {
+            const dateA = a.date && a.date.toDate ? a.date.toDate() : new Date(a.date);
+            const dateB = b.date && b.date.toDate ? b.date.toDate() : new Date(b.date);
+            return dateA - dateB; // Ascending
+        });
+
+        // Calculate running balance for ALL transactions combined
+        let runningBalance = 0;
+        const transactionsWithBalance = sortedForBalance.map(tx => {
+            const inVal = Number(tx.cashIn || 0);
+            const outVal = Number(tx.cashOut || 0);
+            runningBalance += inVal - outVal;
+            return {
+                ...tx,
+                balance: runningBalance
+            };
+        });
+
+        // Sort by date descending for display
+        const sortedForDisplay = transactionsWithBalance.slice().sort((a, b) => {
+            const dateA = a.date && a.date.toDate ? a.date.toDate() : new Date(a.date);
+            const dateB = b.date && b.date.toDate ? b.date.toDate() : new Date(b.date);
+            return dateB - dateA; // Descending
+        });
+
+        tableBody.innerHTML = '';
+
+        sortedForDisplay.forEach(tx => {
+            const inVal = Number(tx.cashIn || 0);
+            const outVal = Number(tx.cashOut || 0);
+            
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${formatDate(tx.date)}</td>
+                <td>${escapeHtml(tx.tid || '')}</td>
+                <td>${escapeHtml(tx.description || '')}</td>
+                <td><span class="branch-badge">${getBranchDisplayName(tx.branchId)}</span></td>
+                <td class="num">${inVal > 0 ? formatCurrency(inVal) : ''}</td>
+                <td class="num">${outVal > 0 ? formatCurrency(outVal) : ''}</td>
+                <td class="num">${formatCurrencyCell(tx.balance)}</td>
+                <td>
+                    <button data-id="${tx.id}" class="editBtn" style="margin-right:0.3rem">
+                        <i class="fas fa-edit" style="font-size:0.7rem"></i>
+                    </button>
+                    <button data-id="${tx.id}" class="delBtn">
+                        <i class="fas fa-trash" style="font-size:0.7rem"></i>
+                    </button>
+                </td>
+            `;
+
+            tableBody.appendChild(row);
+        });
+
+        // FIXED: Use event delegation for edit and delete buttons
+        attachRowEvents();
+    }
+
+    // Attach row events - FIXED VERSION
+    function attachRowEvents() {
+        const tableBody = document.getElementById('tableBody');
+        
+        // Use event delegation for edit buttons
+        tableBody.addEventListener('click', function(e) {
+            // Handle edit button click
+            if (e.target.closest('.editBtn')) {
+                const btn = e.target.closest('.editBtn');
+                const id = btn.getAttribute('data-id');
+                editTransaction(id);
+            }
+            
+            // Handle delete button click
+            if (e.target.closest('.delBtn')) {
+                const btn = e.target.closest('.delBtn');
+                const id = btn.getAttribute('data-id');
+                deleteTransaction(id, btn);
+            }
+        });
+    }
+
+    // Edit transaction function
+    async function editTransaction(id) {
+        console.log('Editing transaction ID:', id);
+        
+        // Find the transaction
+        const tx = allTransactions.find(t => t.id === id);
+        if (!tx) {
+            console.error('Transaction not found:', id);
+            return;
+        }
+        
+        // Get form elements
+        const editIdInput = document.getElementById('editId');
+        const formTitle = document.getElementById('formTitle');
+        const dateInput = document.getElementById('date');
+        const tidInput = document.getElementById('tid');
+        const descriptionInput = document.getElementById('description');
+        const cashInInput = document.getElementById('cashIn');
+        const cashOutInput = document.getElementById('cashOut');
+        const branchSelect = document.getElementById('branchSelect');
+        
+        // Fill form with transaction data
+        const txDate = tx.date && tx.date.toDate ? tx.date.toDate() : new Date(tx.date);
+        dateInput.value = txDate.toISOString().slice(0, 10);
+        tidInput.value = tx.tid || '';
+        descriptionInput.value = tx.description || '';
+        cashInInput.value = Number(tx.cashIn || 0).toFixed(2);
+        cashOutInput.value = Number(tx.cashOut || 0).toFixed(2);
+        branchSelect.value = tx.branchId || 'branch1';
+        editIdInput.value = tx.id;
+        formTitle.textContent = 'Edit Transaction';
+        
+        // Show the form
+        const formPane = document.getElementById('formPane');
+        formPane.classList.remove('hidden');
+        formPane.setAttribute('aria-hidden', 'false');
+        dateInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        console.log('Form loaded for editing:', tx);
+    }
+
+    // Delete transaction function
+    async function deleteTransaction(id, btn) {
+        if (!confirm('Delete this transaction? This action cannot be undone.')) return;
+        
+        try {
+            btn.classList.add('disabled');
+            await db.collection('cashflow').doc(id).delete();
+            showMessage('Transaction deleted successfully!', 'success');
+        } catch (err) {
+            console.error('delete err', err);
+            alert('Error deleting: ' + err.message);
+        } finally {
+            btn.classList.remove('disabled');
+        }
+    }
+
+    // Update stats
+    function updateStats() {
+        let totalIncome = 0;
+        let totalExpenses = 0;
+        let netCashFlow = 0;
+        
+        filteredTransactions.forEach(transaction => {
+            totalIncome += parseFloat(transaction.cashIn || 0);
+            totalExpenses += parseFloat(transaction.cashOut || 0);
+        });
+        
+        netCashFlow = totalIncome - totalExpenses;
+        
+        // Update stats cards
+        document.getElementById('totalIncome').innerHTML = `
+            <span class="zmw-symbol">ZMW</span> ${totalIncome.toFixed(2)}
+        `;
+        
+        document.getElementById('totalExpenses').innerHTML = `
+            <span class="zmw-symbol">ZMW</span> ${totalExpenses.toFixed(2)}
+        `;
+        
+        document.getElementById('netCashFlow').innerHTML = `
+            <span class="zmw-symbol">ZMW</span> ${netCashFlow.toFixed(2)}
+        `;
+        
+        document.getElementById('totalTransactions').textContent = filteredTransactions.length;
+    }
+
+    // Show message
+    function showMessage(text, type) {
+        const messageDiv = document.getElementById('message');
+        messageDiv.textContent = text;
+        messageDiv.className = 'message ' + type;
+        messageDiv.style.display = 'block';
+
+        setTimeout(() => {
+            messageDiv.style.display = 'none';
+        }, 5000);
+    }
+
+    // Logout function
+    function logout() {
+        localStorage.removeItem('currentUser');
+        window.location.href = 'index.html';
+    }
+
+    // Set dashboard start time
+    window.dashboardStartTime = Date.now();
+
+    // Auto-refresh data every 30 seconds
+    setInterval(() => {
+        if (listenerUnsub) {
+            setupListener();
+            console.log("🔄 Auto-refreshing admin cash flow data");
+        }
+    }, 30000);
+</script>
 </body>
 </html>
