@@ -214,16 +214,6 @@
             font-size: 0.85rem;
         }
 
-        .branch-badge {
-            background: #4299e1;
-            color: white;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            white-space: nowrap;
-        }
-
         .admin-badge {
             background: #e53e3e;
             color: white;
@@ -269,6 +259,13 @@
         .welcome-banner p {
             opacity: 0.9;
             font-size: 0.8rem;
+        }
+
+        .date-display {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            margin-top: 0.3rem;
+            font-style: italic;
         }
 
         /* Message Display */
@@ -327,6 +324,17 @@
             font-weight: 700;
             color: #2d3748;
             margin-bottom: 0.3rem;
+        }
+
+        .stat-value.zmw {
+            font-size: 1.1rem;
+        }
+
+        .zmw-symbol {
+            font-size: 0.8rem;
+            margin-right: 2px;
+            color: #4299e1;
+            font-weight: 600;
         }
 
         .stat-label {
@@ -677,13 +685,13 @@
                 background: #4299e1;
                 color: white;
                 border: none;
-                width: 32px;
-                height: 32px;
+                width: 36px;
+                height: 36px;
                 border-radius: 6px;
                 cursor: pointer;
                 align-items: center;
                 justify-content: center;
-                font-size: 0.9rem;
+                font-size: 1rem;
             }
 
             .header-left {
@@ -813,7 +821,7 @@
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <div class="dashboard-container">
-        <!-- Sidebar -->
+        <!-- Sidebar - Updated to match other admin files -->
         <div class="sidebar" id="sidebar">
             <button class="sidebar-toggle" id="sidebarToggle">
                 <i class="fas fa-chevron-left"></i>
@@ -824,29 +832,29 @@
                     <i class="fas fa-home"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="admin-sales.html" class="nav-item active">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span>All Sales</span>
+                <a href="branches.html" class="nav-item">
+                    <i class="fas fa-building"></i>
+                    <span>Branches</span>
+                </a>
+                <a href="grv.html" class="nav-item">
+                    <i class="fas fa-upload"></i>
+                    <span>Add Stock</span>
                 </a>
                 <a href="admin-warehouse.html" class="nav-item">
                     <i class="fas fa-warehouse"></i>
-                    <span>All Inventory</span>
+                    <span>Warehouse</span>
+                </a>
+                <a href="admin-sales.html" class="nav-item active">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>All Sales Data</span>
                 </a>
                 <a href="admin-reports.html" class="nav-item">
                     <i class="fas fa-chart-bar"></i>
                     <span>Reports</span>
                 </a>
-                <a href="admin-users.html" class="nav-item">
-                    <i class="fas fa-users"></i>
-                    <span>User Management</span>
-                </a>
-                <a href="sales.html" class="nav-item">
-                    <i class="fas fa-store"></i>
-                    <span>Branch Sales</span>
-                </a>
-                <a href="user-dashboard.html" class="nav-item">
-                    <i class="fas fa-tachometer-alt"></i>
-                    <span>User Dashboard</span>
+                <a href="admin-cashflow.html" class="nav-item">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>Cash Flow</span>
                 </a>
                 <button class="nav-item" onclick="logout()">
                     <i class="fas fa-sign-out-alt"></i>
@@ -866,9 +874,8 @@
                     <h1>Wamz Arts & Prints - Admin Sales</h1>
                 </div>
                 <div class="user-info">
-                    <span class="user-name">Welcome, <strong id="currentUser">User</strong></span>
-                    <span class="branch-badge" id="branchBadge">ADMIN</span>
-                    <span class="admin-badge" id="adminBadge">ADMIN</span>
+                    <span class="user-name">Welcome, <strong id="currentUser">Admin</strong></span>
+                    <span class="admin-badge">ADMIN</span>
                     <button class="logout-btn" onclick="logout()">Logout</button>
                 </div>
             </div>
@@ -877,6 +884,7 @@
             <div class="welcome-banner">
                 <h2>Admin Sales Overview</h2>
                 <p>View all sales across all branches with advanced filtering options</p>
+                <div class="date-display" id="currentDate"></div>
             </div>
 
             <!-- Message Display -->
@@ -889,11 +897,15 @@
                     <div class="stat-label">Total Sales</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value" id="totalRevenue">ZMW 0.00</div>
+                    <div class="stat-value zmw" id="totalRevenue">
+                        <span class="zmw-symbol">ZMW</span> 0.00
+                    </div>
                     <div class="stat-label">Total Revenue</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value" id="avgSale">ZMW 0.00</div>
+                    <div class="stat-value zmw" id="avgSale">
+                        <span class="zmw-symbol">ZMW</span> 0.00
+                    </div>
                     <div class="stat-label">Average Sale</div>
                 </div>
                 <div class="stat-card">
@@ -918,9 +930,9 @@
                         <label class="filter-label">Branch</label>
                         <select class="filter-select" id="branchFilter">
                             <option value="all">All Branches</option>
-                            <option value="branch1">Branch 1 (Main)</option>
-                            <option value="branch2">Branch 2 (Retail)</option>
-                            <option value="branch3">Branch 3 (Wholesale)</option>
+                            <option value="branch1">Branch 1 (Wamz)</option>
+                            <option value="branch2">Branch 2 (Samz)</option>
+                            <option value="branch3">Branch 3 (Namz)</option>
                         </select>
                     </div>
                     
@@ -1094,8 +1106,11 @@
             }
             
             document.getElementById('currentUser').textContent = username;
-            document.getElementById('branchBadge').textContent = 'ADMIN';
-            document.getElementById('adminBadge').style.display = 'inline-block';
+            
+            // Set current date
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', options);
             
             setupEventListeners();
             loadAllSales();
@@ -1350,8 +1365,8 @@
         function updateStats(allSales) {
             if (allSales.length === 0) {
                 document.getElementById('totalSales').textContent = '0';
-                document.getElementById('totalRevenue').textContent = 'ZMW 0.00';
-                document.getElementById('avgSale').textContent = 'ZMW 0.00';
+                document.getElementById('totalRevenue').innerHTML = '<span class="zmw-symbol">ZMW</span> 0.00';
+                document.getElementById('avgSale').innerHTML = '<span class="zmw-symbol">ZMW</span> 0.00';
                 document.getElementById('topBranch').textContent = '-';
                 return;
             }
@@ -1361,11 +1376,11 @@
             
             // Total revenue
             const totalRevenue = allSales.reduce((sum, sale) => sum + (sale.total || 0), 0);
-            document.getElementById('totalRevenue').textContent = formatCurrency(totalRevenue);
+            document.getElementById('totalRevenue').innerHTML = `<span class="zmw-symbol">ZMW</span> ${totalRevenue.toFixed(2)}`;
             
             // Average sale
             const avgSale = totalRevenue / allSales.length;
-            document.getElementById('avgSale').textContent = formatCurrency(avgSale);
+            document.getElementById('avgSale').innerHTML = `<span class="zmw-symbol">ZMW</span> ${avgSale.toFixed(2)}`;
             
             // Top branch
             const branchRevenue = {};
@@ -1508,6 +1523,7 @@
                 .replace(/'/g, '&#039;');
         }
 
+        // Show message
         function showMessage(text, type) {
             const messageDiv = document.getElementById('message');
             messageDiv.textContent = text;
@@ -1525,13 +1541,14 @@
             window.location.href = 'index.html';
         }
 
+        // Set dashboard start time
+        window.dashboardStartTime = Date.now();
+
         // Auto-refresh data every minute
         setInterval(() => {
             loadAllSales();
+            console.log("🔄 Auto-refreshing admin sales data");
         }, 60000);
-
-        // Set dashboard start time
-        window.dashboardStartTime = Date.now();
     </script>
 </body>
 </html>
