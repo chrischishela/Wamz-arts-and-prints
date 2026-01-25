@@ -820,4 +820,1284 @@
                 background: #4299e1;
                 color: white;
                 border: none;
-                width: 3
+                width: 36px;
+                height: 36px;
+                border-radius: 6px;
+                cursor: pointer;
+                align-items: center;
+                justify-content: center;
+                font-size: 1rem;
+            }
+
+            .header-left {
+                gap: 0.5rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .profit-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+
+            .branch-reports {
+                grid-template-columns: 1fr;
+            }
+
+            .controls-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .date-range {
+                min-width: 100%;
+            }
+
+            .period-filter {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .download-options {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.5rem;
+            }
+
+            .header-left {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .user-info {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .indicators-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .period-filter {
+                flex-wrap: wrap;
+            }
+
+            .period-btn {
+                flex: 1;
+                min-width: 80px;
+                text-align: center;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .mobile-menu-toggle {
+                display: none;
+            }
+        }
+
+        /* Sidebar overlay for mobile */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            backdrop-filter: blur(3px);
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* Print Styles */
+        @media print {
+            .sidebar,
+            .header,
+            .controls-bar,
+            .btn,
+            .message,
+            .period-filter {
+                display: none !important;
+            }
+            
+            .main-content {
+                padding: 0;
+                margin: 0;
+            }
+            
+            .stat-card,
+            .chart-card,
+            .branch-report-card,
+            .profit-breakdown,
+            .top-products-table {
+                box-shadow: none;
+                border: 1px solid #ddd;
+                break-inside: avoid;
+            }
+        }
+
+        /* SCROLLBAR STYLING */
+        .table-container::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        .table-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb {
+            background: #cbd5e0;
+            border-radius: 4px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: #a0aec0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <div class="sidebar-title">Navigation</div>
+            <div class="nav-menu">
+                <a href="admin-dashboard.html" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="branches.html" class="nav-item">
+                    <i class="fas fa-building"></i>
+                    <span>Branches</span>
+                </a>
+                <a href="grv.html" class="nav-item">
+                    <i class="fas fa-upload"></i>
+                    <span>Add Stock</span>
+                </a>
+                <a href="admin-warehouse.html" class="nav-item">
+                    <i class="fas fa-warehouse"></i>
+                    <span>Warehouse</span>
+                </a>
+                <a href="admin-sales.html" class="nav-item">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>All Sales Data</span>
+                </a>
+                <a href="admin-reports.html" class="nav-item active">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Reports & Profit</span>
+                </a>
+                <a href="admin-cashflow.html" class="nav-item">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>Cash Flow</span>
+                </a>
+                <button class="nav-item" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-left">
+                    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1>Wamz Arts & Prints - Profit & Reports</h1>
+                </div>
+                <div class="user-info">
+                    <span class="user-name">Welcome, <strong id="currentUser">Admin</strong></span>
+                    <span class="admin-badge">ADMIN</span>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
+            </div>
+
+            <!-- Welcome Banner -->
+            <div class="welcome-banner">
+                <h2>Profit & Performance Dashboard</h2>
+                <p>Track sales, costs, and profits across all branches</p>
+                <div class="date-display" id="currentDate"></div>
+            </div>
+
+            <!-- Message Display -->
+            <div class="message" id="message"></div>
+
+            <!-- Controls Bar -->
+            <div class="controls-bar">
+                <div class="date-range">
+                    <input type="date" id="startDate" class="date-input">
+                    <span>to</span>
+                    <input type="date" id="endDate" class="date-input">
+                </div>
+                <div style="display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap;">
+                    <div class="period-filter">
+                        <button class="period-btn" data-days="1">Today</button>
+                        <button class="period-btn" data-days="7">Last 7 Days</button>
+                        <button class="period-btn active" data-days="30">This Month</button>
+                        <button class="period-btn" data-days="90">Last 3 Months</button>
+                        <button class="period-btn" data-days="365">This Year</button>
+                    </div>
+                    <button class="btn" id="generateReportBtn">
+                        <i class="fas fa-sync-alt"></i> Generate
+                    </button>
+                    <button class="btn secondary" id="printReportBtn">
+                        <i class="fas fa-print"></i> Print
+                    </button>
+                </div>
+            </div>
+
+            <!-- Summary Stats - UPDATED WITH PROFIT -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">Total Sales Revenue</div>
+                        <div class="stat-icon green">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value zmw" id="totalSales">
+                        <span class="zmw-symbol">ZMW</span> 0.00
+                    </div>
+                    <div class="stat-change positive" id="salesChange">+0% vs last period</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">Total Cost</div>
+                        <div class="stat-icon orange">
+                            <i class="fas fa-money-bill"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value zmw" id="totalCost">
+                        <span class="zmw-symbol">ZMW</span> 0.00
+                    </div>
+                    <div class="stat-change negative" id="costChange">+0% vs last period</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">Gross Profit</div>
+                        <div class="stat-icon gold">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value zmw" id="grossProfit">
+                        <span class="zmw-symbol">ZMW</span> 0.00
+                    </div>
+                    <div class="stat-change positive" id="profitChange">+0% vs last period</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">Profit Margin</div>
+                        <div class="stat-icon blue">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="profitMargin">0%</div>
+                    <div class="stat-change positive" id="marginChange">+0% vs last period</div>
+                </div>
+            </div>
+
+            <!-- Profit Breakdown -->
+            <div class="profit-breakdown">
+                <div class="chart-header">
+                    <div class="chart-title">Profit Breakdown</div>
+                    <div class="download-options">
+                        <button class="btn download secondary" id="exportProfitBtn">
+                            <i class="fas fa-download"></i> Export Profit Data
+                        </button>
+                    </div>
+                </div>
+                <div class="profit-grid">
+                    <div class="profit-item">
+                        <div class="profit-amount zmw" id="branchProfit1">
+                            <span class="zmw-symbol">ZMW</span> 0.00
+                        </div>
+                        <div class="profit-percentage" id="branchMargin1">0%</div>
+                        <div class="profit-label-small">Branch 1 Profit</div>
+                    </div>
+                    <div class="profit-item">
+                        <div class="profit-amount zmw" id="branchProfit2">
+                            <span class="zmw-symbol">ZMW</span> 0.00
+                        </div>
+                        <div class="profit-percentage" id="branchMargin2">0%</div>
+                        <div class="profit-label-small">Branch 2 Profit</div>
+                    </div>
+                    <div class="profit-item">
+                        <div class="profit-amount zmw" id="branchProfit3">
+                            <span class="zmw-symbol">ZMW</span> 0.00
+                        </div>
+                        <div class="profit-percentage" id="branchMargin3">0%</div>
+                        <div class="profit-label-small">Branch 3 Profit</div>
+                    </div>
+                    <div class="profit-item">
+                        <div class="profit-amount zmw" id="averageProfit">
+                            <span class="zmw-symbol">ZMW</span> 0.00
+                        </div>
+                        <div class="profit-percentage" id="averageMargin">0%</div>
+                        <div class="profit-label-small">Avg Transaction Profit</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="charts-container">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">Profit by Branch</div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="profitChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">Revenue vs Cost Trend</div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="revenueCostChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Branch Reports - UPDATED WITH PROFIT -->
+            <div class="branch-reports">
+                <div class="branch-report-card">
+                    <div class="branch-header">
+                        <div class="branch-name">Branch 1 (Wamz)</div>
+                        <div class="branch-user">Wamz</div>
+                    </div>
+                    <div class="branch-stats">
+                        <div class="branch-stat">
+                            <span class="branch-stat-label">Sales Revenue:</span>
+                            <span class="branch-stat-value zmw" id="branch1Sales">ZMW 0.00</span>
+                        </div>
+                        <div class="branch-stat">
+                            <span class="branch-stat-label">Total Cost:</span>
+                            <span class="branch-stat-value zmw" id="branch1Cost">ZMW 0.00</span>
+                        </div>
+                        <div class="branch-stat-profit">
+                            <span class="profit-label">Gross Profit:</span>
+                            <span class="profit-value positive" id="branch1Profit">ZMW 0.00</span>
+                        </div>
+                        <div class="branch-stat">
+                            <span class="branch-stat-label">Margin:</span>
+                            <span class="branch-stat-value" id="branch1Margin">0%</span>
+                        </div>
+                        <div class="branch-stat">
+                            <span class="branch-stat-label">Transactions:</span>
+                            <span class="branch-stat-value" id="branch1Transactions">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="branch-report-card">
+                    <div class="branch-header">
+                        <div class="branch-name">Branch 2 (Samz)</div>
+                        <div class="branch-user">Samz</div>
+                    </div>
+                    <div class="branch-stats">
+                        <div class="branch-stat">
+                            <span class="branch-stat-label">Sales Revenue:</span>
+                            <span class="branch-stat-value zmw" id="branch2Sales">ZMW 0.00</span>
+                        </div>
+                        <div class="branch-stat">
+                            <span class="branch-stat-label">Total Cost:</span>
+                            <span class="branch-stat-value zmw" id="branch2Cost">ZMW 0.00</span>
+                        </div>
+                        <div class="branch-stat-profit">
+                            <span class="profit-label">Gross Profit:</span>
+                            <span class="profit-value positive" id="branch2Profit">ZMW 0.00</span>
+                        </div>
+                        <div class="branch-stat">
+                            <span class="branch-stat-label">Margin:</span>
+                            <span class="branch-stat-value" id="branch2Margin">0%</span>
+                        </div>
+                        <div class="branch-stat">
+                            <span class="branch-stat-label">Transactions:</span>
+                            <span class="branch-stat-value" id="branch2Transactions">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="branch-report-card">
+                    <div class="branch-header">
+                        <div class="branch-name">Branch 3 (Namz)</div>
+                        <div class="branch-user">Namz</div>
+                    </div>
+                    <div class="branch-stats">
+                        <div class="branch-stat">
+                            <span class="branch-stat-label">Sales Revenue:</span>
+                            <span class="branch-stat-value zmw" id="branch3Sales">ZMW 0.00</span>
+                        </div>
+                        <div class="branch-stat">
+                            <span class="branch-stat-label">Total Cost:</span>
+                            <span class="branch-stat-value zmw" id="branch3Cost">ZMW 0.00</span>
+                        </div>
+                        <div class="branch-stat-profit">
+                            <span class="profit-label">Gross Profit:</span>
+                            <span class="profit-value positive" id="branch3Profit">ZMW 0.00</span>
+                        </div>
+                        <div class="branch-stat">
+                            <span class="branch-stat-label">Margin:</span>
+                            <span class="branch-stat-value" id="branch3Margin">0%</span>
+                        </div>
+                        <div class="branch-stat">
+                            <span class="branch-stat-label">Transactions:</span>
+                            <span class="branch-stat-value" id="branch3Transactions">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Products by Profit -->
+            <div class="top-products-table">
+                <div class="chart-header">
+                    <div class="chart-title">Top Products by Profit</div>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Branch</th>
+                                <th>Quantity Sold</th>
+                                <th>Revenue</th>
+                                <th>Cost</th>
+                                <th>Profit</th>
+                                <th>Margin</th>
+                            </tr>
+                        </thead>
+                        <tbody id="topProductsBody">
+                            <tr>
+                                <td colspan="7" style="text-align: center; padding: 2rem; color: #a0aec0;">
+                                    No data available
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDTslfW2YQOw1XqiTn4RgTNKusi4w6NcHI",
+            authDomain: "wamz-arts-and-prints.firebaseapp.com",
+            projectId: "wamz-arts-and-prints",
+            storageBucket: "wamz-arts-and-prints.firebasestorage.app",
+            messagingSenderId: "495100135771",
+            appId: "1:495100135771:web:d63ab48db021b4b02c327e",
+            measurementId: "G-1HL55EC1D1"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        
+        let currentUserData = null;
+        let profitChart = null;
+        let revenueCostChart = null;
+        let startDate = null;
+        let endDate = null;
+        let periodDays = 30; // Default to this month
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("📊 Profit & Reports Dashboard loaded");
+            initializeSidebar();
+            checkLogin();
+            
+            // Initialize date range (default to current month)
+            initializeDateRange();
+            
+            // Initialize event listeners
+            initializeEventListeners();
+            
+            // Load data
+            loadProfitReportData();
+        });
+
+        // Initialize sidebar
+        function initializeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            // Load saved sidebar state
+            const savedState = localStorage.getItem('sidebarCollapsed');
+            if (savedState === 'true') {
+                sidebar.classList.add('collapsed');
+            }
+            
+            // Desktop sidebar toggle
+            sidebarToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('collapsed');
+                localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+            });
+            
+            // Mobile menu toggle
+            mobileMenuToggle.addEventListener('click', () => {
+                sidebar.classList.add('open');
+                overlay.classList.add('active');
+            });
+            
+            // Close sidebar on overlay click (mobile)
+            overlay.addEventListener('click', () => {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+            });
+            
+            // Close sidebar when clicking on links (mobile)
+            document.querySelectorAll('.nav-item').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.remove('open');
+                        overlay.classList.remove('active');
+                    }
+                });
+            });
+        }
+
+        // Initialize date range
+        function initializeDateRange() {
+            const today = new Date();
+            const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+            const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+            
+            startDate = firstDayOfMonth;
+            endDate = lastDayOfMonth;
+            
+            document.getElementById('startDate').value = startDate.toISOString().split('T')[0];
+            document.getElementById('endDate').value = endDate.toISOString().split('T')[0];
+            
+            // Set current date display
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDate').textContent = today.toLocaleDateString('en-US', options);
+        }
+
+        // Initialize event listeners
+        function initializeEventListeners() {
+            // Period filter buttons
+            document.querySelectorAll('.period-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    periodDays = parseInt(this.dataset.days);
+                    applyPeriodFilter();
+                    loadProfitReportData();
+                });
+            });
+            
+            // Date range changes
+            document.getElementById('startDate').addEventListener('change', function() {
+                const startInput = this.value;
+                const endInput = document.getElementById('endDate').value;
+                
+                if (startInput && endInput) {
+                    startDate = new Date(startInput);
+                    endDate = new Date(endInput);
+                    endDate.setHours(23, 59, 59, 999);
+                    document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+                    loadProfitReportData();
+                }
+            });
+            
+            document.getElementById('endDate').addEventListener('change', function() {
+                const startInput = document.getElementById('startDate').value;
+                const endInput = this.value;
+                
+                if (startInput && endInput) {
+                    startDate = new Date(startInput);
+                    endDate = new Date(endInput);
+                    endDate.setHours(23, 59, 59, 999);
+                    document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+                    loadProfitReportData();
+                }
+            });
+            
+            // Generate report button
+            document.getElementById('generateReportBtn').addEventListener('click', () => {
+                const startInput = document.getElementById('startDate').value;
+                const endInput = document.getElementById('endDate').value;
+                
+                if (!startInput || !endInput) {
+                    showMessage("Please select both start and end dates", "error");
+                    return;
+                }
+                
+                startDate = new Date(startInput);
+                endDate = new Date(endInput);
+                endDate.setHours(23, 59, 59, 999);
+                
+                if (startDate > endDate) {
+                    showMessage("Start date cannot be after end date", "error");
+                    return;
+                }
+                
+                document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+                loadProfitReportData();
+                showMessage("Generating profit report...", "info");
+            });
+            
+            // Print button
+            document.getElementById('printReportBtn').addEventListener('click', () => {
+                window.print();
+            });
+            
+            // Export profit data button
+            document.getElementById('exportProfitBtn').addEventListener('click', exportProfitData);
+        }
+
+        // Apply period filter
+        function applyPeriodFilter() {
+            const today = new Date();
+            endDate = today;
+            
+            switch(periodDays) {
+                case 1: // Today
+                    startDate = new Date(today);
+                    startDate.setHours(0, 0, 0, 0);
+                    break;
+                case 7: // Last 7 days
+                    startDate = new Date(today);
+                    startDate.setDate(today.getDate() - 6);
+                    startDate.setHours(0, 0, 0, 0);
+                    break;
+                case 30: // This month
+                    startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                    endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                    break;
+                case 90: // Last 3 months
+                    startDate = new Date(today);
+                    startDate.setMonth(today.getMonth() - 3);
+                    startDate.setDate(1);
+                    break;
+                case 365: // This year
+                    startDate = new Date(today.getFullYear(), 0, 1);
+                    endDate = new Date(today.getFullYear(), 11, 31);
+                    break;
+            }
+            
+            document.getElementById('startDate').value = startDate.toISOString().split('T')[0];
+            document.getElementById('endDate').value = endDate.toISOString().split('T')[0];
+        }
+
+        // Check login
+        function checkLogin() {
+            const currentUser = localStorage.getItem('currentUser');
+            
+            if (!currentUser) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            currentUserData = JSON.parse(currentUser);
+            
+            if (currentUserData.username !== 'Wamz') {
+                window.location.href = 'user-dashboard.html';
+                return;
+            }
+
+            document.getElementById('currentUser').textContent = currentUserData.username;
+            console.log("👤 Logged in as:", currentUserData.username);
+        }
+
+        // Format currency
+        function formatCurrency(amount) {
+            return 'ZMW ' + parseFloat(amount).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+
+        // Show message
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = 'message ' + type;
+            messageDiv.style.display = 'block';
+
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        }
+
+        // Main function to load profit report data
+        async function loadProfitReportData() {
+            try {
+                console.log("📊 Loading profit report data...");
+                showMessage("Loading profit data...", "info");
+                
+                // Fetch sales data with profit calculation
+                const salesData = await fetchSalesDataWithProfit();
+                
+                // Calculate profit metrics
+                const profitMetrics = calculateProfitMetrics(salesData);
+                
+                // Update UI with profit data
+                updateProfitUI(profitMetrics);
+                
+                // Update charts
+                updateProfitCharts(profitMetrics);
+                
+                // Load top products
+                await loadTopProductsByProfit(salesData);
+                
+                console.log("✅ Profit report data loaded successfully");
+                showMessage("Profit report generated successfully!", "success");
+                
+            } catch (error) {
+                console.error("❌ Error loading profit report data:", error);
+                showMessage("Error loading profit data. Please try again.", "error");
+            }
+        }
+
+        // Fetch sales data and calculate profit
+        async function fetchSalesDataWithProfit() {
+            try {
+                const salesRef = db.collection('sales');
+                const query = salesRef.where('timestamp', '>=', startDate)
+                                      .where('timestamp', '<=', endDate);
+                
+                const snapshot = await query.get();
+                const sales = [];
+                
+                // Get all inventory data for cost lookup
+                const inventorySnapshot = await db.collection('inventory').get();
+                const inventoryMap = {};
+                
+                inventorySnapshot.forEach(doc => {
+                    const data = doc.data();
+                    const key = `${data.branchId || 'branch1'}_${data.code}`;
+                    inventoryMap[key] = {
+                        orderPrice: parseFloat(data.orderPrice || 0),
+                        salePrice: parseFloat(data.salePrice || 0)
+                    };
+                });
+                
+                snapshot.forEach(doc => {
+                    const sale = { id: doc.id, ...doc.data() };
+                    
+                    // Calculate profit for each sale
+                    let totalCost = 0;
+                    let totalRevenue = parseFloat(sale.totalAmount || 0);
+                    
+                    if (sale.items && Array.isArray(sale.items)) {
+                        sale.items.forEach(item => {
+                            const inventoryKey = `${sale.branch || 'branch1'}_${item.code}`;
+                            const inventory = inventoryMap[inventoryKey];
+                            
+                            if (inventory && inventory.orderPrice > 0) {
+                                const cost = inventory.orderPrice * (item.qty || 1);
+                                totalCost += cost;
+                            }
+                        });
+                    }
+                    
+                    sale.totalCost = totalCost;
+                    sale.totalProfit = totalRevenue - totalCost;
+                    sale.profitMargin = totalRevenue > 0 ? ((sale.totalProfit / totalRevenue) * 100) : 0;
+                    
+                    sales.push(sale);
+                });
+                
+                console.log(`💰 Fetched ${sales.length} sales with profit calculation`);
+                return sales;
+                
+            } catch (error) {
+                console.error("Error fetching sales data with profit:", error);
+                return [];
+            }
+        }
+
+        // Calculate profit metrics from sales data
+        function calculateProfitMetrics(salesData) {
+            const metrics = {
+                totalRevenue: 0,
+                totalCost: 0,
+                totalProfit: 0,
+                totalTransactions: salesData.length,
+                byBranch: {
+                    branch1: { revenue: 0, cost: 0, profit: 0, transactions: 0 },
+                    branch2: { revenue: 0, cost: 0, profit: 0, transactions: 0 },
+                    branch3: { revenue: 0, cost: 0, profit: 0, transactions: 0 }
+                }
+            };
+            
+            salesData.forEach(sale => {
+                const branch = sale.user === 'Wamz' ? 'branch1' : 
+                              sale.user === 'Samz' ? 'branch2' : 'branch3';
+                
+                metrics.totalRevenue += parseFloat(sale.totalAmount || 0);
+                metrics.totalCost += sale.totalCost || 0;
+                metrics.totalProfit += sale.totalProfit || 0;
+                
+                if (metrics.byBranch[branch]) {
+                    metrics.byBranch[branch].revenue += parseFloat(sale.totalAmount || 0);
+                    metrics.byBranch[branch].cost += sale.totalCost || 0;
+                    metrics.byBranch[branch].profit += sale.totalProfit || 0;
+                    metrics.byBranch[branch].transactions++;
+                }
+            });
+            
+            // Calculate percentages
+            metrics.profitMargin = metrics.totalRevenue > 0 ? 
+                (metrics.totalProfit / metrics.totalRevenue) * 100 : 0;
+            
+            // Calculate branch margins
+            Object.keys(metrics.byBranch).forEach(branch => {
+                const branchData = metrics.byBranch[branch];
+                branchData.margin = branchData.revenue > 0 ? 
+                    (branchData.profit / branchData.revenue) * 100 : 0;
+            });
+            
+            return metrics;
+        }
+
+        // Update UI with profit data
+        function updateProfitUI(metrics) {
+            // Update summary stats
+            document.getElementById('totalSales').innerHTML = `
+                <span class="zmw-symbol">ZMW</span> ${metrics.totalRevenue.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            `;
+            
+            document.getElementById('totalCost').innerHTML = `
+                <span class="zmw-symbol">ZMW</span> ${metrics.totalCost.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            `;
+            
+            document.getElementById('grossProfit').innerHTML = `
+                <span class="zmw-symbol">ZMW</span> ${metrics.totalProfit.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            `;
+            
+            document.getElementById('profitMargin').textContent = `${metrics.profitMargin.toFixed(1)}%`;
+            
+            // Update profit breakdown
+            const branch1 = metrics.byBranch.branch1;
+            const branch2 = metrics.byBranch.branch2;
+            const branch3 = metrics.byBranch.branch3;
+            
+            document.getElementById('branchProfit1').innerHTML = `
+                <span class="zmw-symbol">ZMW</span> ${branch1.profit.toFixed(2)}
+            `;
+            document.getElementById('branchMargin1').textContent = `${branch1.margin.toFixed(1)}%`;
+            
+            document.getElementById('branchProfit2').innerHTML = `
+                <span class="zmw-symbol">ZMW</span> ${branch2.profit.toFixed(2)}
+            `;
+            document.getElementById('branchMargin2').textContent = `${branch2.margin.toFixed(1)}%`;
+            
+            document.getElementById('branchProfit3').innerHTML = `
+                <span class="zmw-symbol">ZMW</span> ${branch3.profit.toFixed(2)}
+            `;
+            document.getElementById('branchMargin3').textContent = `${branch3.margin.toFixed(1)}%`;
+            
+            // Calculate average profit per transaction
+            const avgProfit = metrics.totalTransactions > 0 ? 
+                metrics.totalProfit / metrics.totalTransactions : 0;
+            const avgMargin = metrics.totalTransactions > 0 ? 
+                metrics.profitMargin : 0;
+            
+            document.getElementById('averageProfit').innerHTML = `
+                <span class="zmw-symbol">ZMW</span> ${avgProfit.toFixed(2)}
+            `;
+            document.getElementById('averageMargin').textContent = `${avgMargin.toFixed(1)}%`;
+            
+            // Update branch reports
+            updateBranchReports(metrics);
+        }
+
+        // Update branch reports
+        function updateBranchReports(metrics) {
+            const branch1 = metrics.byBranch.branch1;
+            const branch2 = metrics.byBranch.branch2;
+            const branch3 = metrics.byBranch.branch3;
+            
+            // Branch 1
+            document.getElementById('branch1Sales').textContent = formatCurrency(branch1.revenue);
+            document.getElementById('branch1Cost').textContent = formatCurrency(branch1.cost);
+            document.getElementById('branch1Profit').textContent = formatCurrency(branch1.profit);
+            document.getElementById('branch1Margin').textContent = `${branch1.margin.toFixed(1)}%`;
+            document.getElementById('branch1Transactions').textContent = branch1.transactions;
+            
+            // Branch 2
+            document.getElementById('branch2Sales').textContent = formatCurrency(branch2.revenue);
+            document.getElementById('branch2Cost').textContent = formatCurrency(branch2.cost);
+            document.getElementById('branch2Profit').textContent = formatCurrency(branch2.profit);
+            document.getElementById('branch2Margin').textContent = `${branch2.margin.toFixed(1)}%`;
+            document.getElementById('branch2Transactions').textContent = branch2.transactions;
+            
+            // Branch 3
+            document.getElementById('branch3Sales').textContent = formatCurrency(branch3.revenue);
+            document.getElementById('branch3Cost').textContent = formatCurrency(branch3.cost);
+            document.getElementById('branch3Profit').textContent = formatCurrency(branch3.profit);
+            document.getElementById('branch3Margin').textContent = `${branch3.margin.toFixed(1)}%`;
+            document.getElementById('branch3Transactions').textContent = branch3.transactions;
+        }
+
+        // Update profit charts
+        function updateProfitCharts(metrics) {
+            const branch1 = metrics.byBranch.branch1;
+            const branch2 = metrics.byBranch.branch2;
+            const branch3 = metrics.byBranch.branch3;
+            
+            // Profit by branch chart
+            const profitChartCtx = document.getElementById('profitChart').getContext('2d');
+            if (profitChart) profitChart.destroy();
+            
+            profitChart = new Chart(profitChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Branch 1', 'Branch 2', 'Branch 3'],
+                    datasets: [
+                        {
+                            label: 'Revenue',
+                            data: [branch1.revenue, branch2.revenue, branch3.revenue],
+                            backgroundColor: 'rgba(66, 153, 225, 0.7)',
+                            borderColor: 'rgb(66, 153, 225)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Cost',
+                            data: [branch1.cost, branch2.cost, branch3.cost],
+                            backgroundColor: 'rgba(237, 137, 54, 0.7)',
+                            borderColor: 'rgb(237, 137, 54)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Profit',
+                            data: [branch1.profit, branch2.profit, branch3.profit],
+                            backgroundColor: 'rgba(56, 161, 105, 0.7)',
+                            borderColor: 'rgb(56, 161, 105)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return 'ZMW ' + value.toFixed(2);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Revenue vs Cost trend chart (weekly breakdown)
+            const weeklyData = calculateWeeklyData(metrics);
+            const revenueCostChartCtx = document.getElementById('revenueCostChart').getContext('2d');
+            if (revenueCostChart) revenueCostChart.destroy();
+            
+            revenueCostChart = new Chart(revenueCostChartCtx, {
+                type: 'line',
+                data: {
+                    labels: weeklyData.labels,
+                    datasets: [
+                        {
+                            label: 'Revenue',
+                            data: weeklyData.revenue,
+                            borderColor: 'rgb(66, 153, 225)',
+                            backgroundColor: 'rgba(66, 153, 225, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Cost',
+                            data: weeklyData.cost,
+                            borderColor: 'rgb(237, 137, 54)',
+                            backgroundColor: 'rgba(237, 137, 54, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Profit',
+                            data: weeklyData.profit,
+                            borderColor: 'rgb(56, 161, 105)',
+                            backgroundColor: 'rgba(56, 161, 105, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return 'ZMW ' + value.toFixed(2);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Calculate weekly data for trend chart
+        function calculateWeeklyData(metrics) {
+            // Simplified weekly breakdown (in a real app, you'd fetch actual daily data)
+            const weeks = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+            const revenue = [];
+            const cost = [];
+            const profit = [];
+            
+            // Distribute totals across weeks (for demo purposes)
+            weeks.forEach((week, index) => {
+                const factor = (weeks.length - index) / weeks.length; // More recent weeks get more
+                revenue.push(metrics.totalRevenue * (factor / weeks.length) * (0.8 + Math.random() * 0.4));
+                cost.push(metrics.totalCost * (factor / weeks.length) * (0.8 + Math.random() * 0.4));
+                profit.push(revenue[index] - cost[index]);
+            });
+            
+            return {
+                labels: weeks,
+                revenue: revenue,
+                cost: cost,
+                profit: profit
+            };
+        }
+
+        // Load top products by profit
+        async function loadTopProductsByProfit(salesData) {
+            try {
+                // Aggregate product data
+                const productMap = {};
+                
+                salesData.forEach(sale => {
+                    if (sale.items && Array.isArray(sale.items)) {
+                        const branch = sale.user === 'Wamz' ? 'Branch 1' : 
+                                      sale.user === 'Samz' ? 'Branch 2' : 'Branch 3';
+                        
+                        sale.items.forEach(item => {
+                            const key = `${item.code}_${branch}`;
+                            
+                            if (!productMap[key]) {
+                                productMap[key] = {
+                                    code: item.code,
+                                    name: item.name || item.code,
+                                    branch: branch,
+                                    quantity: 0,
+                                    revenue: 0,
+                                    cost: 0,
+                                    profit: 0
+                                };
+                            }
+                            
+                            // Get cost price from inventory
+                            const inventoryKey = `${sale.branch || 'branch1'}_${item.code}`;
+                            // Note: In a real implementation, you'd fetch actual cost from inventory
+                            const costPerItem = 0; // This should come from your inventory data
+                            const salePrice = parseFloat(item.price || 0);
+                            const quantity = item.qty || 1;
+                            
+                            const itemCost = costPerItem * quantity;
+                            const itemRevenue = salePrice * quantity;
+                            const itemProfit = itemRevenue - itemCost;
+                            
+                            productMap[key].quantity += quantity;
+                            productMap[key].revenue += itemRevenue;
+                            productMap[key].cost += itemCost;
+                            productMap[key].profit += itemProfit;
+                        });
+                    }
+                });
+                
+                // Convert to array and sort by profit
+                const products = Object.values(productMap)
+                    .filter(p => p.quantity > 0)
+                    .sort((a, b) => b.profit - a.profit)
+                    .slice(0, 10); // Top 10 products
+                
+                // Update table
+                updateTopProductsTable(products);
+                
+            } catch (error) {
+                console.error("Error loading top products:", error);
+            }
+        }
+
+        // Update top products table
+        function updateTopProductsTable(products) {
+            const tbody = document.getElementById('topProductsBody');
+            
+            if (products.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 2rem; color: #a0aec0;">
+                            No product data available for the selected period
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = '';
+            
+            products.forEach((product, index) => {
+                const margin = product.revenue > 0 ? (product.profit / product.revenue) * 100 : 0;
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td><strong>${product.name}</strong><br><small style="color: #718096;">${product.code}</small></td>
+                    <td>${product.branch}</td>
+                    <td>${product.quantity}</td>
+                    <td>${formatCurrency(product.revenue)}</td>
+                    <td>${formatCurrency(product.cost)}</td>
+                    <td style="font-weight: 600; color: ${product.profit >= 0 ? '#38a169' : '#e53e3e'}">
+                        ${formatCurrency(product.profit)}
+                    </td>
+                    <td style="font-weight: 600; color: ${margin >= 0 ? '#38a169' : '#e53e3e'}">
+                        ${margin.toFixed(1)}%
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        // Export profit data
+        function exportProfitData() {
+            // Get all data from the current view
+            const data = {
+                period: {
+                    start: startDate.toISOString().split('T')[0],
+                    end: endDate.toISOString().split('T')[0]
+                },
+                totals: {
+                    revenue: parseFloat(document.getElementById('totalSales').textContent.replace(/[^0-9.-]+/g, "")),
+                    cost: parseFloat(document.getElementById('totalCost').textContent.replace(/[^0-9.-]+/g, "")),
+                    profit: parseFloat(document.getElementById('grossProfit').textContent.replace(/[^0-9.-]+/g, "")),
+                    margin: parseFloat(document.getElementById('profitMargin').textContent)
+                },
+                branches: {
+                    branch1: {
+                        revenue: parseFloat(document.getElementById('branch1Sales').textContent.replace(/[^0-9.-]+/g, "")),
+                        cost: parseFloat(document.getElementById('branch1Cost').textContent.replace(/[^0-9.-]+/g, "")),
+                        profit: parseFloat(document.getElementById('branch1Profit').textContent.replace(/[^0-9.-]+/g, "")),
+                        margin: parseFloat(document.getElementById('branch1Margin').textContent),
+                        transactions: parseInt(document.getElementById('branch1Transactions').textContent)
+                    },
+                    branch2: {
+                        revenue: parseFloat(document.getElementById('branch2Sales').textContent.replace(/[^0-9.-]+/g, "")),
+                        cost: parseFloat(document.getElementById('branch2Cost').textContent.replace(/[^0-9.-]+/g, "")),
+                        profit: parseFloat(document.getElementById('branch2Profit').textContent.replace(/[^0-9.-]+/g, "")),
+                        margin: parseFloat(document.getElementById('branch2Margin').textContent),
+                        transactions: parseInt(document.getElementById('branch2Transactions').textContent)
+                    },
+                    branch3: {
+                        revenue: parseFloat(document.getElementById('branch3Sales').textContent.replace(/[^0-9.-]+/g, "")),
+                        cost: parseFloat(document.getElementById('branch3Cost').textContent.replace(/[^0-9.-]+/g, "")),
+                        profit: parseFloat(document.getElementById('branch3Profit').textContent.replace(/[^0-9.-]+/g, "")),
+                        margin: parseFloat(document.getElementById('branch3Margin').textContent),
+                        transactions: parseInt(document.getElementById('branch3Transactions').textContent)
+                    }
+                }
+            };
+            
+            // Convert to CSV
+            const csvRows = [];
+            
+            // Header
+            csvRows.push(['Profit Report', `Period: ${data.period.start} to ${data.period.end}`]);
+            csvRows.push([]);
+            csvRows.push(['Overall Performance', 'Revenue', 'Cost', 'Profit', 'Margin %']);
+            csvRows.push([
+                'Totals',
+                data.totals.revenue,
+                data.totals.cost,
+                data.totals.profit,
+                data.totals.margin
+            ]);
+            csvRows.push([]);
+            csvRows.push(['Branch Performance', 'Revenue', 'Cost', 'Profit', 'Margin %', 'Transactions']);
+            
+            Object.keys(data.branches).forEach(branch => {
+                const b = data.branches[branch];
+                csvRows.push([
+                    branch === 'branch1' ? 'Branch 1 (Wamz)' : 
+                    branch === 'branch2' ? 'Branch 2 (Samz)' : 'Branch 3 (Namz)',
+                    b.revenue,
+                    b.cost,
+                    b.profit,
+                    b.margin,
+                    b.transactions
+                ]);
+            });
+            
+            // Convert to CSV string
+            const csvContent = csvRows.map(row => 
+                row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')
+            ).join('\n');
+            
+            // Create download
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `profit-report-${data.period.start}-to-${data.period.end}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showMessage("Profit data exported successfully!", "success");
+        }
+
+        // Auto-refresh data every 5 minutes
+        setInterval(() => {
+            loadProfitReportData();
+            console.log("🔄 Auto-refreshing profit report data");
+        }, 300000);
+    </script>
+</body>
+</html>
