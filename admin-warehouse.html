@@ -583,6 +583,241 @@
             color: #718096;
         }
 
+        /* Add Items Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            background: #1a365d;
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.2rem;
+            border-radius: 4px;
+        }
+
+        .modal-close:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .modal-body {
+            padding: 1rem;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .modal-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-section h4 {
+            font-size: 0.9rem;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 0.8rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.8rem;
+            color: #4a5568;
+            margin-bottom: 0.3rem;
+            font-weight: 500;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: #2c3e50;
+            background: white;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #4299e1;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: #4a5568;
+            cursor: pointer;
+        }
+
+        .checkbox-input {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #cbd5e0;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .checkbox-input:checked {
+            background: #4299e1;
+            border-color: #4299e1;
+        }
+
+        .modal-footer {
+            background: #f8fafc;
+            padding: 1rem;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.8rem;
+        }
+
+        .modal-btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .modal-btn.primary {
+            background: #4299e1;
+            color: white;
+            border-color: #4299e1;
+        }
+
+        .modal-btn.primary:hover {
+            background: #3182ce;
+        }
+
+        .modal-btn.secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+            border-color: #cbd5e0;
+        }
+
+        .modal-btn.secondary:hover {
+            background: #cbd5e0;
+        }
+
+        .preview-box {
+            background: #f8fafc;
+            border: 1px dashed #cbd5e0;
+            border-radius: 6px;
+            padding: 0.8rem;
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 0.75rem;
+            color: #4a5568;
+        }
+
+        .preview-item {
+            padding: 0.3rem 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .preview-item:last-child {
+            border-bottom: none;
+        }
+
+        .modal-progress {
+            display: none;
+            align-items: center;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            padding: 0.8rem;
+            background: #ebf8ff;
+            border-radius: 6px;
+            border: 1px solid #bee3f8;
+        }
+
+        .modal-progress.active {
+            display: flex;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #4299e1;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 0.75rem;
+            color: #2c5282;
+            font-weight: 500;
+            min-width: 60px;
+            text-align: right;
+        }
+
         /* Responsive Design */
         @media (max-width: 1024px) {
             .admin-container {
@@ -672,6 +907,10 @@
             .table-container {
                 max-height: 50vh;
             }
+
+            .modal {
+                max-height: 95vh;
+            }
         }
 
         @media (max-width: 480px) {
@@ -701,6 +940,14 @@
 
             .last-updated {
                 font-size: 0.65rem;
+            }
+
+            .modal-footer {
+                flex-direction: column;
+            }
+
+            .modal-btn {
+                width: 100%;
             }
         }
 
@@ -773,6 +1020,86 @@
 <body>
     <!-- Sidebar Overlay for Mobile -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Add Items Modal -->
+    <div class="modal-overlay" id="addItemsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Add New Items to Warehouse</h3>
+                <button class="modal-close" id="closeModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-section">
+                    <h4>Item Details</h4>
+                    <div class="form-group">
+                        <label class="form-label">Paste Items List</label>
+                        <textarea class="form-textarea" id="itemsTextarea" placeholder="Paste your items list here... Format: Item Name kPrice
+Example:
+Protea chargers k50
+Gotv remotes k100
+Dstv remotes k100"></textarea>
+                    </div>
+                </div>
+                
+                <div class="modal-section">
+                    <h4>Settings</h4>
+                    <div class="form-group">
+                        <label class="form-label">Initial Stock Quantity</label>
+                        <input type="number" class="form-input" id="initialStock" value="0" min="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <select class="form-select" id="itemCategory">
+                            <option value="electronics">Electronics</option>
+                            <option value="phones">Phones</option>
+                            <option value="accessories">Accessories</option>
+                            <option value="audio">Audio</option>
+                            <option value="storage">Storage</option>
+                            <option value="stationery">Stationery</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Add to Branches</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" class="checkbox-input" id="branch1Check" checked>
+                                <span>Branch 1 (Main)</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" class="checkbox-input" id="branch2Check" checked>
+                                <span>Branch 2</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" class="checkbox-input" id="branch3Check" checked>
+                                <span>Branch 3</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-section">
+                    <h4>Preview (Items to Add)</h4>
+                    <div class="preview-box" id="previewBox">
+                        <div class="preview-item">No items preview yet...</div>
+                    </div>
+                </div>
+                
+                <div class="modal-progress" id="progressSection">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-text" id="progressText">0%</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn secondary" id="cancelBtn">Cancel</button>
+                <button class="modal-btn primary" id="addItemsBtn">Add Items to Warehouse</button>
+            </div>
+        </div>
+    </div>
 
     <div class="dashboard-container">
         <!-- Sidebar -->
@@ -877,7 +1204,11 @@
                             <i class="fas fa-file-export"></i>
                             <span>Export CSV</span>
                         </button>
-                        <button class="tool-btn primary" id="refreshBtn">
+                        <button class="tool-btn primary" id="addItemsBtnSidebar">
+                            <i class="fas fa-plus-circle"></i>
+                            <span>Add New Items</span>
+                        </button>
+                        <button class="tool-btn" id="refreshBtn">
                             <i class="fas fa-sync"></i>
                             <span>Refresh</span>
                         </button>
@@ -925,7 +1256,7 @@
             <!-- Footer Note -->
             <div class="footer-note">
                 <h4>Notes</h4>
-                <p>This admin page uses Firestore for live inventory monitoring. Use the GRV page to perform batch restocks across branches.</p>
+                <p>This admin page uses Firestore for live inventory monitoring. Use the "Add New Items" button to batch add items to all branches.</p>
             </div>
         </div>
     </div>
@@ -960,6 +1291,7 @@
             checkAccess();
             setupUI();
             setupInventoryListener();
+            setupModal();
         });
 
         // Initialize sidebar toggle for both desktop and mobile
@@ -1038,6 +1370,344 @@
             document.getElementById('exportViewCsv').addEventListener('click', exportCurrentViewCsv);
             document.getElementById('refreshBtn').addEventListener('click', refreshCurrentView);
             document.getElementById('grvBtn').addEventListener('click', () => window.location.href = 'grv.html');
+            document.getElementById('addItemsBtnSidebar').addEventListener('click', showAddItemsModal);
+        }
+
+        // Setup modal functionality
+        function setupModal() {
+            const modal = document.getElementById('addItemsModal');
+            const closeBtn = document.getElementById('closeModalBtn');
+            const cancelBtn = document.getElementById('cancelBtn');
+            const addItemsBtn = document.getElementById('addItemsBtn');
+            const itemsTextarea = document.getElementById('itemsTextarea');
+            
+            // Show modal
+            window.showAddItemsModal = function() {
+                modal.classList.add('active');
+                // Pre-populate with your items list
+                itemsTextarea.value = `Protea chargers k50
+Gotv remotes k100
+Dstv remotes k100
+Tv remotes k150
+Mango pods k250
+Pods k150
+Teckno chargers k130
+ORG Chargers k150
+Sky max chargers type c k150
+Sivia cables iPhone k70
+Sivia cables normal k70
+Sivia cables type c k70
+Itel original small batteries k80
+Venus original small batteries k80
+OTG K40
+Car modulators k150
+Mango headset k70
+Av cables k50
+Aux av k50
+Aux cables k35
+Ipone complete chargers k350
+Mango car chargers k150
+Mango pod casings k80
+Card reders k25
+Mp3 k100
+Travel chargers k100
+Samsung 45w chargers type c tp c k350
+P47 betsheadsets k150
+Oking phones k280
+Callus phones k280
+Nokia phones 106 k400
+Nokia phones 105 k350
+Itel original phones k350
+Venus phones k350
+2gb flash k75
+4gb flash k85
+HDMI cables k70
+C to C cables k100
+C to c and impone cables k100
+Mouse k50
+Nomal cables k50
+Type c data cables k50
+Iphone cables k50
+Aux car cabele k35
+Rims of papers k150
+Key bolds k150
+Mifi mini mtn k600
+Ticno chargers type c k80
+Ticno chargers normal k80
+Next chargers k150
+Samsung chargers k50
+Screen protectors k35
+Screen protectors k70
+Screen protectors k100
+Privacy screen protectors k150
+Evelops small k3
+Evelops medium k5
+Evelops big k7
+Pens k2
+Passport size papes photos k50
+Headsets k35
+Headsets k40
+Airtel simcards k15
+Mtn sim cards k15
+Zedmobile sim cards k15
+ZAMTEL SIM card k20`;
+                updatePreview();
+            };
+            
+            // Close modal
+            closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+            cancelBtn.addEventListener('click', () => modal.classList.remove('active'));
+            
+            // Update preview when textarea changes
+            itemsTextarea.addEventListener('input', updatePreview);
+            
+            // Add items button
+            addItemsBtn.addEventListener('click', processAndAddItems);
+            
+            // Close modal on ESC key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal.classList.contains('active')) {
+                    modal.classList.remove('active');
+                }
+            });
+            
+            // Close modal when clicking outside
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
+                }
+            });
+        }
+        
+        // Update preview box
+        function updatePreview() {
+            const textarea = document.getElementById('itemsTextarea');
+            const previewBox = document.getElementById('previewBox');
+            const items = parseItemsText(textarea.value);
+            
+            if (items.length === 0) {
+                previewBox.innerHTML = '<div class="preview-item">No items preview yet...</div>';
+                return;
+            }
+            
+            let previewHTML = '';
+            items.slice(0, 10).forEach((item, index) => {
+                previewHTML += `<div class="preview-item">${index + 1}. ${item.name} - ZMW ${item.price.toFixed(2)}</div>`;
+            });
+            
+            if (items.length > 10) {
+                previewHTML += `<div class="preview-item">... and ${items.length - 10} more items</div>`;
+            }
+            
+            previewBox.innerHTML = previewHTML;
+        }
+        
+        // Parse items text
+        function parseItemsText(text) {
+            const items = [];
+            const lines = text.split('\n').filter(line => line.trim() !== '');
+            
+            for (const line of lines) {
+                const trimmed = line.trim();
+                if (!trimmed) continue;
+                
+                // Extract price (look for "k" followed by numbers)
+                const priceMatch = trimmed.match(/k(\d+(\.\d+)?)$/i);
+                if (priceMatch) {
+                    const price = parseFloat(priceMatch[1]);
+                    const name = trimmed.substring(0, trimmed.lastIndexOf(priceMatch[0])).trim();
+                    
+                    if (name && !isNaN(price)) {
+                        items.push({
+                            name: name,
+                            price: price,
+                            category: detectCategory(name)
+                        });
+                    }
+                } else {
+                    // Try to find price in other formats
+                    const numberMatch = trimmed.match(/\d+(\.\d+)?$/);
+                    if (numberMatch) {
+                        const price = parseFloat(numberMatch[0]);
+                        const name = trimmed.substring(0, trimmed.lastIndexOf(numberMatch[0])).trim();
+                        
+                        if (name && !isNaN(price)) {
+                            items.push({
+                                name: name,
+                                price: price,
+                                category: detectCategory(name)
+                            });
+                        }
+                    } else {
+                        // Add without price
+                        items.push({
+                            name: trimmed,
+                            price: 0,
+                            category: detectCategory(trimmed)
+                        });
+                    }
+                }
+            }
+            
+            return items;
+        }
+        
+        // Detect category from item name
+        function detectCategory(name) {
+            const lowerName = name.toLowerCase();
+            
+            if (lowerName.includes('phone') || lowerName.includes('nokia') || lowerName.includes('itel') || 
+                lowerName.includes('venus') || lowerName.includes('oking') || lowerName.includes('callus')) {
+                return 'phones';
+            } else if (lowerName.includes('charger') || lowerName.includes('cable') || lowerName.includes('adapter') || 
+                       lowerName.includes('battery') || lowerName.includes('otg') || lowerName.includes('hdmi') || 
+                       lowerName.includes('av cable') || lowerName.includes('aux') || lowerName.includes('mouse') || 
+                       lowerName.includes('card reader') || lowerName.includes('mp3') || lowerName.includes('modulator') ||
+                       lowerName.includes('mifi')) {
+                return 'electronics';
+            } else if (lowerName.includes('headset') || lowerName.includes('earphone') || lowerName.includes('audio') || 
+                       lowerName.includes('pod') || lowerName.includes('headphone')) {
+                return 'audio';
+            } else if (lowerName.includes('flash') || lowerName.includes('memory') || lowerName.includes('storage')) {
+                return 'storage';
+            } else if (lowerName.includes('sim') || lowerName.includes('simcard')) {
+                return 'simcards';
+            } else if (lowerName.includes('paper') || lowerName.includes('envelop') || lowerName.includes('pen') || 
+                       lowerName.includes('rim') || lowerName.includes('key bold')) {
+                return 'stationery';
+            } else if (lowerName.includes('screen protector')) {
+                return 'accessories';
+            } else if (lowerName.includes('photo') || lowerName.includes('picture')) {
+                return 'services';
+            }
+            
+            return 'other';
+        }
+        
+        // Process and add items to database
+        async function processAndAddItems() {
+            const textarea = document.getElementById('itemsTextarea');
+            const initialStock = parseInt(document.getElementById('initialStock').value) || 0;
+            const category = document.getElementById('itemCategory').value;
+            const progressSection = document.getElementById('progressSection');
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            
+            // Get selected branches
+            const selectedBranches = [];
+            if (document.getElementById('branch1Check').checked) selectedBranches.push('branch1');
+            if (document.getElementById('branch2Check').checked) selectedBranches.push('branch2');
+            if (document.getElementById('branch3Check').checked) selectedBranches.push('branch3');
+            
+            if (selectedBranches.length === 0) {
+                showMessage('Please select at least one branch', 'error');
+                return;
+            }
+            
+            const items = parseItemsText(textarea.value);
+            
+            if (items.length === 0) {
+                showMessage('No valid items found. Check the format.', 'error');
+                return;
+            }
+            
+            // Show progress
+            progressSection.classList.add('active');
+            progressFill.style.width = '0%';
+            progressText.textContent = '0%';
+            
+            let addedCount = 0;
+            let errorCount = 0;
+            
+            try {
+                for (let i = 0; i < items.length; i++) {
+                    const item = items[i];
+                    const itemCategory = item.category || category;
+                    
+                    // Generate code from name
+                    const code = generateCodeFromName(item.name);
+                    
+                    for (const branchId of selectedBranches) {
+                        try {
+                            // Create item data
+                            const itemData = {
+                                code: code,
+                                name: item.name,
+                                category: itemCategory,
+                                price: item.price,
+                                stock: initialStock,
+                                branchId: branchId,
+                                location: 'Warehouse',
+                                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                            };
+                            
+                            // Add to Firestore
+                            await db.collection('inventory').add(itemData);
+                            addedCount++;
+                        } catch (err) {
+                            console.error(`Error adding ${item.name} to ${branchId}:`, err);
+                            errorCount++;
+                        }
+                    }
+                    
+                    // Update progress
+                    const progress = Math.round((i + 1) / items.length * 100);
+                    progressFill.style.width = `${progress}%`;
+                    progressText.textContent = `${progress}%`;
+                }
+                
+                // Complete
+                progressFill.style.width = '100%';
+                progressText.textContent = '100%';
+                
+                // Show success message
+                showMessage(`Successfully added ${addedCount} item entries across ${selectedBranches.length} branch(es). ${errorCount} errors.`, 'success');
+                
+                // Close modal after delay
+                setTimeout(() => {
+                    document.getElementById('addItemsModal').classList.remove('active');
+                    progressSection.classList.remove('active');
+                    
+                    // Refresh inventory view
+                    if (unsubscribe) {
+                        setupInventoryListener();
+                    }
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Batch add error:', error);
+                showMessage(`Error adding items: ${error.message}`, 'error');
+                progressSection.classList.remove('active');
+            }
+        }
+        
+        // Generate code from name
+        function generateCodeFromName(name) {
+            // Remove special characters and extra spaces
+            const cleanName = name.toLowerCase()
+                .replace(/[^a-z0-9\s]/g, '')
+                .replace(/\s+/g, ' ')
+                .trim();
+            
+            // Get first letters of words
+            const words = cleanName.split(' ');
+            let code = '';
+            
+            if (words.length === 1) {
+                // Single word: take first 4 letters
+                code = words[0].substring(0, 4).toUpperCase();
+            } else if (words.length === 2) {
+                // Two words: first 2 letters of each
+                code = (words[0].substring(0, 2) + words[1].substring(0, 2)).toUpperCase();
+            } else {
+                // Multiple words: first letter of first 3 words
+                code = words.slice(0, 3).map(w => w.charAt(0)).join('').toUpperCase();
+            }
+            
+            // Add timestamp for uniqueness
+            const timestamp = Date.now().toString().slice(-4);
+            return code + timestamp;
         }
 
         // Setup real-time Firestore listener
