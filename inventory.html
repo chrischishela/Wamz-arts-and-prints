@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Warehouse - Wamz Arts & Prints</title>
+    <title>Warehouse Inventory - Wamz Arts & Prints</title>
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
@@ -332,6 +332,84 @@
             border-color: #bee3f8;
         }
 
+        /* ADD ITEMS SECTION */
+        .add-items-section {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+            display: none;
+        }
+
+        .add-items-section h3 {
+            font-size: 0.9rem;
+            margin-bottom: 0.8rem;
+            color: #2d3748;
+            font-weight: 600;
+        }
+
+        .add-items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .add-item-btn {
+            background: #48bb78;
+            color: white;
+            border: none;
+            padding: 0.6rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .add-item-btn:hover {
+            background: #38a169;
+            transform: translateY(-2px);
+        }
+
+        .add-items-controls {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-primary {
+            background: #4299e1;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3182ce;
+        }
+
+        .btn-secondary {
+            background: #718096;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #4a5568;
+        }
+
         /* STATS GRID - COMPACT */
         .stats-grid {
             display: grid;
@@ -491,7 +569,12 @@
             font-weight: 600;
         }
 
-        .print-btn {
+        .table-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
             background: #2d3748;
             color: white;
             border: none;
@@ -507,8 +590,16 @@
             white-space: nowrap;
         }
 
-        .print-btn:hover {
+        .action-btn:hover {
             background: #4a5568;
+        }
+
+        .action-btn.add {
+            background: #48bb78;
+        }
+
+        .action-btn.add:hover {
+            background: #38a169;
         }
 
         /* TABLE SCROLL */
@@ -671,6 +762,10 @@
                 grid-template-columns: repeat(2, 1fr);
             }
 
+            .add-items-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
             .table-container {
                 height: calc(100vh - 500px);
                 min-height: 250px;
@@ -715,6 +810,10 @@
                 grid-template-columns: repeat(2, 1fr);
             }
 
+            .add-items-grid {
+                grid-template-columns: 1fr;
+            }
+
             .search-box {
                 flex-direction: column;
             }
@@ -740,8 +839,12 @@
                 align-items: stretch;
             }
 
-            .print-btn {
+            .table-actions {
                 width: 100%;
+            }
+
+            .action-btn {
+                flex: 1;
                 justify-content: center;
             }
 
@@ -869,10 +972,22 @@
                 <p style="margin-top: 0.6rem; font-size: 0.75rem;">All actions will be logged for security purposes.</p>
             </div>
 
+            <!-- Add Items Section (Admin Only) -->
+            <div class="add-items-section" id="addItemsSection">
+                <h3>Add Multiple Items to All Branches</h3>
+                <div class="add-items-grid" id="addItemsGrid">
+                    <!-- Items will be loaded here -->
+                </div>
+                <div class="add-items-controls">
+                    <button class="btn btn-secondary" onclick="hideAddItems()">Cancel</button>
+                    <button class="btn btn-primary" onclick="addSelectedItems()">Add Selected Items</button>
+                </div>
+            </div>
+
             <!-- Welcome Banner -->
             <div class="welcome-banner">
                 <h2 id="branchTitle">Warehouse Inventory</h2>
-                <p id="branchDescription">View-only access to warehouse inventory</p>
+                <p id="branchDescription">View and manage warehouse inventory</p>
             </div>
 
             <!-- Message Display -->
@@ -916,8 +1031,8 @@
                     <button class="filter-btn active" onclick="filterItems('all')">All Items</button>
                     <button class="filter-btn" onclick="filterItems('low-stock')">Low Stock</button>
                     <button class="filter-btn" onclick="filterItems('out-of-stock')">Out of Stock</button>
-                    <button class="filter-btn" onclick="filterItems('paper')">Phone Accessories</button>
-                    <button class="filter-btn" onclick="filterItems('ink')">Stationary</button>
+                    <button class="filter-btn" onclick="filterItems('phone')">Phone Accessories</button>
+                    <button class="filter-btn" onclick="filterItems('stationary')">Stationary</button>
                 </div>
             </div>
 
@@ -925,9 +1040,14 @@
             <div class="table-container">
                 <div class="table-header">
                     <h3>Current Inventory</h3>
-                    <button class="print-btn" onclick="window.print()">
-                        <i class="fas fa-print"></i> Print Report
-                    </button>
+                    <div class="table-actions">
+                        <button class="action-btn" onclick="window.print()">
+                            <i class="fas fa-print"></i> Print
+                        </button>
+                        <button class="action-btn add" onclick="showAddItems()" id="addItemsBtn" style="display: none;">
+                            <i class="fas fa-plus"></i> Add Items
+                        </button>
+                    </div>
                 </div>
                 
                 <div class="table-scroll">
@@ -982,13 +1102,87 @@
         let allItems = [];
         let currentFilter = 'all';
         let unsubscribeInventory = null;
+        let allPredefinedItems = [];
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
-            console.log("🏬 Warehouse Viewer loaded");
+            console.log("🏬 Warehouse Inventory Manager loaded");
             initializeSidebar();
             checkLogin();
+            loadPredefinedItems();
         });
+
+        // Load all predefined items (your list)
+        function loadPredefinedItems() {
+            allPredefinedItems = [
+                { name: "Protea chargers", category: "phone accessories", price: 50, code: "PC50" },
+                { name: "Gotv remotes", category: "phone accessories", price: 100, code: "GR100" },
+                { name: "Dstv remotes", category: "phone accessories", price: 100, code: "DR100" },
+                { name: "Tv remotes", category: "phone accessories", price: 150, code: "TR150" },
+                { name: "Mango pods", category: "phone accessories", price: 250, code: "MP250" },
+                { name: "Pods", category: "phone accessories", price: 150, code: "P150" },
+                { name: "Teckno chargers", category: "phone accessories", price: 130, code: "TC130" },
+                { name: "ORG Chargers", category: "phone accessories", price: 150, code: "OC150" },
+                { name: "Sky max chargers type c", category: "phone accessories", price: 150, code: "SMC150" },
+                { name: "Sivia cables iPhone", category: "phone accessories", price: 70, code: "SCI70" },
+                { name: "Sivia cables normal", category: "phone accessories", price: 70, code: "SCN70" },
+                { name: "Sivia cables type c", category: "phone accessories", price: 70, code: "SCT70" },
+                { name: "Itel original small batteries", category: "phone accessories", price: 80, code: "ISB80" },
+                { name: "Venus original small batteries", category: "phone accessories", price: 80, code: "VSB80" },
+                { name: "OTG", category: "phone accessories", price: 40, code: "OTG40" },
+                { name: "Car modulators", category: "phone accessories", price: 150, code: "CM150" },
+                { name: "Mango headset", category: "phone accessories", price: 70, code: "MH70" },
+                { name: "Av cables", category: "phone accessories", price: 50, code: "AC50" },
+                { name: "Aux av", category: "phone accessories", price: 50, code: "AA50" },
+                { name: "Aux cables", category: "phone accessories", price: 35, code: "AUX35" },
+                { name: "iPhone complete chargers", category: "phone accessories", price: 350, code: "ICC350" },
+                { name: "Mango car chargers", category: "phone accessories", price: 150, code: "MCC150" },
+                { name: "Mango pod casings", category: "phone accessories", price: 80, code: "MPC80" },
+                { name: "Card readers", category: "phone accessories", price: 25, code: "CR25" },
+                { name: "Mp3", category: "phone accessories", price: 100, code: "MP3100" },
+                { name: "Travel chargers", category: "phone accessories", price: 100, code: "TC100" },
+                { name: "Samsung 45w chargers type c to c", category: "phone accessories", price: 350, code: "S45C350" },
+                { name: "P47 betsheadsets", category: "phone accessories", price: 150, code: "P47B150" },
+                { name: "Oking phones", category: "phone accessories", price: 280, code: "OP280" },
+                { name: "Callus phones", category: "phone accessories", price: 280, code: "CP280" },
+                { name: "Nokia phones 106", category: "phone accessories", price: 400, code: "N106400" },
+                { name: "Nokia phones 105", category: "phone accessories", price: 350, code: "N105350" },
+                { name: "Itel original phones", category: "phone accessories", price: 350, code: "IOP350" },
+                { name: "Venus phones", category: "phone accessories", price: 350, code: "VP350" },
+                { name: "2gb flash", category: "phone accessories", price: 75, code: "2GB75" },
+                { name: "4gb flash", category: "phone accessories", price: 85, code: "4GB85" },
+                { name: "HDMI cables", category: "phone accessories", price: 70, code: "HDMI70" },
+                { name: "C to C cables", category: "phone accessories", price: 100, code: "CTC100" },
+                { name: "C to c and iPhone cables", category: "phone accessories", price: 100, code: "CIC100" },
+                { name: "Mouse", category: "phone accessories", price: 50, code: "M50" },
+                { name: "Normal cables", category: "phone accessories", price: 50, code: "NC50" },
+                { name: "Type c data cables", category: "phone accessories", price: 50, code: "TCDC50" },
+                { name: "iPhone cables", category: "phone accessories", price: 50, code: "IC50" },
+                { name: "Aux car cable", category: "phone accessories", price: 35, code: "ACC35" },
+                { name: "Rims of papers", category: "stationary", price: 150, code: "ROP150" },
+                { name: "Key boards", category: "phone accessories", price: 150, code: "KB150" },
+                { name: "Mifi mini mtn", category: "phone accessories", price: 600, code: "MMM600" },
+                { name: "Ticno chargers type c", category: "phone accessories", price: 80, code: "TCTC80" },
+                { name: "Ticno chargers normal", category: "phone accessories", price: 80, code: "TCN80" },
+                { name: "Next chargers", category: "phone accessories", price: 150, code: "NXC150" },
+                { name: "Samsung chargers", category: "phone accessories", price: 50, code: "SC50" },
+                { name: "Screen protectors", category: "phone accessories", price: 35, code: "SP35" },
+                { name: "Screen protectors", category: "phone accessories", price: 70, code: "SP70" },
+                { name: "Screen protectors", category: "phone accessories", price: 100, code: "SP100" },
+                { name: "Privacy screen protectors", category: "phone accessories", price: 150, code: "PSP150" },
+                { name: "Envelops small", category: "stationary", price: 3, code: "ES3" },
+                { name: "Envelops medium", category: "stationary", price: 5, code: "EM5" },
+                { name: "Envelops big", category: "stationary", price: 7, code: "EB7" },
+                { name: "Pens", category: "stationary", price: 2, code: "P2" },
+                { name: "Passport size paper photos", category: "stationary", price: 50, code: "PSP50" },
+                { name: "Headsets", category: "phone accessories", price: 35, code: "HS35" },
+                { name: "Headsets", category: "phone accessories", price: 40, code: "HS40" },
+                { name: "Airtel simcards", category: "phone accessories", price: 15, code: "ASC15" },
+                { name: "Mtn sim cards", category: "phone accessories", price: 15, code: "MSC15" },
+                { name: "Zedmobile sim cards", category: "phone accessories", price: 15, code: "ZSC15" },
+                { name: "ZAMTEL SIM card", category: "phone accessories", price: 20, code: "ZTSC20" }
+            ];
+        }
 
         // Initialize sidebar toggle for both desktop and mobile
         function initializeSidebar() {
@@ -1068,8 +1262,9 @@
                 document.getElementById('branchBadge').textContent = 'Branch 1';
                 document.getElementById('adminBadge').style.display = 'inline-block';
                 document.getElementById('adminPanelBtn').style.display = 'flex';
+                document.getElementById('addItemsBtn').style.display = 'flex';
                 document.getElementById('branchTitle').textContent = 'Branch 1 Warehouse';
-                document.getElementById('branchDescription').textContent = 'Main Branch - View Only';
+                document.getElementById('branchDescription').textContent = 'Main Branch - Full Access';
             } else {
                 currentBranch = 'unassigned';
                 document.getElementById('branchBadge').textContent = 'Unassigned';
@@ -1225,7 +1420,7 @@
                                     📭 No items in warehouse inventory
                                 </div>
                                 <div style="color: #999; margin-top: 10px; font-size: 11px;">
-                                    ${isAdmin ? 'Add items from Admin Dashboard' : 'Admin will add items to this branch'}
+                                    ${isAdmin ? 'Add items using the "Add Items" button above' : 'Admin will add items to this branch'}
                                 </div>
                             </td>
                         </tr>
@@ -1322,7 +1517,7 @@
                     <td class="${quantityClass}">${item.stock}</td>
                     <td>${formatZMW(item.price)}</td>
                     <td><strong>${formatZMW(item.totalValue || 0)}</strong></td>
-                    <td>${item.location || ''}</td>
+                    <td>${item.location || 'A1'}</td>
                     <td><span class="status-badge ${statusClass}">${statusText}</span></td>
                 `;
             });
@@ -1351,6 +1546,105 @@
             document.getElementById('totalValue').innerHTML = formatZMW(value);
             document.getElementById('outOfStock').textContent = outOfStock;
             console.log(`📈 Stats updated: ${items} items, ZMW ${value.toFixed(2)} value`);
+        }
+
+        // Show add items section
+        function showAddItems() {
+            if (!isAdmin) {
+                showMessage("Only admin can add items", "error");
+                return;
+            }
+            
+            const addItemsSection = document.getElementById('addItemsSection');
+            const addItemsGrid = document.getElementById('addItemsGrid');
+            
+            // Populate with predefined items
+            addItemsGrid.innerHTML = '';
+            
+            allPredefinedItems.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'add-item-btn';
+                itemDiv.innerHTML = `
+                    <input type="checkbox" id="item-${item.code}" value="${item.code}" style="margin-right: 5px;">
+                    <label for="item-${item.code}" style="cursor: pointer;">
+                        ${item.name} - ZMW${item.price} (${item.code})
+                    </label>
+                `;
+                addItemsGrid.appendChild(itemDiv);
+            });
+            
+            addItemsSection.style.display = 'block';
+            addItemsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Hide add items section
+        function hideAddItems() {
+            document.getElementById('addItemsSection').style.display = 'none';
+        }
+
+        // Add selected items to all branches
+        function addSelectedItems() {
+            const checkboxes = document.querySelectorAll('#addItemsGrid input[type="checkbox"]:checked');
+            
+            if (checkboxes.length === 0) {
+                showMessage("Please select at least one item to add", "error");
+                return;
+            }
+            
+            const selectedCodes = Array.from(checkboxes).map(cb => cb.value);
+            const selectedItems = allPredefinedItems.filter(item => selectedCodes.includes(item.code));
+            
+            // All branches
+            const branches = ['branch1', 'branch2', 'branch3'];
+            
+            console.log(`Adding ${selectedItems.length} items to ${branches.length} branches...`);
+            
+            let addedCount = 0;
+            let errorCount = 0;
+            const totalItems = selectedItems.length * branches.length;
+            
+            // Show loading message
+            showMessage(`Adding items to all branches...`, "info");
+            
+            // Add items to each branch
+            branches.forEach(branch => {
+                selectedItems.forEach(item => {
+                    const itemData = {
+                        name: item.name,
+                        code: item.code,
+                        category: item.category,
+                        salePrice: item.price,
+                        price: item.price,
+                        stock: 0, // Initial stock is 0
+                        minStock: 5,
+                        branchId: branch,
+                        location: "A1",
+                        supplier: "General Supplier",
+                        description: `${item.name} - ${getCategoryName(item.category)}`,
+                        totalValue: 0,
+                        lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+                        dateAdded: firebase.firestore.FieldValue.serverTimestamp(),
+                        status: "out-of-stock"
+                    };
+                    
+                    // Add to Firestore
+                    db.collection('inventory').add(itemData)
+                        .then(docRef => {
+                            addedCount++;
+                            console.log(`✅ Added ${item.name} (${item.code}) to ${branch}`);
+                            
+                            // Show completion message
+                            if ((addedCount + errorCount) === totalItems) {
+                                showMessage(`Successfully added ${addedCount} items to all branches! ${errorCount} errors occurred.`, "success");
+                                hideAddItems();
+                            }
+                        })
+                        .catch(error => {
+                            errorCount++;
+                            console.error(`❌ Error adding ${item.name} to ${branch}:`, error);
+                        });
+                });
+            });
         }
 
         // Search items
@@ -1398,11 +1692,11 @@
                     filteredItems = allItems.filter(item => item.stock === 0);
                     console.log(`❌ Filter: Out of Stock (${filteredItems.length} items)`);
                     break;
-                case 'paper':
+                case 'phone':
                     filteredItems = allItems.filter(item => item.category === 'phone accessories');
-                    console.log(`📄 Filter: Phone Accessories (${filteredItems.length} items)`);
+                    console.log(`📱 Filter: Phone Accessories (${filteredItems.length} items)`);
                     break;
-                case 'ink':
+                case 'stationary':
                     filteredItems = allItems.filter(item => item.category === 'stationary');
                     console.log(`🖋️ Filter: Stationary (${filteredItems.length} items)`);
                     break;
