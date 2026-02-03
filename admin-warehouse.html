@@ -462,19 +462,21 @@
             overflow: auto;
         }
 
+        /* SMALLER TABLE CSS AS REQUESTED */
         .inventory-table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 900px;
+            min-width: 700px; /* Reduced from 900px */
+            font-size: 0.75rem; /* Smaller font */
         }
 
         .inventory-table th {
             background: #f8fafc;
-            padding: 0.6rem;
+            padding: 0.5rem; /* Reduced padding */
             text-align: left;
             color: #718096;
             font-weight: 600;
-            font-size: 0.7rem;
+            font-size: 0.65rem; /* Smaller font */
             text-transform: uppercase;
             letter-spacing: 0.5px;
             border-bottom: 2px solid #e2e8f0;
@@ -484,10 +486,10 @@
         }
 
         .inventory-table td {
-            padding: 0.6rem;
+            padding: 0.5rem; /* Reduced padding */
             border-bottom: 1px solid #f7fafc;
             color: #4a5568;
-            font-size: 0.8rem;
+            font-size: 0.75rem; /* Smaller font */
             vertical-align: middle;
         }
 
@@ -495,11 +497,244 @@
             background: #f8fafc;
         }
 
+        /* Action Menu Column */
+        .action-menu {
+            position: relative;
+            width: 30px;
+            text-align: center;
+        }
+
+        .action-dots {
+            background: none;
+            border: none;
+            color: #718096;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0.2rem;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .action-dots:hover {
+            background: #e2e8f0;
+            color: #2d3748;
+        }
+
+        .action-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 100;
+            min-width: 140px;
+            display: none;
+        }
+
+        .action-dropdown.show {
+            display: block;
+        }
+
+        .action-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem;
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            color: #4a5568;
+            font-size: 0.75rem;
+            transition: all 0.2s;
+        }
+
+        .action-item:hover {
+            background: #f7fafc;
+        }
+
+        .action-item.edit {
+            color: #3182ce;
+        }
+
+        .action-item.delete {
+            color: #e53e3e;
+        }
+
+        .action-item i {
+            width: 14px;
+            font-size: 0.8rem;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalSlide 0.3s ease;
+        }
+
+        @keyframes modalSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            font-size: 0.9rem;
+            color: #2d3748;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #718096;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0.2rem;
+            border-radius: 4px;
+        }
+
+        .modal-close:hover {
+            color: #2d3748;
+            background: #f7fafc;
+        }
+
+        .modal-body {
+            padding: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.3rem;
+            font-size: 0.75rem;
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4299e1;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            background: white;
+            cursor: pointer;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: #4299e1;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .btn {
+            padding: 0.6rem 1rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            flex: 1;
+        }
+
+        .btn-primary {
+            background: #4299e1;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3182ce;
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+
+        .btn-danger {
+            background: #e53e3e;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c53030;
+        }
+
         /* Status Badges */
         .status-badge {
-            padding: 0.2rem 0.4rem;
-            border-radius: 4px;
-            font-size: 0.65rem;
+            padding: 0.15rem 0.3rem; /* Smaller */
+            border-radius: 3px;
+            font-size: 0.6rem; /* Smaller */
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.3px;
@@ -525,9 +760,9 @@
         .code-badge {
             background: #4299e1;
             color: white;
-            padding: 0.2rem 0.4rem;
-            border-radius: 4px;
-            font-size: 0.7rem;
+            padding: 0.15rem 0.3rem; /* Smaller */
+            border-radius: 3px;
+            font-size: 0.65rem; /* Smaller */
             font-weight: 600;
             font-family: monospace;
             display: inline-block;
@@ -561,7 +796,7 @@
         .loading {
             color: #a0aec0;
             font-style: italic;
-            font-size: 0.8rem;
+            font-size: 0.75rem; /* Smaller */
             animation: pulse 1.5s infinite;
         }
 
@@ -573,12 +808,12 @@
         /* Empty State */
         .empty-state {
             text-align: center;
-            padding: 2rem;
+            padding: 1.5rem; /* Smaller */
             color: #a0aec0;
         }
 
         .empty-state h3 {
-            font-size: 0.9rem;
+            font-size: 0.85rem; /* Smaller */
             margin-bottom: 0.3rem;
             color: #718096;
         }
@@ -672,6 +907,10 @@
             .table-container {
                 max-height: 50vh;
             }
+
+            .inventory-table {
+                min-width: 600px; /* Even smaller on mobile */
+            }
         }
 
         @media (max-width: 480px) {
@@ -692,15 +931,15 @@
             }
 
             .inventory-table {
-                min-width: 800px;
+                min-width: 550px; /* Smaller on very small screens */
             }
 
             .content-header h3 {
-                font-size: 0.8rem;
+                font-size: 0.75rem; /* Smaller */
             }
 
             .last-updated {
-                font-size: 0.65rem;
+                font-size: 0.65rem; /* Smaller */
             }
         }
 
@@ -773,6 +1012,65 @@
 <body>
     <!-- Sidebar Overlay for Mobile -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Edit/Delete Modal -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalTitle">Edit Inventory Item</h3>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="editCode">Item Code *</label>
+                    <input type="text" id="editCode" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="editName">Item Name *</label>
+                    <input type="text" id="editName" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="editCategory">Category</label>
+                    <select id="editCategory" class="form-select">
+                        <option value="art">Art</option>
+                        <option value="prints">Prints</option>
+                        <option value="canvas">Canvas</option>
+                        <option value="framed">Framed</option>
+                        <option value="supplies">Supplies</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editBranch">Branch *</label>
+                    <select id="editBranch" class="form-select">
+                        <option value="branch1">Branch 1 (Main)</option>
+                        <option value="branch2">Branch 2</option>
+                        <option value="branch3">Branch 3</option>
+                        <option value="samz">Samz</option>
+                        <option value="wamz">Wamz</option>
+                        <option value="namz">Namz</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editQuantity">Quantity *</label>
+                    <input type="number" id="editQuantity" class="form-input" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="editPrice">Unit Price (ZMW)</label>
+                    <input type="number" id="editPrice" class="form-input" min="0" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="editLocation">Location(s)</label>
+                    <input type="text" id="editLocation" class="form-input" placeholder="e.g., Shelf A, Row 3">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="deleteBtn" style="display:none;">Delete</button>
+                    <button type="button" class="btn btn-primary" id="saveBtn">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="dashboard-container">
         <!-- Sidebar -->
@@ -871,6 +1169,18 @@
                         <i class="fas fa-building"></i>
                         <span>Branch 3</span>
                     </button>
+                    <button class="nav-btn" data-view="samz">
+                        <i class="fas fa-user"></i>
+                        <span>Samz</span>
+                    </button>
+                    <button class="nav-btn" data-view="wamz">
+                        <i class="fas fa-user"></i>
+                        <span>Wamz</span>
+                    </button>
+                    <button class="nav-btn" data-view="namz">
+                        <i class="fas fa-user"></i>
+                        <span>Namz</span>
+                    </button>
                     
                     <div class="nav-tools">
                         <button class="tool-btn" id="exportViewCsv">
@@ -908,11 +1218,12 @@
                                     <th>Unit Price</th>
                                     <th>Value</th>
                                     <th>Location(s)</th>
+                                    <th style="width: 40px;">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="inventoryBody">
                                 <tr>
-                                    <td colspan="8" style="text-align: center; padding: 2rem;">
+                                    <td colspan="9" style="text-align: center; padding: 2rem;">
                                         <span class="loading">Connecting to Firestore...</span>
                                     </td>
                                 </tr>
@@ -952,6 +1263,8 @@
         let rawDocs = [];
         let currentView = 'all';
         let isAdmin = false;
+        let editingItem = null;
+        let actionDropdownOpen = null;
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
@@ -960,6 +1273,14 @@
             checkAccess();
             setupUI();
             setupInventoryListener();
+            setupModal();
+            
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.action-menu')) {
+                    closeAllDropdowns();
+                }
+            });
         });
 
         // Initialize sidebar toggle for both desktop and mobile
@@ -1040,6 +1361,27 @@
             document.getElementById('grvBtn').addEventListener('click', () => window.location.href = 'grv.html');
         }
 
+        // Setup modal functionality
+        function setupModal() {
+            const modal = document.getElementById('editModal');
+            const modalClose = document.getElementById('modalClose');
+            const cancelBtn = document.getElementById('cancelBtn');
+            const saveBtn = document.getElementById('saveBtn');
+            const deleteBtn = document.getElementById('deleteBtn');
+            
+            modalClose.addEventListener('click', closeModal);
+            cancelBtn.addEventListener('click', closeModal);
+            saveBtn.addEventListener('click', saveItem);
+            deleteBtn.addEventListener('click', deleteItem);
+            
+            // Close modal on overlay click
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+        }
+
         // Setup real-time Firestore listener
         function setupInventoryListener() {
             console.log("🔍 Setting up Firestore listener...");
@@ -1074,7 +1416,7 @@
             }, err => {
                 console.error('Firestore listener error:', err);
                 const tbody = document.getElementById('inventoryBody');
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:2rem;color:#c53030; font-size: 0.8rem;">Error loading inventory: ${err.message}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:2rem;color:#c53030; font-size: 0.8rem;">Error loading inventory: ${err.message}</td></tr>`;
             });
         }
 
@@ -1093,7 +1435,8 @@
                         price: item.price || 0,
                         total: 0,
                         branches: {},
-                        locations: new Set()
+                        locations: new Set(),
+                        items: [] // Store individual items for editing
                     };
                 }
                 
@@ -1113,6 +1456,16 @@
                 if ((!rec.price || rec.price === 0) && item.price) {
                     rec.price = item.price;
                 }
+                
+                // Store individual item reference
+                rec.items.push({
+                    id: item._id,
+                    branchId: item.branchId,
+                    qty: q,
+                    price: item.price,
+                    location: item.location,
+                    rawData: item
+                });
             });
             return map;
         }
@@ -1126,7 +1479,7 @@
             const rows = Object.values(map).sort((a, b) => b.total - a.total || a.code.localeCompare(b.code));
             
             if (!rows.length) {
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:2rem; font-size: 0.8rem; color: #718096;">No items found</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:2rem; font-size: 0.8rem; color: #718096;">No items found</td></tr>`;
                 return;
             }
             
@@ -1144,7 +1497,20 @@
                     <td>${numberWithCommas(r.total)}</td>
                     <td>${formatZMW(price)}</td>
                     <td>${formatZMW(value)}</td>
-                    <td style="font-size: 0.75rem;">${escapeHtml(locations)}</td>
+                    <td style="font-size: 0.7rem;">${escapeHtml(locations)}</td>
+                    <td class="action-menu">
+                        <button class="action-dots" onclick="toggleActionMenu(event, '${r.code}')">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <div class="action-dropdown" id="menu-${r.code}">
+                            <button class="action-item edit" onclick="editConsolidatedItem('${r.code}')">
+                                <i class="fas fa-edit"></i> Edit Items
+                            </button>
+                            <button class="action-item delete" onclick="deleteConsolidatedItem('${r.code}')">
+                                <i class="fas fa-trash"></i> Delete All
+                            </button>
+                        </div>
+                    </td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -1158,54 +1524,255 @@
             const list = rawDocs.filter(d => d.branchId === branchId);
             
             if (!list.length) {
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:2rem; font-size: 0.8rem; color: #718096;">No items for ${branchId}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:2rem; font-size: 0.8rem; color: #718096;">No items for ${branchId}</td></tr>`;
                 return;
             }
             
-            const map = {};
-            list.forEach(item => {
-                const code = (item.code || '').toUpperCase();
-                if (!code) return;
-                
-                if (!map[code]) {
-                    map[code] = {
-                        code,
-                        name: item.name || code,
-                        category: item.category || 'other',
-                        price: item.price || 0,
-                        qty: 0,
-                        locations: new Set()
-                    };
-                }
-                
-                map[code].qty += Number(item.qty || 0);
-                
-                if (item.location) {
-                    if (Array.isArray(item.location)) {
-                        item.location.forEach(l => map[code].locations.add(l));
-                    } else {
-                        map[code].locations.add(item.location);
-                    }
-                }
-            });
-            
-            Object.values(map)
+            list
                 .sort((a, b) => b.qty - a.qty || a.code.localeCompare(b.code))
-                .forEach(it => {
+                .forEach(item => {
                     const tr = document.createElement('tr');
-                    const val = Number(it.price || 0) * Number(it.qty || 0);
+                    const val = Number(item.price || 0) * Number(item.qty || 0);
+                    const locations = Array.isArray(item.location) 
+                        ? item.location.join('; ') 
+                        : item.location;
                     
                     tr.innerHTML = `
-                        <td><span class="code-badge">${escapeHtml(it.code)}</span></td>
-                        <td>${escapeHtml(it.name)}</td>
-                        <td>${capitalize(it.category)}</td>
+                        <td><span class="code-badge">${escapeHtml(item.code)}</span></td>
+                        <td>${escapeHtml(item.name)}</td>
+                        <td>${capitalize(item.category)}</td>
                         <td>-</td>
-                        <td>${numberWithCommas(it.qty)}</td>
-                        <td>${formatZMW(it.price)}</td>
+                        <td>${numberWithCommas(item.qty)}</td>
+                        <td>${formatZMW(item.price)}</td>
                         <td>${formatZMW(val)}</td>
-                        <td style="font-size: 0.75rem;">${escapeHtml(Array.from(it.locations).join('; '))}</td>
+                        <td style="font-size: 0.7rem;">${escapeHtml(locations)}</td>
+                        <td class="action-menu">
+                            <button class="action-dots" onclick="toggleActionMenu(event, '${item._id}')">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div class="action-dropdown" id="menu-${item._id}">
+                                <button class="action-item edit" onclick="editSingleItem('${item._id}')">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="action-item delete" onclick="deleteSingleItem('${item._id}')">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </div>
+                        </td>
                     `;
                     tbody.appendChild(tr);
+                });
+        }
+
+        // Toggle action menu
+        function toggleActionMenu(event, id) {
+            event.stopPropagation();
+            
+            // Close other dropdowns
+            if (actionDropdownOpen && actionDropdownOpen !== id) {
+                const prevMenu = document.getElementById(`menu-${actionDropdownOpen}`);
+                if (prevMenu) prevMenu.classList.remove('show');
+            }
+            
+            const menu = document.getElementById(`menu-${id}`);
+            if (menu) {
+                menu.classList.toggle('show');
+                actionDropdownOpen = menu.classList.contains('show') ? id : null;
+            }
+        }
+
+        // Close all dropdowns
+        function closeAllDropdowns() {
+            document.querySelectorAll('.action-dropdown').forEach(menu => {
+                menu.classList.remove('show');
+            });
+            actionDropdownOpen = null;
+        }
+
+        // Edit single item (branch view)
+        function editSingleItem(itemId) {
+            closeAllDropdowns();
+            const item = rawDocs.find(d => d._id === itemId);
+            if (!item) {
+                showMessage('Item not found', 'error');
+                return;
+            }
+            
+            editingItem = item;
+            openModal(item);
+        }
+
+        // Edit consolidated item (all branches view)
+        function editConsolidatedItem(code) {
+            closeAllDropdowns();
+            const map = buildAggregatedMap();
+            const item = map[code];
+            if (!item) {
+                showMessage('Item not found', 'error');
+                return;
+            }
+            
+            // For consolidated view, we need to decide which item to edit
+            // Let's edit the first item in the list
+            if (item.items && item.items.length > 0) {
+                editingItem = item.items[0].rawData;
+                openModal(editingItem);
+            } else {
+                showMessage('No items found to edit', 'error');
+            }
+        }
+
+        // Delete single item
+        function deleteSingleItem(itemId) {
+            closeAllDropdowns();
+            if (!confirm('Are you sure you want to delete this item?')) return;
+            
+            db.collection('inventory').doc(itemId).delete()
+                .then(() => {
+                    showMessage('Item deleted successfully', 'success');
+                })
+                .catch(error => {
+                    console.error('Error deleting item:', error);
+                    showMessage('Error deleting item: ' + error.message, 'error');
+                });
+        }
+
+        // Delete consolidated item (all items with same code)
+        function deleteConsolidatedItem(code) {
+            closeAllDropdowns();
+            if (!confirm(`Are you sure you want to delete ALL items with code ${code}? This will delete from ALL branches.`)) return;
+            
+            const map = buildAggregatedMap();
+            const item = map[code];
+            if (!item || !item.items) return;
+            
+            const deletePromises = item.items.map(itemData => 
+                db.collection('inventory').doc(itemData.id).delete()
+            );
+            
+            Promise.all(deletePromises)
+                .then(() => {
+                    showMessage(`All items with code ${code} deleted successfully`, 'success');
+                })
+                .catch(error => {
+                    console.error('Error deleting items:', error);
+                    showMessage('Error deleting items: ' + error.message, 'error');
+                });
+        }
+
+        // Open modal for editing
+        function openModal(item) {
+            const modal = document.getElementById('editModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const deleteBtn = document.getElementById('deleteBtn');
+            
+            // Fill form with item data
+            document.getElementById('editCode').value = item.code || '';
+            document.getElementById('editName').value = item.name || '';
+            document.getElementById('editCategory').value = item.category || 'other';
+            document.getElementById('editBranch').value = item.branchId || 'branch1';
+            document.getElementById('editQuantity').value = item.qty || 0;
+            document.getElementById('editPrice').value = item.price || 0;
+            
+            // Handle location (could be string or array)
+            const locationValue = Array.isArray(item.location) 
+                ? item.location.join(', ') 
+                : item.location || '';
+            document.getElementById('editLocation').value = locationValue;
+            
+            // Update UI based on context
+            if (currentView === 'all') {
+                modalTitle.textContent = `Edit Item: ${item.code}`;
+                deleteBtn.style.display = 'none'; // Hide delete in consolidated view
+            } else {
+                modalTitle.textContent = `Edit Item: ${item.code} (${item.branchId})`;
+                deleteBtn.style.display = 'block';
+            }
+            
+            modal.classList.add('show');
+        }
+
+        // Close modal
+        function closeModal() {
+            const modal = document.getElementById('editModal');
+            modal.classList.remove('show');
+            editingItem = null;
+            
+            // Reset form
+            document.getElementById('editCode').value = '';
+            document.getElementById('editName').value = '';
+            document.getElementById('editCategory').value = 'other';
+            document.getElementById('editBranch').value = 'branch1';
+            document.getElementById('editQuantity').value = 0;
+            document.getElementById('editPrice').value = 0;
+            document.getElementById('editLocation').value = '';
+        }
+
+        // Save item changes
+        function saveItem() {
+            if (!editingItem) return;
+            
+            // Get form values
+            const code = document.getElementById('editCode').value.trim();
+            const name = document.getElementById('editName').value.trim();
+            const category = document.getElementById('editCategory').value;
+            const branchId = document.getElementById('editBranch').value;
+            const quantity = parseInt(document.getElementById('editQuantity').value, 10) || 0;
+            const price = parseFloat(document.getElementById('editPrice').value) || 0;
+            const location = document.getElementById('editLocation').value.trim();
+            
+            // Validate
+            if (!code) {
+                showMessage('Item code is required', 'error');
+                return;
+            }
+            if (!name) {
+                showMessage('Item name is required', 'error');
+                return;
+            }
+            
+            // Prepare update data
+            const updateData = {
+                code: code.toUpperCase(),
+                name,
+                category,
+                branchId,
+                qty: quantity,
+                price,
+                updatedAt: new Date()
+            };
+            
+            // Handle location (split by comma if provided)
+            if (location) {
+                updateData.location = location.split(',').map(l => l.trim()).filter(l => l);
+            }
+            
+            // Update in Firestore
+            db.collection('inventory').doc(editingItem._id).update(updateData)
+                .then(() => {
+                    showMessage('Item updated successfully', 'success');
+                    closeModal();
+                })
+                .catch(error => {
+                    console.error('Error updating item:', error);
+                    showMessage('Error updating item: ' + error.message, 'error');
+                });
+        }
+
+        // Delete item from modal
+        function deleteItem() {
+            if (!editingItem) return;
+            
+            if (!confirm('Are you sure you want to delete this item?')) return;
+            
+            db.collection('inventory').doc(editingItem._id).delete()
+                .then(() => {
+                    showMessage('Item deleted successfully', 'success');
+                    closeModal();
+                })
+                .catch(error => {
+                    console.error('Error deleting item:', error);
+                    showMessage('Error deleting item: ' + error.message, 'error');
                 });
         }
 
@@ -1217,7 +1784,8 @@
                 viewTitle.textContent = 'All Branches (Consolidated)';
                 renderConsolidated();
             } else {
-                viewTitle.textContent = `${currentView} Inventory`;
+                const viewName = currentView.charAt(0).toUpperCase() + currentView.slice(1);
+                viewTitle.textContent = `${viewName} Inventory`;
                 renderBranch(currentView);
             }
             
@@ -1232,7 +1800,7 @@
             
             if (currentView === 'all') {
                 const map = buildAggregatedMap();
-                rows.push(['code', 'name', 'category', 'branch1_qty', 'branch2_qty', 'branch3_qty', 'total_qty', 'unit_price', 'value', 'locations']);
+                rows.push(['code', 'name', 'category', 'branch1_qty', 'branch2_qty', 'branch3_qty', 'samz_qty', 'wamz_qty', 'namz_qty', 'total_qty', 'unit_price', 'value', 'locations']);
                 
                 Object.values(map).forEach(m => {
                     rows.push([
@@ -1242,6 +1810,9 @@
                         m.branches.branch1 || 0,
                         m.branches.branch2 || 0,
                         m.branches.branch3 || 0,
+                        m.branches.samz || 0,
+                        m.branches.wamz || 0,
+                        m.branches.namz || 0,
                         m.total,
                         (m.price || 0).toFixed(2),
                         ((m.price || 0) * m.total).toFixed(2),
@@ -1266,7 +1837,13 @@
                         };
                     }
                     map[c].qty += Number(it.qty || 0);
-                    if (it.location) map[c].locations.add(it.location);
+                    if (it.location) {
+                        if (Array.isArray(it.location)) {
+                            it.location.forEach(l => map[c].locations.add(l));
+                        } else {
+                            map[c].locations.add(it.location);
+                        }
+                    }
                 });
                 
                 Object.values(map).forEach(i => {
@@ -1304,8 +1881,8 @@
         }
 
         function formatBranchQtys(obj) {
-            const order = ['branch1', 'branch2', 'branch3'];
-            return order.map(b => `${b.replace('branch', 'B')}:${numberWithCommas(obj[b] || 0)}`).join(' • ');
+            const order = ['branch1', 'branch2', 'branch3', 'samz', 'wamz', 'namz'];
+            return order.map(b => `${b.charAt(0).toUpperCase() + b.slice(1)}:${numberWithCommas(obj[b] || 0)}`).join(' • ');
         }
 
         function downloadTextFile(text, filename) {
